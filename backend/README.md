@@ -5,7 +5,7 @@
 ![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Servlet](https://img.shields.io/badge/Jakarta_Servlet-6.0-orange?style=for-the-badge)
 ![Tomcat](https://img.shields.io/badge/Tomcat-11-F8DC75?style=for-the-badge&logo=apache-tomcat&logoColor=black)
-![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 
 **RESTful API Backend cho UTE PhoneHub E-commerce Platform**
 
@@ -39,7 +39,7 @@ Backend của UTE PhoneHub được xây dựng với **Java Servlet API 6.0** v
 - 🔐 **JWT Authentication** - Xác thực bảo mật với JWT tokens
 - 🛡️ **CORS Support** - Cross-Origin Resource Sharing
 - 📖 **Swagger Integration** - Tự động tạo API documentation  
-- 🗃️ **MySQL Integration** - Kết nối cơ sở dữ liệu MySQL
+- 🗃️ **PostgreSQL Integration** - Kết nối cơ sở dữ liệu PostgreSQL
 - 🔄 **JSON Processing** - Jackson library cho xử lý JSON
 - 🛡️ **Security Filters** - Authentication và Authorization filters
 - 📊 **Modular Architecture** - Chia theo modules chức năng
@@ -75,7 +75,7 @@ Backend của UTE PhoneHub được xây dựng với **Java Servlet API 6.0** v
 │                              │                  │           │
 │                              ▼                  ▼           │
 │                     ┌─────────────────────────────────┐     │
-│                     │           MySQL Database       │     │
+│                     │        PostgreSQL Database     │     │
 │                     │                                 │     │
 │                     │ • users     • orders           │     │
 │                     │ • products  • order_items      │     │
@@ -106,7 +106,7 @@ Backend của UTE PhoneHub được xây dựng với **Java Servlet API 6.0** v
 | **Jackson Databind** | 2.15.2 | JSON processing |
 | **JJWT** | 0.11.5 | JWT token handling |
 | **BCrypt** | 0.4 | Password hashing |
-| **MySQL Connector** | 8.0.33 | Database connectivity |
+| **PostgreSQL JDBC** | 42.6.0 | Database connectivity |
 | **Swagger Core** | 2.2.15 | API documentation |
 | **Swagger UI** | 4.15.5 | API documentation UI |
 
@@ -184,19 +184,18 @@ backend/
 
 - **JDK 17+** ([Download](https://openjdk.org/))
 - **Apache Tomcat 11+** ([Download](https://tomcat.apache.org/download-11.cgi))
-- **MySQL 8.0+** ([Download](https://dev.mysql.com/downloads/mysql/))
+- **PostgreSQL 15+** ([Download](https://www.postgresql.org/download/))
 - **Maven 3.9+** ([Download](https://maven.apache.org/download.cgi))
 
 ### 🗃️ Thiết lập Database
 
 ```sql
 -- Tạo database
-CREATE DATABASE ute_phonehub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE ute_phonehub WITH ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
 
 -- Cấu hình user (optional)
-CREATE USER 'phonehub_user'@'localhost' IDENTIFIED BY 'your_secure_password';
-GRANT ALL PRIVILEGES ON ute_phonehub.* TO 'phonehub_user'@'localhost';
-FLUSH PRIVILEGES;
+CREATE USER phonehub_user WITH PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 ```
 
 ### 🔧 Build & Deploy
@@ -348,8 +347,8 @@ addresses           # Địa chỉ
 **File**: `src/main/java/com/utephonehub/util/DatabaseUtil.java`
 
 ```java
-// Cấu hình kết nối MySQL
-private static final String DB_URL = "jdbc:mysql://localhost:3306/ute_phonehub";
+// Cấu hình kết nối PostgreSQL
+private static final String DB_URL = "jdbc:postgresql://localhost:5432/ute_phonehub";
 private static final String DB_USERNAME = "phonehub_user";
 private static final String DB_PASSWORD = "your_password";
 ```
@@ -537,7 +536,7 @@ taskkill /PID <process_id> /F
 #### 2. **Database Connection Failed**
 ```java
 // Kiểm tra cấu hình trong DatabaseUtil.java
-// Đảm bảo MySQL service đang chạy
+// Đảm bảo PostgreSQL service đang chạy
 // Kiểm tra username/password/database name
 ```
 

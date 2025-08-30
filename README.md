@@ -11,7 +11,7 @@
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Railway](https://img.shields.io/badge/Railway-Deployed-0B0D0E?style=flat&logo=railway&logoColor=white)](https://railway.app/)
 
@@ -44,8 +44,8 @@
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │    Backend      │    │    Database     │
-│   (React)       │◄──►│ (Java Servlet)  │◄──►│    (MySQL)      │
-│   Port: 3000    │    │   Port: 8080    │    │   Port: 3306    │
+│   (React)       │◄──►│ (Java Servlet)  │◄──►│  (PostgreSQL)   │
+│   Port: 3000    │    │   Port: 8080    │    │   Port: 5432    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -93,7 +93,7 @@
 | ![Servlet](https://img.shields.io/badge/Jakarta_Servlet-6.0-orange?style=flat) | 6.0 | Web framework |
 | ![Tomcat](https://img.shields.io/badge/Tomcat-11-F8DC75?style=flat&logo=apache-tomcat&logoColor=black) | 11 | Application server |
 | ![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?style=flat&logo=apache-maven&logoColor=white) | 3.9+ | Build tool |
-| ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white) | 8.0 | Cơ sở dữ liệu |
+| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat&logo=postgresql&logoColor=white) | 15 | Cơ sở dữ liệu |
 | ![JWT](https://img.shields.io/badge/JWT-0.11.5-000000?style=flat&logo=jsonwebtokens&logoColor=white) | 0.11.5 | Authentication |
 | ![Jackson](https://img.shields.io/badge/Jackson-2.15.2-green?style=flat) | 2.15.2 | JSON processing |
 | ![Swagger](https://img.shields.io/badge/Swagger-2.2.15-85EA2D?style=flat&logo=swagger&logoColor=black) | 2.2.15 | API documentation |
@@ -168,7 +168,7 @@ ute-phonehub/
 
 - **Java**: JDK 17+ ([OpenJDK](https://openjdk.org/) hoặc [Oracle JDK](https://www.oracle.com/java/))
 - **Apache Tomcat**: 11+ ([Download](https://tomcat.apache.org/download-11.cgi))
-- **MySQL**: 8.0+ ([Download](https://dev.mysql.com/downloads/mysql/))
+- **PostgreSQL**: 15+ ([Download](https://www.postgresql.org/download/))
 - **Maven**: 3.9+ ([Download](https://maven.apache.org/download.cgi))
 - **Node.js**: 18+ ([Download](https://nodejs.org/))
 - **Git**: Latest ([Download](https://git-scm.com/))
@@ -185,12 +185,11 @@ cd ute-phonehub-testdeploy
 
 ```sql
 -- Tạo database
-CREATE DATABASE ute_phonehub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE ute_phonehub WITH ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
 
 -- Tạo user (optional)
-CREATE USER 'phonehub_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON ute_phonehub.* TO 'phonehub_user'@'localhost';
-FLUSH PRIVILEGES;
+CREATE USER phonehub_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 ```
 
 ---
@@ -403,7 +402,7 @@ Dự án này được phát triển cho mục đích học tập tại **Đại
 ### Yêu cầu hệ thống
 - **Java JDK 17** hoặc cao hơn
 - **Apache Tomcat 11** 
-- **MySQL 8.0** hoặc cao hơn
+- **PostgreSQL 15** hoặc cao hơn
 - **Maven 3.6** hoặc cao hơn
 
 ### Cài đặt môi trường
@@ -419,8 +418,8 @@ Dự án này được phát triển cho mục đích học tập tại **Đại
    - Tải về từ: https://tomcat.apache.org/download-11.cgi
    - Giải nén vào thư mục (ví dụ: `C:\apache-tomcat-11.0.10`)
 
-3. **Cài đặt MySQL**
-   - Tải và cài đặt MySQL Server 8.0
+3. **Cài đặt PostgreSQL**
+   - Tải và cài đặt PostgreSQL Server 15
    - Tạo database: `ute_phonehub`
 
 4. **Cài đặt Maven**

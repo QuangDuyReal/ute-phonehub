@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
               <ul>
                 <li>Java 17</li>
                 <li>Java Servlet API</li>
-                <li>JDBC + MySQL</li>
+                <li>JDBC + PostgreSQL</li>
                 <li>JWT Authentication</li>
                 <li>Swagger API Documentation</li>
               </ul>

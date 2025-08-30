@@ -4,12 +4,13 @@
 
 ![Java](https://img.shields.io/badge/Java-17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Servlet](https://img.shields.io/badge/Jakarta_Servlet-6.0-orange?style=for-the-badge)
+![Jetty](https://img.shields.io/badge/Jetty-11-4A90E2?style=for-the-badge&logo=eclipse&logoColor=white)
 ![Tomcat](https://img.shields.io/badge/Tomcat-11-F8DC75?style=for-the-badge&logo=apache-tomcat&logoColor=black)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 
 **RESTful API Backend cho UTE PhoneHub E-commerce Platform**
 
-[🏠 Main Project](../README.md) • [📖 API Docs](http://localhost:8080/ute-phonehub/api-docs/) • [🚀 Deployment](../DEPLOYMENT.md)
+[🏠 Main Project](../README.md) • [📖 API Docs](http://localhost:8080/ute-phonehub/swagger) • [🚀 Deployment](../DEPLOYMENT.md)
 
 </div>
 
@@ -18,10 +19,10 @@
 ## 📋 Mục lục
 
 - [🎯 Tổng quan](#-tổng-quan)
+- [🚀 Quick Start](#-quick-start)
 - [🏗️ Kiến trúc](#️-kiến-trúc)
 - [🛠 Công nghệ](#-công-nghệ)
 - [📁 Cấu trúc Backend](#-cấu-trúc-backend)
-- [🚀 Cài đặt & Chạy](#-cài-đặt--chạy)
 - [🔌 API Endpoints](#-api-endpoints)
 - [🗃️ Database](#️-database)
 - [🔐 Authentication](#-authentication)
@@ -32,7 +33,7 @@
 
 ## 🎯 Tổng quan
 
-Backend của UTE PhoneHub được xây dựng với **Java Servlet API 6.0** và **Apache Tomcat 11**, cung cấp RESTful API cho toàn bộ hệ thống e-commerce.
+Backend của UTE PhoneHub được xây dựng với **Java Servlet API 6.0**, hỗ trợ cả **Jetty 11** (development) và **Apache Tomcat 11** (production), cung cấp RESTful API cho toàn bộ hệ thống e-commerce.
 
 ### ✨ Tính năng chính
 
@@ -43,6 +44,41 @@ Backend của UTE PhoneHub được xây dựng với **Java Servlet API 6.0** v
 - 🔄 **JSON Processing** - Jackson library cho xử lý JSON
 - 🛡️ **Security Filters** - Authentication và Authorization filters
 - 📊 **Modular Architecture** - Chia theo modules chức năng
+- ⚡ **Hot Reload** - Development với Jetty hot reload
+
+---
+
+## 🚀 Quick Start
+
+### 📋 Simple Scripts (Khuyến nghị)
+
+```powershell
+# Chạy backend với Jetty (Development + Hot Reload)
+..\scripts\backend\backend.ps1 run
+
+# Build WAR file cho Production
+..\scripts\backend\backend.ps1 build
+
+# Chạy tests
+..\scripts\backend\backend.ps1 test
+
+# Clean build artifacts
+..\scripts\backend\backend.ps1 clean
+
+# Kiểm tra trạng thái
+..\scripts\backend\backend.ps1 status
+```
+
+### 🌐 Truy cập Backend
+
+- **Development (Jetty)**: http://localhost:8080/ute-phonehub
+- **Production (Tomcat)**: http://localhost:8080/ute-phonehub  
+- **API Documentation**: http://localhost:8080/ute-phonehub/swagger
+- **API Base URL**: http://localhost:8080/ute-phonehub/api
+
+### 🎯 Context Path
+
+Cả Jetty và Tomcat đều sử dụng context path: **`/ute-phonehub`**
 
 ---
 
@@ -183,7 +219,8 @@ backend/
 ### 📋 Yêu cầu
 
 - **JDK 17+** ([Download](https://openjdk.org/))
-- **Apache Tomcat 11+** ([Download](https://tomcat.apache.org/download-11.cgi))
+- **Apache Tomcat 11+** ([Download](https://tomcat.apache.org/download-11.cgi)) - Production
+- **Jetty 11+** (Included in Maven) - Development
 - **PostgreSQL 15+** ([Download](https://www.postgresql.org/download/))
 - **Maven 3.9+** ([Download](https://maven.apache.org/download.cgi))
 
@@ -198,7 +235,23 @@ CREATE USER phonehub_user WITH PASSWORD 'your_secure_password';
 GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 ```
 
-### 🔧 Build & Deploy
+### 🎯 Method 1: Simple Scripts (Khuyến nghị)
+
+```powershell
+# Development với Jetty (Hot Reload)
+..\scripts\backend\backend.ps1 run
+
+# Build WAR cho Production
+..\scripts\backend\backend.ps1 build
+
+# Test backend
+..\scripts\backend\backend.ps1 test
+
+# Clean build
+..\scripts\backend\backend.ps1 clean
+```
+
+### 🔧 Method 2: Manual Build & Deploy
 
 ```powershell
 # 1. Clone repository (nếu chưa có)
@@ -208,20 +261,24 @@ cd ute-phonehub-testdeploy/backend
 # 2. Cấu hình database connection
 # Sửa file: src/main/java/com/utephonehub/util/DatabaseUtil.java
 
-# 3. Build project
-mvn clean compile package
+# 3. Development với Jetty
+mvn clean compile
+mvn jetty:run
 
-# 4. Deploy to Tomcat
+# 4. Hoặc build cho Production (Tomcat)
+mvn clean package
+
+# 5. Deploy to Tomcat
 Copy-Item "target\ute-phonehub.war" "C:\apache-tomcat-11.0.10\webapps\"
 
-# 5. Start Tomcat
+# 6. Start Tomcat
 C:\apache-tomcat-11.0.10\bin\startup.bat
 
-# 6. Verify deployment
+# 7. Verify deployment
 Start-Process "http://localhost:8080/ute-phonehub"
 ```
 
-### 🐳 Docker (Alternative)
+### 🐳 Method 3: Docker
 
 ```powershell
 # Build Docker image
@@ -229,7 +286,18 @@ docker build -t ute-phonehub-backend .
 
 # Run container
 docker run -p 8080:8080 --name phonehub-backend ute-phonehub-backend
+
+# Hoặc sử dụng Docker script
+..\scripts\docker\docker.ps1 build
+..\scripts\docker\docker.ps1 start
 ```
+
+### 🌐 URLs sau khi chạy
+
+- **Backend Root**: http://localhost:8080/ute-phonehub
+- **API Documentation**: http://localhost:8080/ute-phonehub/swagger  
+- **API Base**: http://localhost:8080/ute-phonehub/api
+- **Swagger JSON**: http://localhost:8080/ute-phonehub/swagger.json
 
 ---
 
@@ -240,8 +308,8 @@ docker run -p 8080:8080 --name phonehub-backend ute-phonehub-backend
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/` | Project info và danh sách endpoints |
-| `GET` | `/api-docs/` | Swagger UI documentation |
-| `GET` | `/api-docs/swagger.json` | OpenAPI JSON specification |
+| `GET` | `/swagger` | Swagger UI documentation |
+| `GET` | `/swagger.json` | OpenAPI JSON specification |
 
 ### 🔐 Authentication (`/api/auth`)
 

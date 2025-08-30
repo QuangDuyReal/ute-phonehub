@@ -18,10 +18,10 @@
 ## 📋 Mục lục
 
 - [🎯 Tổng quan](#-tổng-quan)
+- [🚀 Quick Start](#-quick-start)
 - [✨ Tính năng](#-tính-năng)
 - [🛠 Công nghệ](#-công-nghệ)
 - [📁 Cấu trúc Frontend](#-cấu-trúc-frontend)
-- [🚀 Cài đặt & Chạy](#-cài-đặt--chạy)
 - [🌐 API Integration](#-api-integration)
 - [🎨 Components](#-components)
 - [🔄 State Management](#-state-management)
@@ -44,6 +44,42 @@ Frontend của UTE PhoneHub được xây dựng với **React 19.1** và **Type
 - 🎨 **Modern UI/UX** - Clean và intuitive interface
 - 🚀 **Performance Optimized** - Code splitting và lazy loading
 - 🛡️ **Security** - JWT authentication integration
+
+---
+
+## 🚀 Quick Start
+
+### 📋 Simple Scripts (Khuyến nghị)
+
+```powershell
+# Development server với hot reload
+..\scripts\frontend\frontend.ps1 dev
+
+# Build production
+..\scripts\frontend\frontend.ps1 build
+
+# Run tests
+..\scripts\frontend\frontend.ps1 test
+
+# Clean node_modules và build
+..\scripts\frontend\frontend.ps1 clean
+
+# Install dependencies
+..\scripts\frontend\frontend.ps1 install
+```
+
+### 🌐 URLs sau khi chạy
+
+- **Development Server**: http://localhost:3000
+- **Production Build**: Serve từ thư mục `build/`
+- **API Backend**: http://localhost:8080/ute-phonehub
+
+### 🎯 Environment Configuration
+
+Frontend đã được cấu hình để kết nối với backend API:
+
+- **API Base URL**: `http://localhost:8080/ute-phonehub`
+- **Environment Files**: `.env.local`, `.env.development`, `.env.production`
 
 ---
 
@@ -248,7 +284,26 @@ components/
 - **npm**: 9+ (đi kèm với Node.js)
 - **Git**: Latest ([Download](https://git-scm.com/))
 
-### 🔧 Quick Start
+### 🎯 Method 1: Simple Scripts (Khuyến nghị)
+
+```powershell
+# Development server với hot reload
+..\scripts\frontend\frontend.ps1 dev
+
+# Build production
+..\scripts\frontend\frontend.ps1 build
+
+# Run tests
+..\scripts\frontend\frontend.ps1 test
+
+# Clean build và node_modules
+..\scripts\frontend\frontend.ps1 clean
+
+# Install/Update dependencies
+..\scripts\frontend\frontend.ps1 install
+```
+
+### 🔧 Method 2: Manual Setup
 
 ```powershell
 # 1. Clone repository (nếu chưa có)
@@ -265,7 +320,7 @@ npm start
 Start-Process "http://localhost:3000"
 ```
 
-### 🔧 Available Scripts
+### 🔧 Available NPM Scripts
 
 ```powershell
 # Development server (hot reload)
@@ -283,26 +338,30 @@ npm run eject      # Exposes webpack config (not recommended)
 
 ### 🌍 Environment Variables
 
-Tạo file `.env.local` trong thư mục `frontend/`:
+Frontend đã được cấu hình sẵn với các environment files:
 
+**`.env.local`** (Development):
 ```bash
 # API Base URL
 REACT_APP_API_BASE_URL=http://localhost:8080/ute-phonehub
 
 # App Configuration
-REACT_APP_NAME=UTE PhoneHub
-REACT_APP_VERSION=1.0.0
-
-# Development
+REACT_APP_ENV=local
 REACT_APP_DEBUG=true
-GENERATE_SOURCEMAP=true
-
-# Build Configuration
-BUILD_PATH=build
-PUBLIC_URL=/
 ```
 
-### 🐳 Docker (Alternative)
+**`.env.production`** (Production):
+```bash
+# API Base URL  
+REACT_APP_API_BASE_URL=https://ute-phonehub-backend.railway.app
+
+# App Configuration
+REACT_APP_ENV=production
+REACT_APP_DEBUG=false
+GENERATE_SOURCEMAP=false
+```
+
+### 🐳 Method 3: Docker
 
 ```powershell
 # Build Docker image
@@ -310,6 +369,10 @@ docker build -t ute-phonehub-frontend .
 
 # Run container
 docker run -p 3000:80 --name phonehub-frontend ute-phonehub-frontend
+
+# Hoặc sử dụng Docker script
+..\scripts\docker\docker.ps1 build
+..\scripts\docker\docker.ps1 start
 
 # With environment variables
 docker run -p 3000:80 `

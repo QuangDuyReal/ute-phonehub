@@ -196,7 +196,155 @@ GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 
 ## 🔧 Chạy ứng dụng
 
-### 🖥️ Backend (Java Servlet)
+### � Quick Start (Khuyến nghị)
+
+```powershell
+# 1. Setup toàn bộ môi trường development
+.\scripts\manager-new.ps1 setup
+
+# 2. Khởi động toàn bộ ứng dụng
+.\scripts\manager-new.ps1 start
+
+# 3. Kiểm tra trạng thái
+.\scripts\manager-new.ps1 status
+```
+
+### 📋 Scripts Quản lý Project
+
+**Main Manager Script:**
+```powershell
+# Script chính - quản lý toàn bộ project
+.\scripts\manager-new.ps1 [action]
+
+# Available actions:
+#   setup    - Thiết lập môi trường development
+#   start    - Khởi động backend + frontend
+#   stop     - Dừng các services
+#   status   - Kiểm tra trạng thái
+#   clean    - Dọn dẹp build artifacts
+#   reset    - Reset về trạng thái ban đầu
+```
+
+### �🖥️ Backend (Java Servlet)
+
+```powershell
+# Chạy backend với Jetty (Development - Hot Reload)
+.\scripts\backend\backend.ps1 run
+
+# Build WAR file cho production
+.\scripts\backend\backend.ps1 build
+
+# Chạy tests
+.\scripts\backend\backend.ps1 test
+
+# Clean build artifacts
+.\scripts\backend\backend.ps1 clean
+```
+
+**Truy cập Backend:**
+- **Development (Jetty)**: http://localhost:8080/ute-phonehub
+- **Production (Tomcat)**: http://localhost:8080/ute-phonehub
+- **API Documentation**: http://localhost:8080/ute-phonehub/swagger
+- **API Endpoints**: http://localhost:8080/ute-phonehub/api
+
+### 🌐 Frontend (React + TypeScript)
+
+```powershell
+# Development server với hot reload
+.\scripts\frontend\frontend.ps1 dev
+
+# Build production
+.\scripts\frontend\frontend.ps1 build
+
+# Run tests
+.\scripts\frontend\frontend.ps1 test
+
+# Clean node_modules và build
+.\scripts\frontend\frontend.ps1 clean
+```
+
+**Truy cập Frontend:**
+- **Development**: http://localhost:3000
+- **Production Build**: Sau khi build, serve từ thư mục `build/`
+
+### 🗃️ Database Management
+
+```powershell
+# Kiểm tra trạng thái database
+.\scripts\database\database.ps1 status
+
+# Tạo database mới
+.\scripts\database\database.ps1 create
+
+# Chạy migrations
+.\scripts\database\database.ps1 migrate
+
+# Seed dữ liệu mẫu
+.\scripts\database\database.ps1 seed
+
+# Backup database
+.\scripts\database\database.ps1 backup
+
+# Reset database (Cẩn thận!)
+.\scripts\database\database.ps1 reset
+```
+
+### 🐳 Docker Management
+
+```powershell
+# Build Docker images
+.\scripts\docker\docker.ps1 build
+
+# Start services với Docker Compose
+.\scripts\docker\docker.ps1 start
+
+# Stop Docker services
+.\scripts\docker\docker.ps1 stop
+
+# Xem logs
+.\scripts\docker\docker.ps1 logs
+
+# Clean Docker resources
+.\scripts\docker\docker.ps1 clean
+```
+
+### 🚀 Deployment
+
+```powershell
+# Deploy to Railway
+.\scripts\deployment\deploy.ps1 deploy -Environment railway
+
+# Deploy to local production
+.\scripts\deployment\deploy.ps1 deploy -Environment local
+
+# Check deployment status
+.\scripts\deployment\deploy.ps1 status
+
+# View deployment logs
+.\scripts\deployment\deploy.ps1 logs
+```
+
+### 🛠️ Utilities
+
+```powershell
+# Check system requirements
+.\scripts\utils\utils.ps1 check
+
+# Update dependencies
+.\scripts\utils\utils.ps1 update
+
+# Run all tests
+.\scripts\utils\utils.ps1 test
+
+# Lint & format code
+.\scripts\utils\utils.ps1 lint
+.\scripts\utils\utils.ps1 format
+
+# Backup toàn bộ project
+.\scripts\utils\utils.ps1 backup
+```
+
+### 🖥️ Manual Backend Setup (Nếu cần)
 
 ```powershell
 # Di chuyển vào thư mục backend
@@ -206,12 +354,12 @@ cd backend
 mvn clean compile
 mvn package
 
-# Deploy to Tomcat
-# Cách 1: Copy WAR file
-Copy-Item "target\ute-phonehub.war" "C:\apache-tomcat-11.0.10\webapps\"
+# Chạy với Jetty (Development)
+mvn jetty:run
 
-# Cách 2: Sử dụng Maven Tomcat plugin
-mvn tomcat7:deploy
+# Hoặc deploy to Tomcat (Production)
+# Copy WAR file
+Copy-Item "target\ute-phonehub.war" "C:\apache-tomcat-11.0.10\webapps\"
 
 # Start Tomcat
 C:\apache-tomcat-11.0.10\bin\startup.bat
@@ -219,7 +367,7 @@ C:\apache-tomcat-11.0.10\bin\startup.bat
 
 **Backend sẽ chạy tại**: `http://localhost:8080/ute-phonehub`
 
-### 🎨 Frontend (React)
+### 🎨 Manual Frontend Setup (Nếu cần)
 
 ```powershell
 # Di chuyển vào thư mục frontend  
@@ -230,11 +378,118 @@ npm install
 
 # Chạy development server
 npm start
+
+# Build production
+npm run build
 ```
 
 **Frontend sẽ chạy tại**: `http://localhost:3000`
 
-### 🐳 Docker (Tùy chọn)
+---
+
+## 📖 API Documentation
+
+### 🔗 Swagger UI
+- **URL**: http://localhost:8080/ute-phonehub/swagger
+- **API Base**: http://localhost:8080/ute-phonehub/api
+
+### 📋 API Endpoints
+
+#### 🔐 Authentication
+```
+POST /api/auth/login      # Đăng nhập
+POST /api/auth/register   # Đăng ký
+POST /api/auth/logout     # Đăng xuất
+GET  /api/auth/profile    # Thông tin profile
+```
+
+#### 📱 Products
+```
+GET    /api/products           # Danh sách sản phẩm
+GET    /api/products/{id}      # Chi tiết sản phẩm
+POST   /api/products           # Tạo sản phẩm (Admin)
+PUT    /api/products/{id}      # Cập nhật sản phẩm (Admin)
+DELETE /api/products/{id}      # Xóa sản phẩm (Admin)
+```
+
+#### 🛒 Cart
+```
+GET    /api/cart              # Xem giỏ hàng
+POST   /api/cart/add          # Thêm vào giỏ hàng
+PUT    /api/cart/update       # Cập nhật số lượng
+DELETE /api/cart/remove       # Xóa khỏi giỏ hàng
+```
+
+#### � Orders
+```
+GET    /api/orders            # Danh sách đơn hàng
+POST   /api/orders            # Tạo đơn hàng
+GET    /api/orders/{id}       # Chi tiết đơn hàng
+PUT    /api/orders/{id}       # Cập nhật trạng thái (Admin)
+```
+
+#### ⭐ Reviews
+```
+GET    /api/reviews/product/{id}  # Reviews của sản phẩm
+POST   /api/reviews              # Tạo review
+PUT    /api/reviews/{id}         # Cập nhật review
+DELETE /api/reviews/{id}         # Xóa review
+```
+
+#### 🎫 Vouchers
+```
+GET    /api/vouchers          # Danh sách voucher
+POST   /api/vouchers          # Tạo voucher (Admin)
+PUT    /api/vouchers/{id}     # Cập nhật voucher (Admin)
+DELETE /api/vouchers/{id}     # Xóa voucher (Admin)
+```
+
+#### ⚙️ Admin
+```
+GET    /api/admin/dashboard   # Dashboard thống kê
+GET    /api/admin/users       # Quản lý user
+GET    /api/admin/statistics  # Thống kê hệ thống
+```
+
+---
+
+## 🌐 Deployment
+
+### 🚂 Railway (Production)
+
+```powershell
+# Deploy backend + frontend to Railway
+.\scripts\deployment\deploy.ps1 deploy -Environment railway
+
+# Hoặc sử dụng script riêng
+.\deploy-railway.ps1
+```
+
+**Production URLs:**
+- **Frontend**: https://ute-phonehub-frontend.railway.app
+- **Backend**: https://ute-phonehub-backend.railway.app
+
+### �🐳 Docker Production
+
+```powershell
+# Build và start với Docker Compose
+.\scripts\docker\docker.ps1 build
+.\scripts\docker\docker.ps1 start
+
+# Hoặc manual Docker commands
+docker-compose up -d --build
+```
+
+### 🖥️ Local Production
+
+```powershell
+# Deploy to local Tomcat + Nginx
+.\scripts\deployment\deploy.ps1 deploy -Environment local
+```
+
+---
+
+## 📂 Phân chia module
 
 ```powershell
 # Build và chạy cả hệ thống với Docker Compose

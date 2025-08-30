@@ -177,8 +177,8 @@ ute-phonehub/
 
 ```powershell
 # Clone repository
-git clone https://github.com/darktheDE/ute-phonehub-testdeploy.git
-cd ute-phonehub-testdeploy
+git clone https://github.com/quangduyreal/ute-phonehub.git
+cd ute-phonehub
 ```
 
 ### 🗃️ Thiết lập Database

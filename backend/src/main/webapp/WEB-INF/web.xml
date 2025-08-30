@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee 
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <display-name>UTE PhoneHub</display-name>
+    <description>UTE PhoneHub E-commerce Backend</description>
+
+    <!-- CORS Filter -->
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>com.utephonehub.filter.CorsFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Auth Filter -->
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>com.utephonehub.filter.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/api/auth/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Root Servlet -->
+    <servlet>
+        <servlet-name>RootServlet</servlet-name>
+        <servlet-class>com.utephonehub.RootServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>RootServlet</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <!-- Auth Module -->
+    <servlet>
+        <servlet-name>AuthController</servlet-name>
+        <servlet-class>com.utephonehub.auth.AuthController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthController</servlet-name>
+        <url-pattern>/api/auth/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Product Module -->
+    <servlet>
+        <servlet-name>ProductController</servlet-name>
+        <servlet-class>com.utephonehub.product.ProductController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProductController</servlet-name>
+        <url-pattern>/api/products/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Cart Module -->
+    <servlet>
+        <servlet-name>CartController</servlet-name>
+        <servlet-class>com.utephonehub.cart.CartController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CartController</servlet-name>
+        <url-pattern>/api/cart/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Order Module -->
+    <servlet>
+        <servlet-name>OrderController</servlet-name>
+        <servlet-class>com.utephonehub.order.OrderController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OrderController</servlet-name>
+        <url-pattern>/api/orders/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Review Module -->
+    <servlet>
+        <servlet-name>ReviewController</servlet-name>
+        <servlet-class>com.utephonehub.review.ReviewController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ReviewController</servlet-name>
+        <url-pattern>/api/reviews/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Admin Module -->
+    <servlet>
+        <servlet-name>AdminController</servlet-name>
+        <servlet-class>com.utephonehub.admin.AdminController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminController</servlet-name>
+        <url-pattern>/api/admin/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Voucher Module -->
+    <servlet>
+        <servlet-name>VoucherController</servlet-name>
+        <servlet-class>com.utephonehub.voucher.VoucherController</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VoucherController</servlet-name>
+        <url-pattern>/api/vouchers/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- Swagger UI -->
+    <servlet>
+        <servlet-name>SwaggerUIServlet</servlet-name>
+        <servlet-class>com.utephonehub.util.SwaggerUIServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SwaggerUIServlet</servlet-name>
+        <url-pattern>/api-docs/*</url-pattern>
+    </servlet-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

@@ -1,0 +1,170 @@
+# UTE PhoneHub Project .gitignore
+
+# ===============================
+# Java / Maven
+# ===============================
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ===============================
+# Compiled class files
+# ===============================
+*.class
+
+# ===============================
+# Log files
+# ===============================
+*.log
+
+# ===============================
+# BlueJ files
+# ===============================
+*.ctxt
+
+# ===============================
+# Mobile Tools for Java (J2ME)
+# ===============================
+.mtj.tmp/
+
+# ===============================
+# Package Files
+# ===============================
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# ===============================
+# Virtual machine crash logs
+# ===============================
+hs_err_pid*
+replay_pid*
+
+# ===============================
+# IDE - IntelliJ IDEA
+# ===============================
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# ===============================
+# IDE - Eclipse
+# ===============================
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# ===============================
+# IDE - NetBeans
+# ===============================
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ===============================
+# IDE - Visual Studio Code
+# ===============================
+.vscode/
+
+# ===============================
+# Node.js / React Frontend
+# ===============================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp
+.pnp.js
+
+# ===============================
+# Testing
+# ===============================
+coverage/
+*.lcov
+
+# ===============================
+# React / Next.js
+# ===============================
+.next/
+out/
+build
+
+# ===============================
+# Environment Variables
+# ===============================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ===============================
+# Database
+# ===============================
+*.db
+*.sqlite
+*.sqlite3
+
+# ===============================
+# OS Generated Files
+# ===============================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ===============================
+# Temporary Files
+# ===============================
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# ===============================
+# Application Server Files
+# ===============================
+# Tomcat
+/tomcat/
+
+# ===============================
+# Deployment Files
+# ===============================
+deploy/
+
+# ===============================
+# Backup Files
+# ===============================
+*.bak
+*.backup
+
+# ===============================
+# Configuration Files (if contains sensitive data)
+# ===============================
+# config/database.properties
+# config/application.properties
+
+# ===============================
+# Maven Wrapper
+# ===============================
+!/.mvn/wrapper/maven-wrapper.jar
+!/.mvn/wrapper/maven-wrapper.properties

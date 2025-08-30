@@ -23,7 +23,7 @@ const Footer: React.FC = () => {
           <div className="footer-section">
             <h4>Technology Stack</h4>
             <ul>
-              <li>Backend: Java Servlet + MySQL</li>
+              <li>Backend: Java Servlet + PostgreSQL</li>
               <li>Frontend: ReactJS + TypeScript</li>
               <li>API: RESTful + Swagger</li>
             </ul>

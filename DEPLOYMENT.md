@@ -33,11 +33,11 @@ railway login
 ```bash
 # Database (nếu sử dụng)
 DATABASE_URL=your_database_url
-MYSQL_HOST=containers-us-west-xxx.railway.app
-MYSQL_PORT=xxxx
-MYSQL_DATABASE=railway
-MYSQL_USER=root
-MYSQL_PASSWORD=xxxxxxxxx
+POSTGRESQL_HOST=containers-us-west-xxx.railway.app
+POSTGRESQL_PORT=xxxx
+POSTGRESQL_DATABASE=railway
+POSTGRESQL_USER=postgres
+POSTGRESQL_PASSWORD=xxxxxxxxx
 
 # Server configuration
 PORT=8080
@@ -74,22 +74,22 @@ DISABLE_ESLINT_PLUGIN=true
 - URL Frontend: `https://your-frontend-name.railway.app`
 - Test trang chủ và endpoints page
 
-## 🎯 Bước 3: Database (MySQL) - Optional
+## 🎯 Bước 3: Database (PostgreSQL) - Optional
 
-### 3.1. Thêm MySQL Database
+### 3.1. Thêm PostgreSQL Database
 1. Trong Backend project, click **"+ New"**
-2. Chọn **"Database" → "MySQL"**
+2. Chọn **"Database" → "PostgreSQL"**
 3. Railway sẽ tự tạo database instance
 
 ### 3.2. Kết nối Database
 ```bash
 # Railway sẽ tự động provide các variables:
-MYSQL_URL=mysql://root:password@host:port/railway
-MYSQLHOST=containers-us-west-xxx.railway.app
-MYSQLPORT=xxxx
-MYSQLDATABASE=railway
-MYSQLUSER=root
-MYSQLPASSWORD=xxxxxxxxx
+DATABASE_URL=postgresql://postgres:password@host:port/railway
+PGHOST=containers-us-west-xxx.railway.app
+PGPORT=xxxx
+PGDATABASE=railway
+PGUSER=postgres
+PGPASSWORD=xxxxxxxxx
 ```
 
 ## 📝 File Structure cho Railway
@@ -145,9 +145,9 @@ ute-phonehub/
 ### Database connection failed
 ```bash
 # Verify environment variables:
-echo $MYSQL_URL
-echo $MYSQL_HOST
-echo $MYSQL_PORT
+echo $DATABASE_URL
+echo $PGHOST
+echo $PGPORT
 ```
 
 ## 🚀 Production URLs
@@ -157,7 +157,7 @@ Sau khi deploy thành công:
 - **Frontend**: `https://ute-phonehub-frontend.railway.app`
 - **Backend API**: `https://ute-phonehub-backend.railway.app`
 - **Swagger UI**: `https://ute-phonehub-backend.railway.app/api-docs/`
-- **Database**: `Railway-managed MySQL instance`
+- **Database**: `Railway-managed PostgreSQL instance`
 
 ## 💡 Tips
 

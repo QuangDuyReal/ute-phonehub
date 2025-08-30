@@ -11,7 +11,7 @@
 [![Java](https://img.shields.io/badge/Java-17-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Latest-2496ED?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Railway](https://img.shields.io/badge/Railway-Deployed-0B0D0E?style=flat&logo=railway&logoColor=white)](https://railway.app/)
 
@@ -44,8 +44,8 @@
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
 │   Frontend      │    │    Backend      │    │    Database     │
-│   (React)       │◄──►│ (Java Servlet)  │◄──►│    (MySQL)      │
-│   Port: 3000    │    │   Port: 8080    │    │   Port: 3306    │
+│   (React)       │◄──►│ (Java Servlet)  │◄──►│  (PostgreSQL)   │
+│   Port: 3000    │    │   Port: 8080    │    │   Port: 5432    │
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
@@ -93,7 +93,7 @@
 | ![Servlet](https://img.shields.io/badge/Jakarta_Servlet-6.0-orange?style=flat) | 6.0 | Web framework |
 | ![Tomcat](https://img.shields.io/badge/Tomcat-11-F8DC75?style=flat&logo=apache-tomcat&logoColor=black) | 11 | Application server |
 | ![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?style=flat&logo=apache-maven&logoColor=white) | 3.9+ | Build tool |
-| ![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white) | 8.0 | Cơ sở dữ liệu |
+| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?style=flat&logo=postgresql&logoColor=white) | 15 | Cơ sở dữ liệu |
 | ![JWT](https://img.shields.io/badge/JWT-0.11.5-000000?style=flat&logo=jsonwebtokens&logoColor=white) | 0.11.5 | Authentication |
 | ![Jackson](https://img.shields.io/badge/Jackson-2.15.2-green?style=flat) | 2.15.2 | JSON processing |
 | ![Swagger](https://img.shields.io/badge/Swagger-2.2.15-85EA2D?style=flat&logo=swagger&logoColor=black) | 2.2.15 | API documentation |
@@ -168,7 +168,7 @@ ute-phonehub/
 
 - **Java**: JDK 17+ ([OpenJDK](https://openjdk.org/) hoặc [Oracle JDK](https://www.oracle.com/java/))
 - **Apache Tomcat**: 11+ ([Download](https://tomcat.apache.org/download-11.cgi))
-- **MySQL**: 8.0+ ([Download](https://dev.mysql.com/downloads/mysql/))
+- **PostgreSQL**: 15+ ([Download](https://www.postgresql.org/download/))
 - **Maven**: 3.9+ ([Download](https://maven.apache.org/download.cgi))
 - **Node.js**: 18+ ([Download](https://nodejs.org/))
 - **Git**: Latest ([Download](https://git-scm.com/))
@@ -185,12 +185,11 @@ cd ute-phonehub-testdeploy
 
 ```sql
 -- Tạo database
-CREATE DATABASE ute_phonehub CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE ute_phonehub WITH ENCODING 'UTF8' LC_COLLATE = 'en_US.UTF-8' LC_CTYPE = 'en_US.UTF-8';
 
 -- Tạo user (optional)
-CREATE USER 'phonehub_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON ute_phonehub.* TO 'phonehub_user'@'localhost';
-FLUSH PRIVILEGES;
+CREATE USER phonehub_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 ```
 
 ---
@@ -384,220 +383,3 @@ Dự án này được phát triển cho mục đích học tập tại **Đại
 **Made with ❤️ by UTE Students**
 
 </div>
-│   │   │   ├── admin/    # Module quản trị
-│   │   │   ├── voucher/  # Module mã giảm giá
-│   │   │   ├── filter/   # Filters (CORS, Auth)
-│   │   │   ├── model/    # Entity classes
-│   │   │   ├── dto/      # Data Transfer Objects
-│   │   │   └── util/     # Utility classes
-│   │   └── webapp/
-│   │       └── WEB-INF/web.xml
-│   └── pom.xml
-├── frontend/             # React.js Frontend (Sẽ phát triển)
-├── .gitignore
-└── README.md
-```
-
-## ⚙️ Hướng dẫn cài đặt
-
-### Yêu cầu hệ thống
-- **Java JDK 17** hoặc cao hơn
-- **Apache Tomcat 11** 
-- **MySQL 8.0** hoặc cao hơn
-- **Maven 3.6** hoặc cao hơn
-
-### Cài đặt môi trường
-
-1. **Cài đặt Java JDK 17**
-   ```bash
-   # Kiểm tra version Java
-   java -version
-   javac -version
-   ```
-
-2. **Cài đặt Apache Tomcat 11**
-   - Tải về từ: https://tomcat.apache.org/download-11.cgi
-   - Giải nén vào thư mục (ví dụ: `C:\apache-tomcat-11.0.10`)
-
-3. **Cài đặt MySQL**
-   - Tải và cài đặt MySQL Server 8.0
-   - Tạo database: `ute_phonehub`
-
-4. **Cài đặt Maven**
-   ```bash
-   # Kiểm tra version Maven
-   mvn -version
-   ```
-
-## 🚀 Hướng dẫn chạy Backend
-
-### Bước 1: Clone repository
-```bash
-git clone https://github.com/QuangDuyReal/ute-phonehub.git
-cd ute-phonehub
-```
-
-### Bước 2: Build project
-```bash
-cd backend
-mvn clean package
-```
-
-### Bước 3: Deploy lên Tomcat
-
-#### Cách 1: Manual deployment
-```bash
-# Copy file WAR vào webapps
-copy target\ute-phonehub.war C:\apache-tomcat-11.0.10\webapps\
-
-# Khởi động Tomcat
-cd C:\apache-tomcat-11.0.10\bin
-startup.bat
-```
-
-#### Cách 2: Sử dụng PowerShell (Windows)
-```powershell
-# Build và deploy
-cd D:\path\to\ute-phonehub\backend
-mvn clean package
-
-# Copy WAR file
-Copy-Item "target\ute-phonehub.war" "C:\apache-tomcat-11.0.10\webapps\" -Force
-
-# Start Tomcat
-$env:CATALINA_HOME = "C:\apache-tomcat-11.0.10"
-cd C:\apache-tomcat-11.0.10\bin
-.\startup.bat
-```
-
-### Bước 4: Kiểm tra ứng dụng
-- **Root endpoint**: http://localhost:8080/ute-phonehub/
-- **API Documentation**: http://localhost:8080/ute-phonehub/api-docs/
-
-### Troubleshooting
-
-#### Lỗi thường gặp:
-1. **Port 8080 đã được sử dụng**
-   ```bash
-   # Kiểm tra process đang sử dụng port
-   netstat -ano | findstr :8080
-   
-   # Kill process (thay PID bằng số thực tế)
-   taskkill /PID [PID] /F
-   ```
-
-2. **Java version không khớp**
-   - Đảm bảo đang sử dụng Java 17
-   - Kiểm tra biến môi trường JAVA_HOME
-
-3. **Tomcat không khởi động được**
-   - Kiểm tra log tại `logs/catalina.YYYY-MM-DD.log`
-   - Đảm bảo CATALINA_HOME được set đúng
-
-## � Deployment
-
-### Development
-- **Frontend**: http://localhost:3000
-- **Backend**: http://localhost:8080/ute-phonehub
-- **API Docs**: http://localhost:8080/ute-phonehub/api-docs/
-
-### Production (Railway.app)
-Dự án được cấu hình để deploy lên Railway.app với:
-
-- **Containerization**: Docker containers cho cả Frontend và Backend
-- **Auto-scaling**: Tự động scale theo traffic
-- **CI/CD**: Deploy tự động từ GitHub
-
-#### Quick Deploy
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login to Railway
-railway login
-
-# Deploy (từ root directory)
-.\deploy-railway.ps1
-```
-
-📖 **Xem hướng dẫn chi tiết**: [DEPLOYMENT.md](./DEPLOYMENT.md)
-
-## �📚 API Documentation
-
-### Root API
-- **GET** `/` - Thông tin project
-- **GET** `/api-docs/` - Swagger UI Documentation
-
-### Module APIs
-- **GET** `/api/auth` - Authentication module info
-- **GET** `/api/products` - Product module info  
-- **GET** `/api/cart` - Cart module info
-- **GET** `/api/orders` - Order module info
-- **GET** `/api/reviews` - Review module info
-- **GET** `/api/admin` - Admin module info
-- **GET** `/api/vouchers` - Voucher module info
-
-### Swagger UI
-Truy cập: http://localhost:8080/ute-phonehub/api-docs/
-
-API documentation được tự động tạo và cập nhật thông qua Swagger annotations.
-
-## ✨ Tính năng chính
-
-### Cho Khách hàng
-- 🔐 Đăng ký/Đăng nhập tài khoản
-- 🏠 Xem trang chủ với sản phẩm nổi bật
-- 📱 Duyệt danh sách sản phẩm với bộ lọc
-- 🔍 Tìm kiếm sản phẩm
-- 📄 Xem chi tiết sản phẩm
-- 🛒 Quản lý giỏ hàng
-- 💳 Đặt hàng và thanh toán COD
-- 📦 Theo dõi đơn hàng
-- ⭐ Đánh giá sản phẩm
-
-### Cho Admin
-- 📊 Dashboard tổng quan
-- 📱 Quản lý sản phẩm (CRUD)
-- 📂 Quản lý danh mục và thương hiệu
-- 📋 Quản lý đơn hàng
-- 👥 Quản lý người dùng
-- 🎫 Quản lý mã giảm giá
-
-## 👥 Phân chia module
-
-| Module | Chức năng | Người phụ trách |
-|--------|-----------|-----------------|
-| **M01** | Xác thực & Quản lý Tài khoản | Thành viên 1 |
-| **M02** | Quản lý Sản phẩm (Admin) | Thành viên 2 |
-| **M03** | Quản lý Danh mục & Thương hiệu (Admin) | Thành viên 3 |
-| **M04** | Hiển thị Sản phẩm & Tìm kiếm (Client) | Thành viên 4 |
-| **M05** | Giỏ hàng (Shopping Cart) | Thành viên 5 |
-| **M06** | Đặt hàng & Thanh toán (Checkout) | Thành viên 6 |
-| **M07** | Quản lý Đơn hàng (Client & Admin) | Thành viên 7 |
-| **M08** | Đánh giá & Bình luận | Thành viên 8 |
-| **M09** | Quản lý Người dùng (Admin) | Thành viên 9 |
-| **M10** | Khuyến mãi & Mã giảm giá | Thành viên 10 |
-
-## 🤝 Đóng góp
-
-### Quy trình phát triển
-1. Fork repository
-2. Tạo branch mới cho feature: `git checkout -b feature/ten-feature`
-3. Commit changes: `git commit -m 'Add some feature'`
-4. Push to branch: `git push origin feature/ten-feature`
-5. Tạo Pull Request
-
-### Coding Convention
-- **Java**: Tuân thủ Google Java Style Guide
-- **Commit message**: Sử dụng Conventional Commits
-- **API**: RESTful API design principles
-
-## 📞 Liên hệ
-
-- **Repository**: https://github.com/QuangDuyReal/ute-phonehub
-- **Documentation**: [Link tới docs]
-- **Issues**: [Link tới issues]
-
----
-
-**© 2025 UTE PhoneHub - Đại học Sư phạm Kỹ thuật TP.HCM**

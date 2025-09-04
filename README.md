@@ -177,8 +177,8 @@ ute-phonehub/
 
 ```powershell
 # Clone repository
-git clone https://github.com/QuangDuyReal/ute-phonehub.git
-cd ute-phonehub-testdeploy
+git clone https://github.com/quangduyreal/ute-phonehub.git
+cd ute-phonehub
 ```
 
 ### 🗃️ Thiết lập Database
@@ -200,13 +200,13 @@ GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 
 ```powershell
 # 1. Setup toàn bộ môi trường development
-.\scripts\manager-new.ps1 setup
+.\scripts\manager.ps1 setup
 
 # 2. Khởi động toàn bộ ứng dụng
-.\scripts\manager-new.ps1 start
+.\scripts\manager.ps1 start
 
 # 3. Kiểm tra trạng thái
-.\scripts\manager-new.ps1 status
+.\scripts\manager.ps1 status
 ```
 
 ### 📋 Scripts Quản lý Project
@@ -214,7 +214,7 @@ GRANT ALL PRIVILEGES ON DATABASE ute_phonehub TO phonehub_user;
 **Main Manager Script:**
 ```powershell
 # Script chính - quản lý toàn bộ project
-.\scripts\manager-new.ps1 [action]
+.\scripts\manager.ps1 [action]
 
 # Available actions:
 #   setup    - Thiết lập môi trường development

@@ -177,7 +177,7 @@ ute-phonehub/
 
 ```powershell
 # Clone repository
-git clone https://github.com/darktheDE/ute-phonehub-testdeploy.git
+git clone https://github.com/QuangDuyReal/ute-phonehub.git
 cd ute-phonehub-testdeploy
 ```
 
@@ -598,7 +598,7 @@ Hệ thống được chia thành **10 modules** chính:
 
 ```powershell
 # 1. Fork repository
-git fork https://github.com/darktheDE/ute-phonehub-testdeploy
+git fork https://github.com/quangduyreal/ute-phonehub
 
 # 2. Tạo branch cho feature
 git checkout -b feature/your-module-name

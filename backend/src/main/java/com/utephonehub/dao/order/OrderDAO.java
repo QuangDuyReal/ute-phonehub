@@ -1,5 +1,6 @@
-package com.utephonehub.dao;
+package com.utephonehub.dao.order;
 
+import com.utephonehub.dao.GenericDAO;
 import com.utephonehub.dto.order.OrderDetailDTO;
 import com.utephonehub.dto.order.OrderItemDetailDTO;
 import com.utephonehub.dto.order.OrderSummaryDTO;

@@ -1,4 +1,4 @@
-package com.utephonehub.dao;
+package com.utephonehub.dao.order;
 
 /**
  * Composite key class for OrderItem

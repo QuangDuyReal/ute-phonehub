@@ -1,5 +1,6 @@
-package com.utephonehub.dao;
+package com.utephonehub.dao.order;
 
+import com.utephonehub.dao.GenericDAO;
 import com.utephonehub.model.order.OrderItem;
 import com.utephonehub.util.DBContext;
 

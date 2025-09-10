@@ -1,6 +1,6 @@
-package com.utephonehub.user.dao;
+package com.utephonehub.dao;
 
-import com.utephonehub.user.model.Address;
+import com.utephonehub.model.Address;
 
 import java.sql.SQLException;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.utephonehub.user.model;
+package com.utephonehub.model;
 
 import java.time.Instant;
 
@@ -8,11 +8,12 @@ import java.time.Instant;
 public class User {
 
     private long id;
+    private String fullName;
     private String email;
     private String passwordHash;
-    private String fullName;
-    private String phone;
-    private short status;
+    private String phoneNumber;
+    private UserRole role;
+    private UserStatus status;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -22,6 +23,14 @@ public class User {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getEmail() {
@@ -40,27 +49,27 @@ public class User {
         this.passwordHash = passwordHash;
     }
 
-    public String getFullName() {
-        return fullName;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getPhone() {
-        return phone;
+    public UserRole getRole() {
+        return role;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
-    public short getStatus() {
+    public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(short status) {
+    public void setStatus(UserStatus status) {
         this.status = status;
     }
 

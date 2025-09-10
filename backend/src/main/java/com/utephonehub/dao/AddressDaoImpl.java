@@ -1,6 +1,6 @@
-package com.utephonehub.user.dao;
+package com.utephonehub.dao;
 
-import com.utephonehub.user.model.Address;
+import com.utephonehub.model.Address;
 import com.utephonehub.util.DbUtil;
 
 import java.sql.*;
@@ -13,7 +13,7 @@ public class AddressDaoImpl implements AddressDao {
 
     @Override
     public List<Address> findAllByUser(long userId) throws SQLException {
-        String sql = "SELECT id, user_id, receiver_name, phone, line1, line2, ward, district, city, is_default, created_at, updated_at FROM addresses WHERE user_id = ? ORDER BY id DESC";
+        String sql = "SELECT id, user_id, recipient_name, phone_number, street_address, city, is_default, created_at, updated_at FROM addresses WHERE user_id = ? ORDER BY id DESC";
         try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -26,7 +26,7 @@ public class AddressDaoImpl implements AddressDao {
 
     @Override
     public Optional<Address> findByIdAndUser(long id, long userId) throws SQLException {
-        String sql = "SELECT id, user_id, receiver_name, phone, line1, line2, ward, district, city, is_default, created_at, updated_at FROM addresses WHERE id = ? AND user_id = ?";
+        String sql = "SELECT id, user_id, recipient_name, phone_number, street_address, city, is_default, created_at, updated_at FROM addresses WHERE id = ? AND user_id = ?";
         try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.setLong(2, userId);
@@ -39,17 +39,14 @@ public class AddressDaoImpl implements AddressDao {
 
     @Override
     public Address create(Address address) throws SQLException {
-        String sql = "INSERT INTO addresses(user_id, receiver_name, phone, line1, line2, ward, district, city, is_default) VALUES(?,?,?,?,?,?,?,?,?) RETURNING id, created_at, updated_at";
+        String sql = "INSERT INTO addresses(user_id, recipient_name, phone_number, street_address, city, is_default) VALUES(?,?,?,?,?,?) RETURNING id, created_at, updated_at";
         try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, address.getUserId());
-            ps.setString(2, address.getReceiverName());
-            ps.setString(3, address.getPhone());
-            ps.setString(4, address.getLine1());
-            ps.setString(5, address.getLine2());
-            ps.setString(6, address.getWard());
-            ps.setString(7, address.getDistrict());
-            ps.setString(8, address.getCity());
-            ps.setBoolean(9, address.isDefault());
+            ps.setString(2, address.getRecipientName());
+            ps.setString(3, address.getPhoneNumber());
+            ps.setString(4, address.getStreetAddress());
+            ps.setString(5, address.getCity());
+            ps.setBoolean(6, address.isDefault());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     address.setId(rs.getLong("id"));
@@ -65,18 +62,15 @@ public class AddressDaoImpl implements AddressDao {
 
     @Override
     public int update(Address address) throws SQLException {
-        String sql = "UPDATE addresses SET receiver_name=?, phone=?, line1=?, line2=?, ward=?, district=?, city=?, is_default=? WHERE id=? AND user_id=?";
+        String sql = "UPDATE addresses SET recipient_name=?, phone_number=?, street_address=?, city=?, is_default=? WHERE id=? AND user_id=?";
         try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, address.getReceiverName());
-            ps.setString(2, address.getPhone());
-            ps.setString(3, address.getLine1());
-            ps.setString(4, address.getLine2());
-            ps.setString(5, address.getWard());
-            ps.setString(6, address.getDistrict());
-            ps.setString(7, address.getCity());
-            ps.setBoolean(8, address.isDefault());
-            ps.setLong(9, address.getId());
-            ps.setLong(10, address.getUserId());
+            ps.setString(1, address.getRecipientName());
+            ps.setString(2, address.getPhoneNumber());
+            ps.setString(3, address.getStreetAddress());
+            ps.setString(4, address.getCity());
+            ps.setBoolean(5, address.isDefault());
+            ps.setLong(6, address.getId());
+            ps.setLong(7, address.getUserId());
             return ps.executeUpdate();
         }
     }
@@ -104,12 +98,9 @@ public class AddressDaoImpl implements AddressDao {
         Address a = new Address();
         a.setId(rs.getLong("id"));
         a.setUserId(rs.getLong("user_id"));
-        a.setReceiverName(rs.getString("receiver_name"));
-        a.setPhone(rs.getString("phone"));
-        a.setLine1(rs.getString("line1"));
-        a.setLine2(rs.getString("line2"));
-        a.setWard(rs.getString("ward"));
-        a.setDistrict(rs.getString("district"));
+        a.setRecipientName(rs.getString("recipient_name"));
+        a.setPhoneNumber(rs.getString("phone_number"));
+        a.setStreetAddress(rs.getString("street_address"));
         a.setCity(rs.getString("city"));
         a.setDefault(rs.getBoolean("is_default"));
         Timestamp cAt = rs.getTimestamp("created_at");

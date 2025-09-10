@@ -1,4 +1,4 @@
-package com.utephonehub.user.dto;
+package com.utephonehub.dto;
 
 /**
  * DTOs for authentication flows.
@@ -6,10 +6,10 @@ package com.utephonehub.user.dto;
 public class AuthDTOs {
 
     public static class RegisterRequest {
+        public String fullName;
         public String email;
         public String password;
-        public String fullName;
-        public String phone;
+        public String phoneNumber;
     }
 
     public static class LoginRequest {
@@ -19,9 +19,10 @@ public class AuthDTOs {
 
     public static class UserPublic {
         public long id;
-        public String email;
         public String fullName;
-        public String phone;
+        public String email;
+        public String phoneNumber;
+        public String role;
         public String createdAt;
     }
 

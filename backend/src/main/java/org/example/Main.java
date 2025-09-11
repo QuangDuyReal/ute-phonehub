@@ -2,7 +2,7 @@ package org.example;
 
 import java.sql.Connection;
 
-import com.utephonedhub.config.DBConnection;
+import com.utephonehub.config.DBConnection;
 
 public class Main {
     public static void main(String[] args) {

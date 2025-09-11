@@ -10,7 +10,7 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 
-@WebServlet("/api/v1/cart/*")
+@WebServlet("/api/v1/cart")
 public class CartController extends HttpServlet {
     private final CartService cartService = new CartService();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -34,8 +34,8 @@ public class CartController extends HttpServlet {
 
 
             // Nếu muốn trả về JSP
-            req.setAttribute("cart", cart);
-            req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
+//            req.setAttribute("cart", cart);
+//            req.getRequestDispatcher("/WEB-INF/views/cart.jsp").forward(req, resp);
 
 
         } catch (NumberFormatException e) {
@@ -47,27 +47,17 @@ public class CartController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        try {
-            String userIdStr = req.getParameter("userId");
-            if (userIdStr == null) {
-                resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Thiếu userId");
-                return;
-            }
-            int userId = Integer.parseInt(userIdStr);
-
-            com.utephonedhub.cart.dto.AddCartItemRequest request = mapper.readValue(req.getReader(), com.utephonedhub.cart.dto.AddCartItemRequest.class);
-            cartService.addItem(userId, request);
-
-            resp.setStatus(HttpServletResponse.SC_CREATED);
-            resp.getWriter().write("Thêm sản phẩm vào giỏ hàng thành công");
-
-        } catch (NumberFormatException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "userId không hợp lệ");
-        } catch (IllegalArgumentException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
-        } catch (Exception e) {
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi server");
+        String userIdStr = req.getParameter("userId");
+        if (userIdStr == null) {
+            resp.sendError(400, "Thiếu userId");
+            return;
         }
+
+        int userId = Integer.parseInt(userIdStr);
+        AddCartItemRequest request = this.mapper.readValue(req.getReader(), AddCartItemRequest.class);
+        this.cartService.addItem(userId, request);
+        resp.setStatus(201);
+        resp.getWriter().write("Thêm sản phẩm vào giỏ hàng thành công");
     }
 
     @Override

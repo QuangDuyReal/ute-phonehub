@@ -13,7 +13,15 @@ public class CartDTO {
         this.total = total;
     }
 
-    public int getUserId() { return userId; }
-    public List<com.utephonedhub.cart.dto.CartItemDTO> getItems() { return items; }
-    public double getTotal() { return total; }
+    public int getUserId() {
+        return userId;
+    }
+
+    public List<com.utephonedhub.cart.dto.CartItemDTO> getItems() {
+        return items;
+    }
+
+    public double getTotal() {
+        return total;
+    }
 }

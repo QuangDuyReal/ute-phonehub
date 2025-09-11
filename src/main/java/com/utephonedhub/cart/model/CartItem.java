@@ -7,7 +7,8 @@ public class CartItem {
     private int quantity;
     private String thumbnailUrl;
 
-    public CartItem() {}
+    public CartItem() {
+    }
 
     public CartItem(int productId, String productName, double price, int quantity, String thumbnailUrl) {
         this.productId = productId;
@@ -18,18 +19,43 @@ public class CartItem {
     }
 
     // Gọi get/set của các thuộc tính
-    public int getProductId() { return productId; }
-    public void setProductId(int productId) { this.productId = productId; }
+    public int getProductId() {
+        return productId;
+    }
 
-    public String getProductName() { return productName; }
-    public void setProductName(String productName) { this.productName = productName; }
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public String getProductName() {
+        return productName;
+    }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 
-    public String getThumbnailUrl() { return thumbnailUrl; }
-    public void setThumbnailUrl(String thumbnailUrl) { this.thumbnailUrl = thumbnailUrl; }
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
 }

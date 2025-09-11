@@ -17,10 +17,27 @@ public class CartItemDTO {
         this.totalPrice = totalPrice;
     }
 
-    public int getProductId() { return productId; }
-    public String getProductName() { return productName; }
-    public double getPrice() { return price; }
-    public int getQuantity() { return quantity; }
-    public String getThumbnailUrl() {return thumbnailUrl; }
-    public double getTotalPrice() {return totalPrice; }
+    public int getProductId() {
+        return productId;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
 }

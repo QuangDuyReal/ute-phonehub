@@ -1,4 +1,4 @@
-package com.utephonehub.order;
+package com.utephonehub.controller.order;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;

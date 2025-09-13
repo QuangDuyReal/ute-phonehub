@@ -16,10 +16,7 @@ public class Order {
     private String shippingAddress;
     private String recipientName;
     private String recipientPhone;
-    private String voucherCode;
-    private BigDecimal discountAmount;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+    private Integer voucherId;
 
     // Default constructor
     public Order() {}
@@ -34,7 +31,6 @@ public class Order {
         this.recipientPhone = recipientPhone;
         this.status = OrderStatus.PENDING;
         this.orderDate = new Timestamp(System.currentTimeMillis());
-        this.discountAmount = BigDecimal.ZERO;
     }
 
     // Getters and Setters
@@ -102,36 +98,12 @@ public class Order {
         this.recipientPhone = recipientPhone;
     }
 
-    public String getVoucherCode() {
-        return voucherCode;
+    public Integer getVoucherId() {
+        return voucherId;
     }
 
-    public void setVoucherCode(String voucherCode) {
-        this.voucherCode = voucherCode;
-    }
-
-    public BigDecimal getDiscountAmount() {
-        return discountAmount;
-    }
-
-    public void setDiscountAmount(BigDecimal discountAmount) {
-        this.discountAmount = discountAmount;
-    }
-
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setVoucherId(Integer voucherId) {
+        this.voucherId = voucherId;
     }
 
     @Override
@@ -145,8 +117,7 @@ public class Order {
                 ", shippingAddress='" + shippingAddress + '\'' +
                 ", recipientName='" + recipientName + '\'' +
                 ", recipientPhone='" + recipientPhone + '\'' +
-                ", voucherCode='" + voucherCode + '\'' +
-                ", discountAmount=" + discountAmount +
+                ", voucherId=" + voucherId +
                 '}';
     }
 }

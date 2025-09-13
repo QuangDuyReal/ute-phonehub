@@ -1,4 +1,4 @@
-package com.utephonehub.auth;
+package com.utephonehub.controller.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;

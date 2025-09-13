@@ -71,8 +71,7 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
     @Override
     public boolean update(Order order) throws SQLException {
         String sql = "UPDATE orders SET status = ?, total_amount = ?, shipping_address = ?, " +
-                    "recipient_name = ?, recipient_phone = ?, voucher_code = ?, " +
-                    "discount_amount = ?, updated_at = ? WHERE id = ?";
+                    "recipient_name = ?, recipient_phone = ?, voucher_id = ? WHERE id = ?";
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -82,10 +81,12 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
             stmt.setString(3, order.getShippingAddress());
             stmt.setString(4, order.getRecipientName());
             stmt.setString(5, order.getRecipientPhone());
-            stmt.setString(6, order.getVoucherCode());
-            stmt.setBigDecimal(7, order.getDiscountAmount());
-            stmt.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
-            stmt.setInt(9, order.getId());
+            if (order.getVoucherId() != null) {
+                stmt.setInt(6, order.getVoucherId());
+            } else {
+                stmt.setNull(6, java.sql.Types.INTEGER);
+            }
+            stmt.setInt(7, order.getId());
             
             return stmt.executeUpdate() > 0;
         }
@@ -94,8 +95,8 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
     @Override
     public boolean update(Order order, Connection conn) throws SQLException {
         String sql = "UPDATE orders SET status = ?, total_amount = ?, shipping_address = ?, " +
-                    "recipient_name = ?, recipient_phone = ?, voucher_code = ?, " +
-                    "discount_amount = ?, updated_at = ? WHERE id = ?";
+                    "recipient_name = ?, recipient_phone = ?, voucher_id = ? WHERE id = ?";
+                    // TODO: Add back when other branches merged: discount_amount = ?, updated_at = ?
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, order.getStatus().name());
@@ -103,10 +104,17 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
             stmt.setString(3, order.getShippingAddress());
             stmt.setString(4, order.getRecipientName());
             stmt.setString(5, order.getRecipientPhone());
-            stmt.setString(6, order.getVoucherCode());
-            stmt.setBigDecimal(7, order.getDiscountAmount());
-            stmt.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
-            stmt.setInt(9, order.getId());
+            if (order.getVoucherId() != null) {
+                stmt.setInt(6, order.getVoucherId());
+            } else {
+                stmt.setNull(6, java.sql.Types.INTEGER);
+            }
+            stmt.setInt(7, order.getId());
+            
+            // TODO: Uncomment when other branches merged
+            // stmt.setBigDecimal(7, order.getDiscountAmount());
+            // stmt.setTimestamp(8, new Timestamp(System.currentTimeMillis()));
+            // stmt.setInt(9, order.getId());
             
             return stmt.executeUpdate() > 0;
         }
@@ -172,9 +180,9 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
      */
     public int createOrder(Order order) throws SQLException {
         String sql = "INSERT INTO orders (user_id, order_date, status, total_amount, " +
-                    "shipping_address, recipient_name, recipient_phone, voucher_code, " +
-                    "discount_amount, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                    "RETURNING id";
+                    "shipping_address, recipient_name, recipient_phone, voucher_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+                    // TODO: Add back when other branches merged: voucher_code, discount_amount, created_at
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -186,9 +194,16 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
             stmt.setString(5, order.getShippingAddress());
             stmt.setString(6, order.getRecipientName());
             stmt.setString(7, order.getRecipientPhone());
-            stmt.setString(8, order.getVoucherCode());
-            stmt.setBigDecimal(9, order.getDiscountAmount());
-            stmt.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
+            if (order.getVoucherId() != null) {
+                stmt.setInt(8, order.getVoucherId());
+            } else {
+                stmt.setNull(8, java.sql.Types.INTEGER);
+            }
+            
+            // TODO: Uncomment when other branches merged
+            // stmt.setString(8, order.getVoucherCode());
+            // stmt.setBigDecimal(9, order.getDiscountAmount());
+            // stmt.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
             
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -207,9 +222,9 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
      */
     public int createOrder(Order order, Connection conn) throws SQLException {
         String sql = "INSERT INTO orders (user_id, order_date, status, total_amount, " +
-                    "shipping_address, recipient_name, recipient_phone, voucher_code, " +
-                    "discount_amount, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                    "RETURNING id";
+                    "shipping_address, recipient_name, recipient_phone, voucher_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
+                    // TODO: Add back when other branches merged: voucher_code, discount_amount, created_at
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, order.getUserId());
@@ -219,9 +234,16 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
             stmt.setString(5, order.getShippingAddress());
             stmt.setString(6, order.getRecipientName());
             stmt.setString(7, order.getRecipientPhone());
-            stmt.setString(8, order.getVoucherCode());
-            stmt.setBigDecimal(9, order.getDiscountAmount());
-            stmt.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
+            if (order.getVoucherId() != null) {
+                stmt.setInt(8, order.getVoucherId());
+            } else {
+                stmt.setNull(8, java.sql.Types.INTEGER);
+            }
+            
+            // TODO: Uncomment when other branches merged
+            // stmt.setString(8, order.getVoucherCode());
+            // stmt.setBigDecimal(9, order.getDiscountAmount());
+            // stmt.setTimestamp(10, new Timestamp(System.currentTimeMillis()));
             
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -492,10 +514,16 @@ public class OrderDAO implements GenericDAO<Order, Integer> {
         order.setShippingAddress(rs.getString("shipping_address"));
         order.setRecipientName(rs.getString("recipient_name"));
         order.setRecipientPhone(rs.getString("recipient_phone"));
-        order.setVoucherCode(rs.getString("voucher_code"));
-        order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
-        order.setCreatedAt(rs.getTimestamp("created_at"));
-        order.setUpdatedAt(rs.getTimestamp("updated_at"));
+        
+        // Map voucher_id from database if available
+        Integer voucherId = rs.getObject("voucher_id", Integer.class);
+        order.setVoucherId(voucherId);
+        
+        // TODO: Uncomment when other branches merged - fields not in current Model
+        // order.setVoucherCode(rs.getString("voucher_code"));
+        // order.setDiscountAmount(rs.getBigDecimal("discount_amount"));
+        // order.setCreatedAt(rs.getTimestamp("created_at"));
+        // order.setUpdatedAt(rs.getTimestamp("updated_at"));
         
         return order;
     }

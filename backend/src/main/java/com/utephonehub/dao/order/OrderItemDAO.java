@@ -85,17 +85,22 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     
     @Override
     public boolean update(OrderItem orderItem) throws SQLException {
-        String sql = "UPDATE order_items SET quantity = ?, price = ?, subtotal = ? " +
+        String sql = "UPDATE order_items SET quantity = ?, price = ? " +
                     "WHERE order_id = ? AND product_id = ?";
+                    // TODO: Add back when other branches merged: subtotal = ?
         
         try (Connection conn = DBContext.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderItem.getQuantity());
             stmt.setBigDecimal(2, orderItem.getPrice());
-            stmt.setBigDecimal(3, orderItem.getSubtotal());
-            stmt.setInt(4, orderItem.getOrderId());
-            stmt.setInt(5, orderItem.getProductId());
+            stmt.setInt(3, orderItem.getOrderId());
+            stmt.setInt(4, orderItem.getProductId());
+            
+            // TODO: Uncomment when other branches merged
+            // stmt.setBigDecimal(3, orderItem.getSubtotal());
+            // stmt.setInt(4, orderItem.getOrderId());
+            // stmt.setInt(5, orderItem.getProductId());
             
             return stmt.executeUpdate() > 0;
         }
@@ -103,15 +108,20 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     
     @Override
     public boolean update(OrderItem orderItem, Connection conn) throws SQLException {
-        String sql = "UPDATE order_items SET quantity = ?, price = ?, subtotal = ? " +
+        String sql = "UPDATE order_items SET quantity = ?, price = ? " +
                     "WHERE order_id = ? AND product_id = ?";
+                    // TODO: Add back when other branches merged: subtotal = ?
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, orderItem.getQuantity());
             stmt.setBigDecimal(2, orderItem.getPrice());
-            stmt.setBigDecimal(3, orderItem.getSubtotal());
-            stmt.setInt(4, orderItem.getOrderId());
-            stmt.setInt(5, orderItem.getProductId());
+            stmt.setInt(3, orderItem.getOrderId());
+            stmt.setInt(4, orderItem.getProductId());
+            
+            // TODO: Uncomment when other branches merged
+            // stmt.setBigDecimal(3, orderItem.getSubtotal());
+            // stmt.setInt(4, orderItem.getOrderId());
+            // stmt.setInt(5, orderItem.getProductId());
             
             return stmt.executeUpdate() > 0;
         }
@@ -184,8 +194,9 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
      * @throws SQLException if database error occurs
      */
     public boolean createOrderItems(List<OrderItem> orderItems, Connection conn) throws SQLException {
-        String sql = "INSERT INTO order_items (order_id, product_id, quantity, price, subtotal, created_at) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO order_items (order_id, product_id, quantity, price) " +
+                    "VALUES (?, ?, ?, ?)";
+                    // TODO: Add back when other branches merged: subtotal, created_at
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             for (OrderItem item : orderItems) {
@@ -193,8 +204,10 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
                 stmt.setInt(2, item.getProductId());
                 stmt.setInt(3, item.getQuantity());
                 stmt.setBigDecimal(4, item.getPrice());
-                stmt.setBigDecimal(5, item.getSubtotal());
-                stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+                
+                // TODO: Uncomment when other branches merged
+                // stmt.setBigDecimal(5, item.getSubtotal());
+                // stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
                 
                 stmt.addBatch();
             }
@@ -219,16 +232,19 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
      * @throws SQLException if database error occurs
      */
     public boolean createOrderItem(OrderItem orderItem, Connection conn) throws SQLException {
-        String sql = "INSERT INTO order_items (order_id, product_id, quantity, price, subtotal, created_at) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO order_items (order_id, product_id, quantity, price) " +
+                    "VALUES (?, ?, ?, ?)";
+                    // TODO: Add back when other branches merged: subtotal, created_at
         
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, orderItem.getOrderId());
             stmt.setInt(2, orderItem.getProductId());
             stmt.setInt(3, orderItem.getQuantity());
             stmt.setBigDecimal(4, orderItem.getPrice());
-            stmt.setBigDecimal(5, orderItem.getSubtotal());
-            stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
+            
+            // TODO: Uncomment when other branches merged
+            // stmt.setBigDecimal(5, orderItem.getSubtotal());
+            // stmt.setTimestamp(6, new Timestamp(System.currentTimeMillis()));
             
             return stmt.executeUpdate() > 0;
         }
@@ -379,8 +395,10 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
         item.setProductId(rs.getInt("product_id"));
         item.setQuantity(rs.getInt("quantity"));
         item.setPrice(rs.getBigDecimal("price"));
-        item.setSubtotal(rs.getBigDecimal("subtotal"));
-        item.setCreatedAt(rs.getTimestamp("created_at"));
+        
+        // TODO: Uncomment when other branches merged - fields not in current Model
+        // item.setSubtotal(rs.getBigDecimal("subtotal"));
+        // item.setCreatedAt(rs.getTimestamp("created_at"));
         
         return item;
     }

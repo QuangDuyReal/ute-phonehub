@@ -1,4 +1,4 @@
-package com.utephonehub.cart;
+package com.utephonehub.controller.cart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;

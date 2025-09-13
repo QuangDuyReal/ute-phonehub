@@ -1,4 +1,4 @@
-package com.utephonehub.product;
+package com.utephonehub.controller.review;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,15 +13,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Product Controller - Xử lý các API liên quan đến sản phẩm
+ * Review Controller - Xử lý các API liên quan đến đánh giá sản phẩm
  */
-@Tag(name = "Products", description = "APIs for product management and display")
-public class ProductController extends HttpServlet {
+@Tag(name = "Reviews", description = "APIs for product reviews and ratings")
+public class ReviewController extends HttpServlet {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @Operation(summary = "Get Product Module Info", description = "Returns information about the product module")
+    @Operation(summary = "Get Review Module Info", description = "Returns information about the review module")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -29,19 +29,17 @@ public class ProductController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         
         Map<String, Object> moduleInfo = new HashMap<>();
-        moduleInfo.put("module", "product");
-        moduleInfo.put("description", "Product Management and Display Module");
+        moduleInfo.put("module", "review");
+        moduleInfo.put("description", "Product Review and Rating Module");
         moduleInfo.put("version", "1.0.0");
         
         Map<String, String> availableEndpoints = new HashMap<>();
-        availableEndpoints.put("list", "GET /api/products");
-        availableEndpoints.put("detail", "GET /api/products/{id}");
-        availableEndpoints.put("search", "GET /api/products/search");
-        availableEndpoints.put("categories", "GET /api/products/categories");
-        availableEndpoints.put("brands", "GET /api/products/brands");
-        availableEndpoints.put("create", "POST /api/products (Admin)");
-        availableEndpoints.put("update", "PUT /api/products/{id} (Admin)");
-        availableEndpoints.put("delete", "DELETE /api/products/{id} (Admin)");
+        availableEndpoints.put("create", "POST /api/reviews");
+        availableEndpoints.put("list", "GET /api/reviews/product/{productId}");
+        availableEndpoints.put("update", "PUT /api/reviews/{id}");
+        availableEndpoints.put("delete", "DELETE /api/reviews/{id}");
+        availableEndpoints.put("user-reviews", "GET /api/reviews/user");
+        availableEndpoints.put("statistics", "GET /api/reviews/product/{productId}/stats");
         
         moduleInfo.put("endpoints", availableEndpoints);
         

@@ -1,4 +1,4 @@
-package com.utephonehub.review;
+package com.utephonehub.controller.voucher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,15 +13,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Review Controller - Xử lý các API liên quan đến đánh giá sản phẩm
+ * Voucher Controller - Xử lý các API liên quan đến mã giảm giá
  */
-@Tag(name = "Reviews", description = "APIs for product reviews and ratings")
-public class ReviewController extends HttpServlet {
+@Tag(name = "Vouchers", description = "APIs for voucher and discount management")
+public class VoucherController extends HttpServlet {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @Operation(summary = "Get Review Module Info", description = "Returns information about the review module")
+    @Operation(summary = "Get Voucher Module Info", description = "Returns information about the voucher module")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -29,17 +29,17 @@ public class ReviewController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         
         Map<String, Object> moduleInfo = new HashMap<>();
-        moduleInfo.put("module", "review");
-        moduleInfo.put("description", "Product Review and Rating Module");
+        moduleInfo.put("module", "voucher");
+        moduleInfo.put("description", "Voucher and Discount Management Module");
         moduleInfo.put("version", "1.0.0");
         
         Map<String, String> availableEndpoints = new HashMap<>();
-        availableEndpoints.put("create", "POST /api/reviews");
-        availableEndpoints.put("list", "GET /api/reviews/product/{productId}");
-        availableEndpoints.put("update", "PUT /api/reviews/{id}");
-        availableEndpoints.put("delete", "DELETE /api/reviews/{id}");
-        availableEndpoints.put("user-reviews", "GET /api/reviews/user");
-        availableEndpoints.put("statistics", "GET /api/reviews/product/{productId}/stats");
+        availableEndpoints.put("list", "GET /api/vouchers");
+        availableEndpoints.put("validate", "POST /api/vouchers/validate");
+        availableEndpoints.put("create", "POST /api/vouchers (Admin)");
+        availableEndpoints.put("update", "PUT /api/vouchers/{id} (Admin)");
+        availableEndpoints.put("delete", "DELETE /api/vouchers/{id} (Admin)");
+        availableEndpoints.put("usage", "GET /api/vouchers/{id}/usage (Admin)");
         
         moduleInfo.put("endpoints", availableEndpoints);
         

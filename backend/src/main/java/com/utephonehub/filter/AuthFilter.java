@@ -1,11 +1,13 @@
 package com.utephonehub.filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import java.io.IOException;
 
 /**
  * Auth Filter - Kiểm tra JWT token (sẽ được implement sau)
  */
+@WebFilter(filterName = "AuthFilter", urlPatterns = {"/api/auth/*"})
 public class AuthFilter implements Filter {
 
     @Override

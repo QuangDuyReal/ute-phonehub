@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * Admin Controller - Xử lý các API liên quan đến quản trị
  */
+@WebServlet(name = "AdminController", urlPatterns = {"/api/admin/*"})
 @Tag(name = "Admin", description = "APIs for admin management and dashboard")
 public class AdminController extends HttpServlet {
     

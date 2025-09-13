@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * Voucher Controller - Xử lý các API liên quan đến mã giảm giá
  */
+@WebServlet(name = "VoucherController", urlPatterns = {"/api/vouchers/*"})
 @Tag(name = "Vouchers", description = "APIs for voucher and discount management")
 public class VoucherController extends HttpServlet {
     

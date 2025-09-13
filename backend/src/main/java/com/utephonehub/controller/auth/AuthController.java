@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * Auth Controller - Xử lý các API liên quan đến xác thực
  */
+@WebServlet(name = "AuthController", urlPatterns = {"/api/auth/*"})
 @Tag(name = "Authentication", description = "APIs for user authentication and account management")
 public class AuthController extends HttpServlet {
     

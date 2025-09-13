@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * Order Controller - Xử lý các API liên quan đến đơn hàng
  */
+@WebServlet(name = "OrderController", urlPatterns = {"/api/orders/*"})
 @Tag(name = "Orders", description = "APIs for order management and checkout")
 public class OrderController extends HttpServlet {
     

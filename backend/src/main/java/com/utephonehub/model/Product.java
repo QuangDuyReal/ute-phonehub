@@ -11,6 +11,7 @@ public class Product {
     private int stockQuantity;
     private int categoryId;
     private int brandId;
+    private String specifications; // JSON string for product technical specifications
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
@@ -31,6 +32,8 @@ public class Product {
     public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
     public int getBrandId() { return brandId; }
     public void setBrandId(int brandId) { this.brandId = brandId; }
+    public String getSpecifications() { return specifications; }
+    public void setSpecifications(String specifications) { this.specifications = specifications; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Timestamp getUpdatedAt() { return updatedAt; }

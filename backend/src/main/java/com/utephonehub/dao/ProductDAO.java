@@ -1,7 +1,7 @@
 package com.utephonehub.dao;
 
 import com.utephonehub.model.Product;
-import com.utephonehub.util.DatabaseUtil;
+import com.utephonehub.util.DBContext;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class ProductDAO {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM products ORDER BY id LIMIT ? OFFSET ?";
         int offset = (page - 1) * limit;
-        try (Connection conn = DatabaseUtil.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, limit);
             ps.setInt(2, offset);
@@ -38,7 +38,7 @@ public class ProductDAO {
     // Các phương thức addProduct, updateProduct, deleteProduct...
     public void addProduct(Product product) {
         String sql = "INSERT INTO products (name, description, price, stock_quantity, category_id, brand_id) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DatabaseUtil.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
@@ -54,7 +54,7 @@ public class ProductDAO {
 
     public void updateProduct(Product product) {
         String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock_quantity = ?, category_id = ?, brand_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
-        try (Connection conn = DatabaseUtil.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, product.getName());
             ps.setString(2, product.getDescription());
@@ -72,7 +72,7 @@ public class ProductDAO {
     public void deleteProduct(int id) {
         String deleteImagesSql = "DELETE FROM product_images WHERE product_id = ?";
         String deleteProductSql = "DELETE FROM products WHERE id = ?";
-        try (Connection conn = DatabaseUtil.getConnection()) {
+        try (Connection conn = DBContext.getConnection()) {
             conn.setAutoCommit(false);
             try (PreparedStatement psImages = conn.prepareStatement(deleteImagesSql);
                  PreparedStatement psProduct = conn.prepareStatement(deleteProductSql)) {
@@ -96,7 +96,7 @@ public class ProductDAO {
     public Product getProductById(int id) {
         Product product = null;
         String sql = "SELECT * FROM products WHERE id = ?";
-        try (Connection conn = DatabaseUtil.getConnection();
+        try (Connection conn = DBContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);

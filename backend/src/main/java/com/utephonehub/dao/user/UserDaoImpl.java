@@ -3,7 +3,7 @@ package com.utephonehub.dao.user;
 import com.utephonehub.model.user.User;
 import com.utephonehub.model.user.UserRole;
 import com.utephonehub.model.user.UserStatus;
-import com.utephonehub.util.DbUtil;
+import com.utephonehub.util.DBContext;
 
 import java.sql.*;
 import java.time.Instant;
@@ -14,7 +14,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Optional<User> findById(long id) throws SQLException {
         String sql = "SELECT id, full_name, email, password_hash, phone_number, role, status, created_at, updated_at FROM users WHERE id = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return Optional.empty();
@@ -26,7 +26,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Optional<User> findByEmail(String email) throws SQLException {
         String sql = "SELECT id, full_name, email, password_hash, phone_number, role, status, created_at, updated_at FROM users WHERE email = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return Optional.empty();
@@ -38,7 +38,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean existsEmail(String email) throws SQLException {
         String sql = "SELECT 1 FROM users WHERE email = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
@@ -49,7 +49,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public User create(User user) throws SQLException {
         String sql = "INSERT INTO users(full_name, email, password_hash, phone_number, role, status) VALUES(?,?,?,?,?,?) RETURNING id, created_at, updated_at";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, user.getFullName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getPasswordHash());
@@ -72,7 +72,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public int updateProfile(long id, String fullName, String phoneNumber) throws SQLException {
         String sql = "UPDATE users SET full_name = ?, phone_number = ? WHERE id = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, fullName);
             ps.setString(2, phoneNumber);
             ps.setLong(3, id);
@@ -83,7 +83,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public int updatePassword(long id, String passwordHash) throws SQLException {
         String sql = "UPDATE users SET password_hash = ? WHERE id = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, passwordHash);
             ps.setLong(2, id);
             return ps.executeUpdate();

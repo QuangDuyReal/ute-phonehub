@@ -1,7 +1,7 @@
 package com.utephonehub.dao.address;
 
 import com.utephonehub.model.address.Address;
-import com.utephonehub.util.DbUtil;
+import com.utephonehub.util.DBContext;
 
 import java.sql.*;
 import java.time.Instant;
@@ -14,7 +14,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public List<Address> findAllByUser(long userId) throws SQLException {
         String sql = "SELECT id, user_id, recipient_name, phone_number, street_address, city, is_default, created_at, updated_at FROM addresses WHERE user_id = ? ORDER BY id DESC";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 List<Address> list = new ArrayList<>();
@@ -27,7 +27,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public Optional<Address> findByIdAndUser(long id, long userId) throws SQLException {
         String sql = "SELECT id, user_id, recipient_name, phone_number, street_address, city, is_default, created_at, updated_at FROM addresses WHERE id = ? AND user_id = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.setLong(2, userId);
             try (ResultSet rs = ps.executeQuery()) {
@@ -40,7 +40,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public Address create(Address address) throws SQLException {
         String sql = "INSERT INTO addresses(user_id, recipient_name, phone_number, street_address, city, is_default) VALUES(?,?,?,?,?,?) RETURNING id, created_at, updated_at";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, address.getUserId());
             ps.setString(2, address.getRecipientName());
             ps.setString(3, address.getPhoneNumber());
@@ -63,7 +63,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public int update(Address address) throws SQLException {
         String sql = "UPDATE addresses SET recipient_name=?, phone_number=?, street_address=?, city=?, is_default=? WHERE id=? AND user_id=?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, address.getRecipientName());
             ps.setString(2, address.getPhoneNumber());
             ps.setString(3, address.getStreetAddress());
@@ -78,7 +78,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public int delete(long id, long userId) throws SQLException {
         String sql = "DELETE FROM addresses WHERE id = ? AND user_id = ?";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, id);
             ps.setLong(2, userId);
             return ps.executeUpdate();
@@ -88,7 +88,7 @@ public class AddressDaoImpl implements AddressDao {
     @Override
     public int unsetDefaultForUser(long userId) throws SQLException {
         String sql = "UPDATE addresses SET is_default = FALSE WHERE user_id = ? AND is_default = TRUE";
-        try (Connection con = DbUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBContext.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setLong(1, userId);
             return ps.executeUpdate();
         }

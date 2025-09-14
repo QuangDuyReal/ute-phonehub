@@ -1,9 +1,10 @@
-package com.utephonehub.dto;
+package com.utephonehub.dto.product;
 
-import com.utephonehub.model.Product;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+
+import com.utephonehub.model.product.Product;
 
 // Đây là lớp đại diện cho dữ liệu Sản phẩm sẽ được gửi ra ngoài qua API
 public class ProductDTO {

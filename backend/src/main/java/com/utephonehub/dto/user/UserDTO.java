@@ -1,4 +1,4 @@
-package com.utephonehub.dto;
+package com.utephonehub.dto.user;
 
 import com.utephonehub.model.user.UserRole;
 import com.utephonehub.model.user.UserStatus;

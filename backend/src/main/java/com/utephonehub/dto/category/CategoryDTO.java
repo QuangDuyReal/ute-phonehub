@@ -1,4 +1,4 @@
-package com.utephonehub.dto;
+package com.utephonehub.dto.category;
 
 
 public class CategoryDTO {

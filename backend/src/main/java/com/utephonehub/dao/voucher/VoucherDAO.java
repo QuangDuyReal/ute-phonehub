@@ -1,7 +1,7 @@
-package com.utephonehub.dao;
+package com.utephonehub.dao.voucher;
 
-import com.utephonehub.model.Voucher;
-import com.utephonehub.util.DBContext; // Sử dụng DBContext của Hưng
+import com.utephonehub.model.voucher.Voucher;
+import com.utephonehub.util.DBUtil; // Sử dụng DBContext của Hưng
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,7 +37,7 @@ public class VoucherDAO {
         String sql = "SELECT * FROM vouchers WHERE code = ?";
         // Sử dụng getNewConnection() để đảm bảo an toàn luồng (thread-safety)
         // và try-with-resources để tự động đóng kết nối.
-        try (Connection conn = DBContext.getNewConnection();
+        try (Connection conn = DBUtil.getNewConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, code);
@@ -59,7 +59,7 @@ public class VoucherDAO {
     public List<Voucher> findAll() {
         List<Voucher> vouchers = new ArrayList<>();
         String sql = "SELECT * FROM vouchers ORDER BY created_at DESC";
-        try (Connection conn = DBContext.getNewConnection();
+        try (Connection conn = DBUtil.getNewConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 

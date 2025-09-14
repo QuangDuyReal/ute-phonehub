@@ -1,27 +1,27 @@
-package com.utephonehub.model;
+package com.utephonehub.model.brand;
 
 
 import java.sql.Timestamp;
 
 
-public class Category {
+public class Brand {
     private int id;
     private String name;
-    private Integer parentId; // Dùng cho danh mục đa cấp
+    private int categoryId; // FK tới categories.id
     private Boolean status;
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
 
     // Constructor rỗng
-    public Category() {}
+    public Brand() {}
 
 
     // Constructor đầy đủ
-    public Category(int id, String name, Integer parentId, Boolean status, Timestamp createdAt, Timestamp updatedAt) {
+    public Brand(int id, String name, int categoryId, Boolean status, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.name = name;
-        this.parentId = parentId;
+        this.categoryId = categoryId;
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -37,8 +37,8 @@ public class Category {
     public void setName(String name) { this.name = name; }
 
 
-    public Integer getParentId() { return parentId; }
-    public void setParentId(Integer parentId) { this.parentId = parentId; }
+    public int getCategoryId() { return categoryId; }
+    public void setCategoryId(int categoryId) { this.categoryId = categoryId; }
 
 
     public Boolean getStatus() { return status; }

@@ -1,4 +1,4 @@
-package com.utephonehub.model;
+package com.utephonehub.model.product;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;

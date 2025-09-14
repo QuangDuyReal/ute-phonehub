@@ -2,7 +2,7 @@ package com.utephonehub.dao.order;
 
 import com.utephonehub.dao.GenericDAO;
 import com.utephonehub.model.order.OrderItem;
-import com.utephonehub.util.DBContext;
+import com.utephonehub.util.DBUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public List<OrderItem> findAll() throws SQLException {
         String sql = "SELECT * FROM order_items ORDER BY order_id, product_id";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             ResultSet rs = stmt.executeQuery();
@@ -64,7 +64,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
             sql.append(" LIMIT ? OFFSET ?");
         }
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
             
             if (limit > 0) {
@@ -89,7 +89,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
                     "WHERE order_id = ? AND product_id = ?";
                     // TODO: Add back when other branches merged: subtotal = ?
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderItem.getQuantity());
@@ -147,7 +147,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public boolean exists(OrderItemKey key) throws SQLException {
         String sql = "SELECT 1 FROM order_items WHERE order_id = ? AND product_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, key.getOrderId());
@@ -161,7 +161,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public long count() throws SQLException {
         String sql = "SELECT COUNT(*) as total FROM order_items";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             ResultSet rs = stmt.executeQuery();
@@ -181,7 +181,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
      * @throws SQLException if database error occurs
      */
     private boolean createOrderItem(OrderItem orderItem) throws SQLException {
-        try (Connection conn = DBContext.getConnection()) {
+        try (Connection conn = DBUtil.getConnection()) {
             return createOrderItem(orderItem, conn);
         }
     }
@@ -259,7 +259,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public List<OrderItem> getOrderItemsByOrderId(int orderId) throws SQLException {
         String sql = "SELECT * FROM order_items WHERE order_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderId);
@@ -285,7 +285,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public OrderItem getOrderItem(int orderId, int productId) throws SQLException {
         String sql = "SELECT * FROM order_items WHERE order_id = ? AND product_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderId);
@@ -313,7 +313,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
         String sql = "UPDATE order_items SET quantity = ?, subtotal = ? " +
                     "WHERE order_id = ? AND product_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, quantity);
@@ -334,7 +334,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public boolean deleteOrderItemsByOrderId(int orderId) throws SQLException {
         String sql = "DELETE FROM order_items WHERE order_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderId);
@@ -352,7 +352,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public boolean deleteOrderItem(int orderId, int productId) throws SQLException {
         String sql = "DELETE FROM order_items WHERE order_id = ? AND product_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderId);
@@ -370,7 +370,7 @@ public class OrderItemDAO implements GenericDAO<OrderItem, OrderItemKey> {
     public int getTotalQuantityByOrderId(int orderId) throws SQLException {
         String sql = "SELECT SUM(quantity) as total_quantity FROM order_items WHERE order_id = ?";
         
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             
             stmt.setInt(1, orderId);

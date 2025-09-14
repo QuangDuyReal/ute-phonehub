@@ -1,7 +1,7 @@
-package com.utephonehub.dao;
+package com.utephonehub.dao.category;
 
-import com.utephonehub.model.Category;
-import com.utephonehub.util.DBContext;
+import com.utephonehub.model.category.Category;
+import com.utephonehub.util.DBUtil;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class CategoryDAO {
     public List<Category> getAllCategories() {
         List<Category> list = new ArrayList<>();
         String sql = "SELECT id, name, parent_id, status, created_at, updated_at FROM categories ORDER BY id ASC";
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -36,7 +36,7 @@ public class CategoryDAO {
     // Tìm category theo id
     public Category getCategoryById(int id) {
         String sql = "SELECT id, name, parent_id, status, created_at, updated_at FROM categories WHERE id = ?";
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
@@ -61,7 +61,7 @@ public class CategoryDAO {
     // Thêm category
     public boolean insertCategory(Category c) {
         String sql = "INSERT INTO categories (name, parent_id, status) VALUES (?, ?, ?)";
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, c.getName());
@@ -81,7 +81,7 @@ public class CategoryDAO {
     // Cập nhật category
     public boolean updateCategory(Category c) {
         String sql = "UPDATE categories SET name=?, parent_id=?, status=?, updated_at=CURRENT_TIMESTAMP WHERE id=?";
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, c.getName());
@@ -102,7 +102,7 @@ public class CategoryDAO {
     // Xóa category
     public boolean deleteCategory(int id) {
         String sql = "DELETE FROM categories WHERE id=?";
-        try (Connection conn = DBContext.getConnection();
+        try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate() > 0;

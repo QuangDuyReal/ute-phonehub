@@ -1,4 +1,4 @@
-package com.utephonehub.dto;
+package com.utephonehub.dto.voucher;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;

@@ -137,7 +137,7 @@
                     <webApp>
                         <contextPath>/ute-phonehub</contextPath>
                     </webApp>
-                    <scanIntervalSeconds>5</scanIntervalSeconds>
+
                 </configuration>
             </plugin>
         </plugins>

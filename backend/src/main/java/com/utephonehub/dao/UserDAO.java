@@ -1,7 +1,7 @@
 package com.utephonehub.dao;
 
-import com.utephonehub.user.User;
-import com.utephonehub.user.UserStatus;
+import com.utephonehub.model.user.User;
+import com.utephonehub.model.user.UserStatus;
 import java.util.List;
 import java.util.Optional;
 

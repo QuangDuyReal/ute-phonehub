@@ -1,7 +1,7 @@
 package com.utephonehub.dto;
 
-import com.utephonehub.user.UserRole;
-import com.utephonehub.user.UserStatus;
+import com.utephonehub.model.user.UserRole;
+import com.utephonehub.model.user.UserStatus;
 import java.time.Instant;
 
 public class UserDTO {

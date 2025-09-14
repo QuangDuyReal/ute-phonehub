@@ -2,9 +2,9 @@ package com.utephonehub.dao;
 
 // Import các lớp cần thiết từ đúng package theo cấu trúc dự án của bạn
 // CÁC IMPORT ĐÃ ĐƯỢC SỬA LẠI CHO ĐÚNG
-import com.utephonehub.user.User;
-import com.utephonehub.user.UserRole;
-import com.utephonehub.user.UserStatus;
+import com.utephonehub.model.user.User;
+import com.utephonehub.model.user.UserRole;
+import com.utephonehub.model.user.UserStatus;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -77,7 +77,7 @@ public class UserDAOImpl implements UserDAO {
         customer2.setPasswordHash("hashed_password_b");
         customer2.setPhoneNumber("0909090909");
         customer2.setRole(UserRole.customer);
-        customer2.setStatus(UserStatus.disabled); // Trạng thái bị khóa
+        customer2.setStatus(UserStatus.locked); // Trạng thái bị khóa
         customer2.setCreatedAt(Instant.now().minus(3, ChronoUnit.DAYS));
         customer2.setUpdatedAt(Instant.now());
         MOCK_USERS.add(customer2);

@@ -1,6 +1,6 @@
 package com.utephonehub.dto;
 
-import com.utephonehub.user.UserStatus;
+import com.utephonehub.model.user.UserStatus;
 
 public class UpdateUserStatusDTO {
     private UserStatus status;

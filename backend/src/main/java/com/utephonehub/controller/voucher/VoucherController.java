@@ -1,10 +1,11 @@
-package com.utephonehub.product;
+package com.utephonehub.controller.voucher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,15 +14,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Product Controller - Xử lý các API liên quan đến sản phẩm
+ * Voucher Controller - Xử lý các API liên quan đến mã giảm giá
  */
-@Tag(name = "Products", description = "APIs for product management and display")
-public class ProductController extends HttpServlet {
+@WebServlet(name = "VoucherController", urlPatterns = {"/api/vouchers/*"})
+@Tag(name = "Vouchers", description = "APIs for voucher and discount management")
+public class VoucherController extends HttpServlet {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @Operation(summary = "Get Product Module Info", description = "Returns information about the product module")
+    @Operation(summary = "Get Voucher Module Info", description = "Returns information about the voucher module")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -29,19 +31,17 @@ public class ProductController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         
         Map<String, Object> moduleInfo = new HashMap<>();
-        moduleInfo.put("module", "product");
-        moduleInfo.put("description", "Product Management and Display Module");
+        moduleInfo.put("module", "voucher");
+        moduleInfo.put("description", "Voucher and Discount Management Module");
         moduleInfo.put("version", "1.0.0");
         
         Map<String, String> availableEndpoints = new HashMap<>();
-        availableEndpoints.put("list", "GET /api/products");
-        availableEndpoints.put("detail", "GET /api/products/{id}");
-        availableEndpoints.put("search", "GET /api/products/search");
-        availableEndpoints.put("categories", "GET /api/products/categories");
-        availableEndpoints.put("brands", "GET /api/products/brands");
-        availableEndpoints.put("create", "POST /api/products (Admin)");
-        availableEndpoints.put("update", "PUT /api/products/{id} (Admin)");
-        availableEndpoints.put("delete", "DELETE /api/products/{id} (Admin)");
+        availableEndpoints.put("list", "GET /api/vouchers");
+        availableEndpoints.put("validate", "POST /api/vouchers/validate");
+        availableEndpoints.put("create", "POST /api/vouchers (Admin)");
+        availableEndpoints.put("update", "PUT /api/vouchers/{id} (Admin)");
+        availableEndpoints.put("delete", "DELETE /api/vouchers/{id} (Admin)");
+        availableEndpoints.put("usage", "GET /api/vouchers/{id}/usage (Admin)");
         
         moduleInfo.put("endpoints", availableEndpoints);
         

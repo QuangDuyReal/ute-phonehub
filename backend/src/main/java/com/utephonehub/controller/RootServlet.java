@@ -1,10 +1,11 @@
-package com.utephonehub;
+package com.utephonehub.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +16,7 @@ import java.util.Map;
 /**
  * Root Servlet - Hiển thị thông tin cơ bản về project
  */
+@WebServlet(name = "RootServlet", urlPatterns = {"/"})
 @OpenAPIDefinition(
     info = @Info(
         title = "UTE PhoneHub API",

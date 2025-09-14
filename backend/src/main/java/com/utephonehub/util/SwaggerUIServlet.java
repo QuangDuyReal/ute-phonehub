@@ -1,6 +1,7 @@
 package com.utephonehub.util;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import java.io.IOException;
 /**
  * Swagger UI Servlet - Hiển thị API Documentation
  */
+@WebServlet(name = "SwaggerUIServlet", urlPatterns = {"/api-docs/*"})
 public class SwaggerUIServlet extends HttpServlet {
 
     @Override

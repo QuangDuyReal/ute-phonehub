@@ -1,6 +1,7 @@
 package com.utephonehub.filter;
 
 import jakarta.servlet.*;
+import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.io.IOException;
 /**
  * CORS Filter - Xử lý Cross-Origin Resource Sharing
  */
+@WebFilter(filterName = "CorsFilter", urlPatterns = {"/api/*"})
 public class CorsFilter implements Filter {
 
     @Override

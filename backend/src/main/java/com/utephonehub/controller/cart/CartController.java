@@ -1,10 +1,11 @@
-package com.utephonehub.review;
+package com.utephonehub.controller.cart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,15 +14,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Review Controller - Xử lý các API liên quan đến đánh giá sản phẩm
+ * Cart Controller - Xử lý các API liên quan đến giỏ hàng
  */
-@Tag(name = "Reviews", description = "APIs for product reviews and ratings")
-public class ReviewController extends HttpServlet {
+@WebServlet(name = "CartController", urlPatterns = {"/api/cart/*"})
+@Tag(name = "Shopping Cart", description = "APIs for shopping cart management")
+public class CartController extends HttpServlet {
     
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    @Operation(summary = "Get Review Module Info", description = "Returns information about the review module")
+    @Operation(summary = "Get Cart Module Info", description = "Returns information about the cart module")
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
@@ -29,17 +31,17 @@ public class ReviewController extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         
         Map<String, Object> moduleInfo = new HashMap<>();
-        moduleInfo.put("module", "review");
-        moduleInfo.put("description", "Product Review and Rating Module");
+        moduleInfo.put("module", "cart");
+        moduleInfo.put("description", "Shopping Cart Management Module");
         moduleInfo.put("version", "1.0.0");
         
         Map<String, String> availableEndpoints = new HashMap<>();
-        availableEndpoints.put("create", "POST /api/reviews");
-        availableEndpoints.put("list", "GET /api/reviews/product/{productId}");
-        availableEndpoints.put("update", "PUT /api/reviews/{id}");
-        availableEndpoints.put("delete", "DELETE /api/reviews/{id}");
-        availableEndpoints.put("user-reviews", "GET /api/reviews/user");
-        availableEndpoints.put("statistics", "GET /api/reviews/product/{productId}/stats");
+        availableEndpoints.put("view", "GET /api/cart");
+        availableEndpoints.put("add", "POST /api/cart/add");
+        availableEndpoints.put("update", "PUT /api/cart/update");
+        availableEndpoints.put("remove", "DELETE /api/cart/remove/{productId}");
+        availableEndpoints.put("clear", "DELETE /api/cart/clear");
+        availableEndpoints.put("count", "GET /api/cart/count");
         
         moduleInfo.put("endpoints", availableEndpoints);
         

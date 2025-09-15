@@ -1,7 +1,7 @@
 package com.utephonehub.dto.cart;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * DTO for cart item with product information
@@ -9,22 +9,22 @@ import java.time.Instant;
  */
 public class CartItemDTO {
     
-    private long cartId;
+    private int cartId;
     private int productId;
     private String productName;
     private BigDecimal productPrice;
     private String productImageUrl;
     private int quantity;
     private BigDecimal subtotal; // quantity * productPrice
-    private Instant addedAt;
+    private Timestamp addedAt;
     private int stockQuantity; // Current stock to check availability
     
     // Constructors
     public CartItemDTO() {
     }
     
-    public CartItemDTO(long cartId, int productId, String productName, BigDecimal productPrice, 
-                      String productImageUrl, int quantity, Instant addedAt, int stockQuantity) {
+    public CartItemDTO(int cartId, int productId, String productName, BigDecimal productPrice, 
+                      String productImageUrl, int quantity, Timestamp addedAt, int stockQuantity) {
         this.cartId = cartId;
         this.productId = productId;
         this.productName = productName;
@@ -37,11 +37,11 @@ public class CartItemDTO {
     }
     
     // Getters and Setters
-    public long getCartId() {
+    public int getCartId() {
         return cartId;
     }
     
-    public void setCartId(long cartId) {
+    public void setCartId(int cartId) {
         this.cartId = cartId;
     }
     
@@ -101,11 +101,11 @@ public class CartItemDTO {
         this.subtotal = subtotal;
     }
     
-    public Instant getAddedAt() {
+    public Timestamp getAddedAt() {
         return addedAt;
     }
     
-    public void setAddedAt(Instant addedAt) {
+    public void setAddedAt(Timestamp addedAt) {
         this.addedAt = addedAt;
     }
     

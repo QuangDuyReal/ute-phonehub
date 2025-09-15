@@ -1,20 +1,21 @@
 package com.utephonehub.dto.voucher;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.utephonehub.model.voucher.DiscountType;
 import java.math.BigDecimal;
 
 public class ApplyVoucherResponseDTO {
 
     private boolean valid;
     private String message;
-    private String discountType;
+    private DiscountType discountType;
     private BigDecimal discountAmount;
 
     // Constructors
     public ApplyVoucherResponseDTO() {
     }
 
-    public ApplyVoucherResponseDTO(boolean valid, String message, String discountType, BigDecimal discountAmount) {
+    public ApplyVoucherResponseDTO(boolean valid, String message, DiscountType discountType, BigDecimal discountAmount) {
         this.valid = valid;
         this.message = message;
         this.discountType = discountType;
@@ -42,11 +43,11 @@ public class ApplyVoucherResponseDTO {
     // Dùng @JsonProperty để đảm bảo tên thuộc tính trong JSON là camelCase
     // Mặc dù getter là getDiscountType nhưng trong JSON sẽ là "discountType"
     @JsonProperty("discountType")
-    public String getDiscountType() {
+    public DiscountType getDiscountType() {
         return discountType;
     }
 
-    public void setDiscountType(String discountType) {
+    public void setDiscountType(DiscountType discountType) {
         this.discountType = discountType;
     }
 

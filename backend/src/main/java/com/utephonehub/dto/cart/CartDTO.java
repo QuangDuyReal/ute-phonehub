@@ -1,7 +1,7 @@
 package com.utephonehub.dto.cart;
 
 import java.math.BigDecimal;
-import java.time.Instant;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -10,19 +10,19 @@ import java.util.List;
  */
 public class CartDTO {
     
-    private long id;
-    private long userId;
+    private int id;
+    private int userId;
     private List<CartItemDTO> items;
     private long totalItems; // Total quantity of all items
     private BigDecimal totalAmount; // Total price of all items
-    private Instant createdAt;
-    private Instant updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     
     // Constructors
     public CartDTO() {
     }
     
-    public CartDTO(long id, long userId, List<CartItemDTO> items, Instant createdAt, Instant updatedAt) {
+    public CartDTO(int id, int userId, List<CartItemDTO> items, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.userId = userId;
         this.items = items;
@@ -49,19 +49,19 @@ public class CartDTO {
     }
     
     // Getters and Setters
-    public long getId() {
+    public int getId() {
         return id;
     }
     
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
     
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
     
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
     
@@ -90,19 +90,19 @@ public class CartDTO {
         this.totalAmount = totalAmount;
     }
     
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
     
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
     
-    public Instant getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
     
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
     

@@ -18,7 +18,7 @@ public class AuthDTOs {
     }
 
     public static class UserPublic {
-        public long id;
+        public int id;
         public String fullName;
         public String email;
         public String phoneNumber;

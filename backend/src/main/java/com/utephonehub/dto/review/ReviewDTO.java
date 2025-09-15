@@ -1,6 +1,6 @@
 package com.utephonehub.dto.review;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * DTO for review with user information
@@ -11,13 +11,13 @@ public class ReviewDTO {
     private int productId;       // Added for context
     private int rating;          // Changed from long to int (1-5)
     private String comment;
-    private Instant createdAt;   // Changed from Timestamp to Instant
+    private Timestamp createdAt;   // Changed from Instant to Timestamp
     private String fullName;     // From users table join
 
     // Constructors
     public ReviewDTO() {}
 
-    public ReviewDTO(int reviewId, int productId, int rating, String comment, Instant createdAt, String fullName) {
+    public ReviewDTO(int reviewId, int productId, int rating, String comment, Timestamp createdAt, String fullName) {
         this.reviewId = reviewId;
         this.productId = productId;
         this.rating = rating;
@@ -27,7 +27,7 @@ public class ReviewDTO {
     }
     
     // Constructor for DAO query result
-    public ReviewDTO(int rating, String comment, Instant createdAt, String fullName) {
+    public ReviewDTO(int rating, String comment, Timestamp createdAt, String fullName) {
         this.rating = rating;
         this.comment = comment;
         this.createdAt = createdAt;
@@ -67,11 +67,11 @@ public class ReviewDTO {
         this.comment = comment; 
     }
 
-    public Instant getCreatedAt() { 
+    public Timestamp getCreatedAt() { 
         return createdAt; 
     }
     
-    public void setCreatedAt(Instant createdAt) { 
+    public void setCreatedAt(Timestamp createdAt) { 
         this.createdAt = createdAt; 
     }
 

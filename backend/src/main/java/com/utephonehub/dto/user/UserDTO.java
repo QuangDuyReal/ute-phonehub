@@ -2,23 +2,23 @@ package com.utephonehub.dto.user;
 
 import com.utephonehub.model.user.UserRole;
 import com.utephonehub.model.user.UserStatus;
-import java.time.Instant;
+import java.sql.Timestamp;
 
 public class UserDTO {
-    private long id;
+    private int id;
     private String fullName;
     private String email;
     private String phoneNumber;
     private UserRole role;
     private UserStatus status;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
     // Constructors
     public UserDTO() {
     }
 
-    public UserDTO(long id, String fullName, String email, String phoneNumber, UserRole role, UserStatus status, Instant createdAt, Instant updatedAt) {
+    public UserDTO(int id, String fullName, String email, String phoneNumber, UserRole role, UserStatus status, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.fullName = fullName;
         this.email = email;
@@ -30,11 +30,11 @@ public class UserDTO {
     }
 
     // Getters and Setters
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -78,19 +78,19 @@ public class UserDTO {
         this.status = status;
     }
 
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

@@ -47,10 +47,10 @@ public class CartItemDAOImpl implements CartItemDAO {
             }
             
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                ps.setLong(1, cartItem.getCartId());
+                ps.setInt(1, cartItem.getCartId());
                 ps.setInt(2, cartItem.getProductId());
                 ps.setInt(3, cartItem.getQuantity());
-                ps.setTimestamp(4, Timestamp.from(cartItem.getAddedAt()));
+                ps.setTimestamp(4, cartItem.getAddedAt());
                 
                 return ps.executeUpdate() > 0;
             } finally {
@@ -62,12 +62,12 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public boolean updateQuantity(long cartId, int productId, int quantity) throws SQLException {
+    public boolean updateQuantity(int cartId, int productId, int quantity) throws SQLException {
         return updateQuantity(cartId, productId, quantity, null);
     }
     
     @Override
-    public boolean updateQuantity(long cartId, int productId, int quantity, Connection conn) throws SQLException {
+    public boolean updateQuantity(int cartId, int productId, int quantity, Connection conn) throws SQLException {
         // Validate quantity is positive
         if (quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than 0");
@@ -87,7 +87,7 @@ public class CartItemDAOImpl implements CartItemDAO {
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, quantity);
-            ps.setLong(2, cartId);
+            ps.setInt(2, cartId);
             ps.setInt(3, productId);
             
             return ps.executeUpdate() > 0;
@@ -99,12 +99,12 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public boolean removeFromCart(long cartId, int productId) throws SQLException {
+    public boolean removeFromCart(int cartId, int productId) throws SQLException {
         return removeFromCart(cartId, productId, null);
     }
     
     @Override
-    public boolean removeFromCart(long cartId, int productId, Connection conn) throws SQLException {
+    public boolean removeFromCart(int cartId, int productId, Connection conn) throws SQLException {
         String sql = "DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -113,7 +113,7 @@ public class CartItemDAOImpl implements CartItemDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, cartId);
+            ps.setInt(1, cartId);
             ps.setInt(2, productId);
             
             return ps.executeUpdate() > 0;
@@ -125,12 +125,12 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public List<CartItem> findByCartId(long cartId) throws SQLException {
+    public List<CartItem> findByCartId(int cartId) throws SQLException {
         return findByCartId(cartId, null);
     }
     
     @Override
-    public List<CartItem> findByCartId(long cartId, Connection conn) throws SQLException {
+    public List<CartItem> findByCartId(int cartId, Connection conn) throws SQLException {
         String sql = "SELECT cart_id, product_id, quantity, added_at FROM cart_items WHERE cart_id = ? ORDER BY added_at DESC";
         
         boolean shouldCloseConnection = (conn == null);
@@ -140,7 +140,7 @@ public class CartItemDAOImpl implements CartItemDAO {
         
         List<CartItem> items = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, cartId);
+            ps.setInt(1, cartId);
             
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -156,12 +156,12 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public List<CartItemDTO> findCartItemsWithProductDetails(long cartId) throws SQLException {
+    public List<CartItemDTO> findCartItemsWithProductDetails(int cartId) throws SQLException {
         return findCartItemsWithProductDetails(cartId, null);
     }
     
     @Override
-    public List<CartItemDTO> findCartItemsWithProductDetails(long cartId, Connection conn) throws SQLException {
+    public List<CartItemDTO> findCartItemsWithProductDetails(int cartId, Connection conn) throws SQLException {
         String sql = """
             SELECT ci.cart_id, ci.product_id, ci.quantity, ci.added_at,
                    p.name as product_name, p.price as product_price, p.stock_quantity,
@@ -180,18 +180,18 @@ public class CartItemDAOImpl implements CartItemDAO {
         
         List<CartItemDTO> items = new ArrayList<>();
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, cartId);
+            ps.setInt(1, cartId);
             
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     CartItemDTO item = new CartItemDTO(
-                        rs.getLong("cart_id"),
+                        rs.getInt("cart_id"),
                         rs.getInt("product_id"),
                         rs.getString("product_name"),
                         rs.getBigDecimal("product_price"),
                         rs.getString("product_image_url"),
                         rs.getInt("quantity"),
-                        rs.getTimestamp("added_at").toInstant(),
+                        rs.getTimestamp("added_at"),
                         rs.getInt("stock_quantity")
                     );
                     items.add(item);
@@ -206,12 +206,12 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public Optional<CartItem> findCartItem(long cartId, int productId) throws SQLException {
+    public Optional<CartItem> findCartItem(int cartId, int productId) throws SQLException {
         return findCartItem(cartId, productId, null);
     }
     
     @Override
-    public Optional<CartItem> findCartItem(long cartId, int productId, Connection conn) throws SQLException {
+    public Optional<CartItem> findCartItem(int cartId, int productId, Connection conn) throws SQLException {
         String sql = "SELECT cart_id, product_id, quantity, added_at FROM cart_items WHERE cart_id = ? AND product_id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -237,12 +237,12 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public boolean clearCart(long cartId) throws SQLException {
+    public boolean clearCart(int cartId) throws SQLException {
         return clearCart(cartId, null);
     }
     
     @Override
-    public boolean clearCart(long cartId, Connection conn) throws SQLException {
+    public boolean clearCart(int cartId, Connection conn) throws SQLException {
         String sql = "DELETE FROM cart_items WHERE cart_id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -261,7 +261,7 @@ public class CartItemDAOImpl implements CartItemDAO {
     }
     
     @Override
-    public int countCartItems(long cartId) throws SQLException {
+    public int countCartItems(int cartId) throws SQLException {
         String sql = "SELECT SUM(quantity) FROM cart_items WHERE cart_id = ?";
         
         try (Connection conn = DBUtil.getConnection();
@@ -282,10 +282,10 @@ public class CartItemDAOImpl implements CartItemDAO {
      */
     private CartItem mapResultSetToCartItem(ResultSet rs) throws SQLException {
         CartItem item = new CartItem();
-        item.setCartId(rs.getLong("cart_id"));
+        item.setCartId(rs.getInt("cart_id"));
         item.setProductId(rs.getInt("product_id"));
         item.setQuantity(rs.getInt("quantity"));
-        item.setAddedAt(rs.getTimestamp("added_at").toInstant());
+        item.setAddedAt(rs.getTimestamp("added_at"));
         return item;
     }
     

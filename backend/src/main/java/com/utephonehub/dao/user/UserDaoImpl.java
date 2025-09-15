@@ -6,16 +6,15 @@ import com.utephonehub.model.user.UserStatus;
 import com.utephonehub.util.DBUtil;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.Optional;
 
 public class UserDaoImpl implements UserDao {
 
     @Override
-    public Optional<User> findById(long id) throws SQLException {
+    public Optional<User> findById(int id) throws SQLException {
         String sql = "SELECT id, full_name, email, password_hash, phone_number, role, status, created_at, updated_at FROM users WHERE id = ?";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return Optional.empty();
                 return Optional.of(mapRow(rs));
@@ -58,11 +57,11 @@ public class UserDaoImpl implements UserDao {
             ps.setString(6, user.getStatus() != null ? user.getStatus().toDatabase() : UserStatus.active.toDatabase());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    user.setId(rs.getLong("id"));
+                    user.setId(rs.getInt("id"));
                     Timestamp cAt = rs.getTimestamp("created_at");
                     Timestamp uAt = rs.getTimestamp("updated_at");
-                    user.setCreatedAt(cAt != null ? cAt.toInstant() : Instant.now());
-                    user.setUpdatedAt(uAt != null ? uAt.toInstant() : user.getCreatedAt());
+                    user.setCreatedAt(cAt != null ? cAt : new Timestamp(System.currentTimeMillis()));
+                    user.setUpdatedAt(uAt != null ? uAt : user.getCreatedAt());
                 }
             }
             return user;
@@ -70,29 +69,29 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public int updateProfile(long id, String fullName, String phoneNumber) throws SQLException {
+    public int updateProfile(int id, String fullName, String phoneNumber) throws SQLException {
         String sql = "UPDATE users SET full_name = ?, phone_number = ? WHERE id = ?";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, fullName);
             ps.setString(2, phoneNumber);
-            ps.setLong(3, id);
+            ps.setInt(3, id);
             return ps.executeUpdate();
         }
     }
 
     @Override
-    public int updatePassword(long id, String passwordHash) throws SQLException {
+    public int updatePassword(int id, String passwordHash) throws SQLException {
         String sql = "UPDATE users SET password_hash = ? WHERE id = ?";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, passwordHash);
-            ps.setLong(2, id);
+            ps.setInt(2, id);
             return ps.executeUpdate();
         }
     }
 
     private User mapRow(ResultSet rs) throws SQLException {
         User u = new User();
-        u.setId(rs.getLong("id"));
+        u.setId(rs.getInt("id"));
         u.setFullName(rs.getString("full_name"));
         u.setEmail(rs.getString("email"));
         u.setPasswordHash(rs.getString("password_hash"));
@@ -101,8 +100,8 @@ public class UserDaoImpl implements UserDao {
         u.setStatus(UserStatus.fromDatabase(rs.getString("status")));
         Timestamp cAt = rs.getTimestamp("created_at");
         Timestamp uAt = rs.getTimestamp("updated_at");
-        u.setCreatedAt(cAt != null ? cAt.toInstant() : null);
-        u.setUpdatedAt(uAt != null ? uAt.toInstant() : null);
+        u.setCreatedAt(cAt != null ? cAt : null);
+        u.setUpdatedAt(uAt != null ? uAt : null);
         return u;
     }
 }

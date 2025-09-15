@@ -27,6 +27,10 @@ public class ProductDAO {
                 product.setStockQuantity(rs.getInt("stock_quantity"));
                 product.setCategoryId(rs.getInt("category_id"));
                 product.setBrandId(rs.getInt("brand_id"));
+                product.setSpecifications(rs.getString("specifications"));
+                product.setStatus(rs.getBoolean("status"));
+                product.setCreatedAt(rs.getTimestamp("created_at"));
+                product.setUpdatedAt(rs.getTimestamp("updated_at"));
                 products.add(product);
             }
         } catch (SQLException e) {
@@ -37,7 +41,7 @@ public class ProductDAO {
 
     // Các phương thức addProduct, updateProduct, deleteProduct...
     public void addProduct(Product product) {
-        String sql = "INSERT INTO products (name, description, price, stock_quantity, category_id, brand_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO products (name, description, price, stock_quantity, category_id, brand_id, specifications, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, product.getName());
@@ -46,6 +50,8 @@ public class ProductDAO {
             ps.setInt(4, product.getStockQuantity());
             ps.setInt(5, product.getCategoryId());
             ps.setInt(6, product.getBrandId());
+            ps.setString(7, product.getSpecifications());
+            ps.setBoolean(8, product.getStatus());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -53,7 +59,7 @@ public class ProductDAO {
     }
 
     public void updateProduct(Product product) {
-        String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock_quantity = ?, category_id = ?, brand_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
+        String sql = "UPDATE products SET name = ?, description = ?, price = ?, stock_quantity = ?, category_id = ?, brand_id = ?, specifications = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?";
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, product.getName());
@@ -62,7 +68,9 @@ public class ProductDAO {
             ps.setInt(4, product.getStockQuantity());
             ps.setInt(5, product.getCategoryId());
             ps.setInt(6, product.getBrandId());
-            ps.setInt(7, product.getId());
+            ps.setString(7, product.getSpecifications());
+            ps.setBoolean(8, product.getStatus());
+            ps.setInt(9, product.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -111,6 +119,10 @@ public class ProductDAO {
                 product.setStockQuantity(rs.getInt("stock_quantity"));
                 product.setCategoryId(rs.getInt("category_id"));
                 product.setBrandId(rs.getInt("brand_id"));
+                product.setSpecifications(rs.getString("specifications"));
+                product.setStatus(rs.getBoolean("status"));
+                product.setCreatedAt(rs.getTimestamp("created_at"));
+                product.setUpdatedAt(rs.getTimestamp("updated_at"));
             }
         } catch (SQLException e) {
             e.printStackTrace();

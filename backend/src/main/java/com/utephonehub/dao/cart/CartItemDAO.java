@@ -39,7 +39,7 @@ public interface CartItemDAO {
      * @return true if updated successfully
      * @throws SQLException if database error occurs
      */
-    boolean updateQuantity(long cartId, int productId, int quantity) throws SQLException;
+    boolean updateQuantity(int cartId, int productId, int quantity) throws SQLException;
     
     /**
      * Update cart item quantity within a transaction
@@ -50,7 +50,7 @@ public interface CartItemDAO {
      * @return true if updated successfully
      * @throws SQLException if database error occurs
      */
-    boolean updateQuantity(long cartId, int productId, int quantity, Connection conn) throws SQLException;
+    boolean updateQuantity(int cartId, int productId, int quantity, Connection conn) throws SQLException;
     
     /**
      * Remove item from cart
@@ -59,7 +59,7 @@ public interface CartItemDAO {
      * @return true if removed successfully
      * @throws SQLException if database error occurs
      */
-    boolean removeFromCart(long cartId, int productId) throws SQLException;
+    boolean removeFromCart(int cartId, int productId) throws SQLException;
     
     /**
      * Remove item from cart within a transaction
@@ -69,7 +69,7 @@ public interface CartItemDAO {
      * @return true if removed successfully
      * @throws SQLException if database error occurs
      */
-    boolean removeFromCart(long cartId, int productId, Connection conn) throws SQLException;
+    boolean removeFromCart(int cartId, int productId, Connection conn) throws SQLException;
     
     /**
      * Get all items in a cart
@@ -77,7 +77,7 @@ public interface CartItemDAO {
      * @return List of cart items
      * @throws SQLException if database error occurs
      */
-    List<CartItem> findByCartId(long cartId) throws SQLException;
+    List<CartItem> findByCartId(int cartId) throws SQLException;
     
     /**
      * Get all items in a cart within a transaction
@@ -86,7 +86,7 @@ public interface CartItemDAO {
      * @return List of cart items
      * @throws SQLException if database error occurs
      */
-    List<CartItem> findByCartId(long cartId, Connection conn) throws SQLException;
+    List<CartItem> findByCartId(int cartId, Connection conn) throws SQLException;
     
     /**
      * Get cart items with product details
@@ -94,7 +94,7 @@ public interface CartItemDAO {
      * @return List of cart item DTOs with product information
      * @throws SQLException if database error occurs
      */
-    List<CartItemDTO> findCartItemsWithProductDetails(long cartId) throws SQLException;
+    List<CartItemDTO> findCartItemsWithProductDetails(int cartId) throws SQLException;
     
     /**
      * Get cart items with product details within a transaction
@@ -103,7 +103,7 @@ public interface CartItemDAO {
      * @return List of cart item DTOs with product information
      * @throws SQLException if database error occurs
      */
-    List<CartItemDTO> findCartItemsWithProductDetails(long cartId, Connection conn) throws SQLException;
+    List<CartItemDTO> findCartItemsWithProductDetails(int cartId, Connection conn) throws SQLException;
     
     /**
      * Find specific cart item
@@ -112,7 +112,7 @@ public interface CartItemDAO {
      * @return Optional containing CartItem if found
      * @throws SQLException if database error occurs
      */
-    Optional<CartItem> findCartItem(long cartId, int productId) throws SQLException;
+    Optional<CartItem> findCartItem(int cartId, int productId) throws SQLException;
     
     /**
      * Find specific cart item within a transaction
@@ -122,7 +122,7 @@ public interface CartItemDAO {
      * @return Optional containing CartItem if found
      * @throws SQLException if database error occurs
      */
-    Optional<CartItem> findCartItem(long cartId, int productId, Connection conn) throws SQLException;
+    Optional<CartItem> findCartItem(int cartId, int productId, Connection conn) throws SQLException;
     
     /**
      * Clear all items from cart
@@ -130,7 +130,7 @@ public interface CartItemDAO {
      * @return true if cleared successfully
      * @throws SQLException if database error occurs
      */
-    boolean clearCart(long cartId) throws SQLException;
+    boolean clearCart(int cartId) throws SQLException;
     
     /**
      * Clear all items from cart within a transaction
@@ -139,7 +139,7 @@ public interface CartItemDAO {
      * @return true if cleared successfully
      * @throws SQLException if database error occurs
      */
-    boolean clearCart(long cartId, Connection conn) throws SQLException;
+    boolean clearCart(int cartId, Connection conn) throws SQLException;
     
     /**
      * Count total items in cart
@@ -147,7 +147,7 @@ public interface CartItemDAO {
      * @return Total number of items
      * @throws SQLException if database error occurs
      */
-    int countCartItems(long cartId) throws SQLException;
+    int countCartItems(int cartId) throws SQLException;
     
     /**
      * Validate if requested quantity is available in stock

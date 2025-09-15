@@ -4,7 +4,6 @@ import com.utephonehub.model.auth.PasswordResetToken;
 import com.utephonehub.util.DBUtil;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.Optional;
 
 public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
@@ -13,14 +12,14 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     public PasswordResetToken create(PasswordResetToken token) throws SQLException {
         String sql = "INSERT INTO password_reset_tokens(user_id, token, expiry_date) VALUES(?,?,?) RETURNING id, created_at";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, token.getUserId());
+            ps.setInt(1, token.getUserId());
             ps.setString(2, token.getToken());
-            ps.setTimestamp(3, Timestamp.from(token.getExpiryDate()));
+            ps.setTimestamp(3, token.getExpiryDate());
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    token.setId(rs.getLong("id"));
+                    token.setId(rs.getInt("id"));
                     Timestamp cAt = rs.getTimestamp("created_at");
-                    token.setCreatedAt(cAt != null ? cAt.toInstant() : Instant.now());
+                    token.setCreatedAt(cAt != null ? cAt : new Timestamp(System.currentTimeMillis()));
                 }
             }
             return token;
@@ -40,10 +39,10 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     }
 
     @Override
-    public Optional<PasswordResetToken> findByUserId(long userId) throws SQLException {
+    public Optional<PasswordResetToken> findByUserId(int userId) throws SQLException {
         String sql = "SELECT id, user_id, token, expiry_date, created_at FROM password_reset_tokens WHERE user_id = ? ORDER BY created_at DESC LIMIT 1";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, userId);
+            ps.setInt(1, userId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return Optional.empty();
                 return Optional.of(mapRow(rs));
@@ -52,19 +51,19 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
     }
 
     @Override
-    public int delete(long id) throws SQLException {
+    public int delete(int id) throws SQLException {
         String sql = "DELETE FROM password_reset_tokens WHERE id = ?";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             return ps.executeUpdate();
         }
     }
 
     @Override
-    public int deleteByUserId(long userId) throws SQLException {
+    public int deleteByUserId(int userId) throws SQLException {
         String sql = "DELETE FROM password_reset_tokens WHERE user_id = ?";
         try (Connection con = DBUtil.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setLong(1, userId);
+            ps.setInt(1, userId);
             return ps.executeUpdate();
         }
     }
@@ -79,13 +78,13 @@ public class PasswordResetTokenDaoImpl implements PasswordResetTokenDao {
 
     private PasswordResetToken mapRow(ResultSet rs) throws SQLException {
         PasswordResetToken token = new PasswordResetToken();
-        token.setId(rs.getLong("id"));
-        token.setUserId(rs.getLong("user_id"));
+        token.setId(rs.getInt("id"));
+        token.setUserId(rs.getInt("user_id"));
         token.setToken(rs.getString("token"));
         Timestamp expiry = rs.getTimestamp("expiry_date");
         Timestamp cAt = rs.getTimestamp("created_at");
-        token.setExpiryDate(expiry != null ? expiry.toInstant() : null);
-        token.setCreatedAt(cAt != null ? cAt.toInstant() : null);
+        token.setExpiryDate(expiry != null ? expiry : null);
+        token.setCreatedAt(cAt != null ? cAt : null);
         return token;
     }
 }

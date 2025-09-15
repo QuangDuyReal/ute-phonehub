@@ -7,12 +7,12 @@ import java.util.Optional;
 import com.utephonehub.model.address.Address;
 
 public interface AddressDao {
-    List<Address> findAllByUser(long userId) throws SQLException;
-    Optional<Address> findByIdAndUser(long id, long userId) throws SQLException;
+    List<Address> findAllByUser(int userId) throws SQLException;
+    Optional<Address> findByIdAndUser(int id, int userId) throws SQLException;
     Address create(Address address) throws SQLException;
     int update(Address address) throws SQLException;
-    int delete(long id, long userId) throws SQLException;
-    int unsetDefaultForUser(long userId) throws SQLException;
+    int delete(int id, int userId) throws SQLException;
+    int unsetDefaultForUser(int userId) throws SQLException;
 }
 
 

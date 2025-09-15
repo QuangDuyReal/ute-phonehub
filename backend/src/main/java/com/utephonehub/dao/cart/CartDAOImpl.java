@@ -4,7 +4,6 @@ import com.utephonehub.model.cart.Cart;
 import com.utephonehub.util.DBUtil;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,12 +15,12 @@ import java.util.Optional;
 public class CartDAOImpl implements CartDAO {
     
     @Override
-    public Long create(Cart cart) throws SQLException {
+    public Integer create(Cart cart) throws SQLException {
         return create(cart, null);
     }
     
     @Override
-    public Long create(Cart cart, Connection conn) throws SQLException {
+    public Integer create(Cart cart, Connection conn) throws SQLException {
         String sql = "INSERT INTO carts (user_id, created_at, updated_at) VALUES (?, ?, ?) RETURNING id";
         
         boolean shouldCloseConnection = (conn == null);
@@ -30,13 +29,13 @@ public class CartDAOImpl implements CartDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, cart.getUserId());
-            ps.setTimestamp(2, Timestamp.from(cart.getCreatedAt()));
-            ps.setTimestamp(3, Timestamp.from(cart.getUpdatedAt()));
+            ps.setInt(1, cart.getUserId());
+            ps.setTimestamp(2, cart.getCreatedAt());
+            ps.setTimestamp(3, cart.getUpdatedAt());
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    long generatedId = rs.getLong(1);
+                    int generatedId = rs.getInt(1);
                     cart.setId(generatedId);
                     return generatedId;
                 }
@@ -50,12 +49,12 @@ public class CartDAOImpl implements CartDAO {
     }
     
     @Override
-    public Cart findById(Long id) throws SQLException {
+    public Cart findById(Integer id) throws SQLException {
         Optional<Cart> cart = findByIdOptional(id, null);
         return cart.orElse(null);
     }
     
-    public Optional<Cart> findByIdOptional(Long id, Connection conn) throws SQLException {
+    public Optional<Cart> findByIdOptional(Integer id, Connection conn) throws SQLException {
         String sql = "SELECT id, user_id, created_at, updated_at FROM carts WHERE id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -64,7 +63,7 @@ public class CartDAOImpl implements CartDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -122,12 +121,12 @@ public class CartDAOImpl implements CartDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, Timestamp.from(Instant.now()));
-            ps.setLong(2, cart.getId());
+            ps.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
+            ps.setInt(2, cart.getId());
             
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
-                cart.setUpdatedAt(Instant.now());
+                cart.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
                 return true;
             }
             return false;
@@ -139,12 +138,12 @@ public class CartDAOImpl implements CartDAO {
     }
     
     @Override
-    public boolean delete(Long id) throws SQLException {
+    public boolean delete(Integer id) throws SQLException {
         return delete(id, null);
     }
     
     @Override
-    public boolean delete(Long id, Connection conn) throws SQLException {
+    public boolean delete(Integer id, Connection conn) throws SQLException {
         String sql = "DELETE FROM carts WHERE id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -153,7 +152,7 @@ public class CartDAOImpl implements CartDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             return ps.executeUpdate() > 0;
         } finally {
             if (shouldCloseConnection && conn != null) {
@@ -163,16 +162,16 @@ public class CartDAOImpl implements CartDAO {
     }
     
     @Override
-    public Optional<Cart> findByUserId(long userId) throws SQLException {
+    public Optional<Cart> findByUserId(int userId) throws SQLException {
         return findByUserId(userId, null);
     }
     
     @Override
-    public Optional<Cart> findByUserId(long userId, Connection conn) throws SQLException {
+    public Optional<Cart> findByUserId(int userId, Connection conn) throws SQLException {
         return findByUserIdOptional(userId, conn);
     }
     
-    private Optional<Cart> findByUserIdOptional(long userId, Connection conn) throws SQLException {
+    private Optional<Cart> findByUserIdOptional(int userId, Connection conn) throws SQLException {
         String sql = "SELECT id, user_id, created_at, updated_at FROM carts WHERE user_id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -181,7 +180,7 @@ public class CartDAOImpl implements CartDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, userId);
+            ps.setInt(1, userId);
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -197,12 +196,12 @@ public class CartDAOImpl implements CartDAO {
     }
     
     @Override
-    public Cart getOrCreateCartForUser(long userId) throws SQLException {
+    public Cart getOrCreateCartForUser(int userId) throws SQLException {
         return getOrCreateCartForUser(userId, null);
     }
     
     @Override
-    public Cart getOrCreateCartForUser(long userId, Connection conn) throws SQLException {
+    public Cart getOrCreateCartForUser(int userId, Connection conn) throws SQLException {
         // First try to find existing cart
         Optional<Cart> existingCart = findByUserIdOptional(userId, conn);
         if (existingCart.isPresent()) {
@@ -216,12 +215,12 @@ public class CartDAOImpl implements CartDAO {
     }
     
     @Override
-    public void updateTimestamp(long cartId) throws SQLException {
+    public void updateTimestamp(int cartId) throws SQLException {
         updateTimestamp(cartId, null);
     }
     
     @Override
-    public void updateTimestamp(long cartId, Connection conn) throws SQLException {
+    public void updateTimestamp(int cartId, Connection conn) throws SQLException {
         String sql = "UPDATE carts SET updated_at = NOW() WHERE id = ?";
         
         boolean shouldCloseConnection = (conn == null);
@@ -230,7 +229,7 @@ public class CartDAOImpl implements CartDAO {
         }
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, cartId);
+            ps.setInt(1, cartId);
             ps.executeUpdate();
         } finally {
             if (shouldCloseConnection && conn != null) {
@@ -244,10 +243,10 @@ public class CartDAOImpl implements CartDAO {
      */
     private Cart mapResultSetToCart(ResultSet rs) throws SQLException {
         Cart cart = new Cart();
-        cart.setId(rs.getLong("id"));
-        cart.setUserId(rs.getLong("user_id"));
-        cart.setCreatedAt(rs.getTimestamp("created_at").toInstant());
-        cart.setUpdatedAt(rs.getTimestamp("updated_at").toInstant());
+        cart.setId(rs.getInt("id"));
+        cart.setUserId(rs.getInt("user_id"));
+        cart.setCreatedAt(rs.getTimestamp("created_at"));
+        cart.setUpdatedAt(rs.getTimestamp("updated_at"));
         return cart;
     }
     
@@ -277,12 +276,12 @@ public class CartDAOImpl implements CartDAO {
     }
     
     @Override
-    public boolean exists(Long id) throws SQLException {
+    public boolean exists(Integer id) throws SQLException {
         String sql = "SELECT 1 FROM carts WHERE id = ?";
         
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setInt(1, id);
             
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();

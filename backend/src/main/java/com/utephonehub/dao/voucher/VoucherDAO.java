@@ -1,6 +1,7 @@
 package com.utephonehub.dao.voucher;
 
 import com.utephonehub.model.voucher.Voucher;
+import com.utephonehub.model.voucher.DiscountType;
 import com.utephonehub.util.DBUtil; // Sử dụng DBContext của Hưng
 
 import java.sql.Connection;
@@ -18,8 +19,8 @@ public class VoucherDAO {
         Voucher voucher = new Voucher();
         voucher.setId(rs.getInt("id"));
         voucher.setCode(rs.getString("code"));
-        // Cần lấy giá trị của Enum từ DB dưới dạng String
-        voucher.setDiscountType(rs.getString("discount_type")); 
+        // Cần lấy giá trị của Enum từ DB dưới dạng String và convert sang DiscountType
+        voucher.setDiscountType(DiscountType.fromDatabase(rs.getString("discount_type"))); 
         voucher.setDiscountValue(rs.getBigDecimal("discount_value"));
         voucher.setMaxUsage(rs.getInt("max_usage"));
         voucher.setCurrentUsage(rs.getInt("current_usage"));

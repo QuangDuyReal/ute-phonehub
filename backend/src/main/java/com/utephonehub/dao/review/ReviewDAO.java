@@ -50,7 +50,7 @@ public class ReviewDAO {
                 ReviewDTO dto = new ReviewDTO(
                         rs.getInt("rating"),
                         rs.getString("comment"),
-                        rs.getTimestamp("created_at").toInstant(),
+                        rs.getTimestamp("created_at"),
                         rs.getString("full_name")
                 );
                 list.add(dto);

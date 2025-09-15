@@ -5,7 +5,6 @@ import com.utephonehub.dto.review.ReviewDTO;
 import com.utephonehub.util.DBUtil;
 
 import java.sql.*;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,8 +34,8 @@ public class ReviewDAOImpl implements ReviewDAOInterface {
             ps.setInt(2, review.getProductId());
             ps.setInt(3, review.getRating());
             ps.setString(4, review.getComment());
-            ps.setTimestamp(5, Timestamp.from(review.getCreatedAt()));
-            ps.setTimestamp(6, Timestamp.from(review.getUpdatedAt()));
+            ps.setTimestamp(5, review.getCreatedAt());
+            ps.setTimestamp(6, review.getUpdatedAt());
             
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -128,7 +127,7 @@ public class ReviewDAOImpl implements ReviewDAOInterface {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, review.getRating());
             ps.setString(2, review.getComment());
-            ps.setTimestamp(3, Timestamp.from(Instant.now()));
+            ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             ps.setInt(4, review.getId());
             
             return ps.executeUpdate() > 0;
@@ -245,7 +244,7 @@ public class ReviewDAOImpl implements ReviewDAOInterface {
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, rating);
             ps.setString(2, comment);
-            ps.setTimestamp(3, Timestamp.from(Instant.now()));
+            ps.setTimestamp(3, new Timestamp(System.currentTimeMillis()));
             ps.setInt(4, reviewId);
             
             return ps.executeUpdate() > 0;
@@ -287,7 +286,7 @@ public class ReviewDAOImpl implements ReviewDAOInterface {
                         productId,
                         rs.getInt("rating"),
                         rs.getString("comment"),
-                        rs.getTimestamp("created_at").toInstant(),
+                        rs.getTimestamp("created_at"),
                         rs.getString("full_name")
                     );
                     reviews.add(dto);
@@ -386,8 +385,8 @@ public class ReviewDAOImpl implements ReviewDAOInterface {
             rs.getInt("user_id"),
             rs.getInt("rating"),
             rs.getString("comment"),
-            rs.getTimestamp("created_at").toInstant(),
-            rs.getTimestamp("updated_at").toInstant()
+            rs.getTimestamp("created_at"),
+            rs.getTimestamp("updated_at")
         );
     }
     

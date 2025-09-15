@@ -1,6 +1,6 @@
 package com.utephonehub.model.cart;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a cart item. Mirrors the `cart_items` table.
@@ -8,23 +8,23 @@ import java.time.Instant;
  */
 public class CartItem {
     
-    private long cartId;
+    private int cartId;
     private int productId;
     private int quantity;
-    private Instant addedAt;
+    private Timestamp addedAt;
     
     // Constructors
     public CartItem() {
     }
     
-    public CartItem(long cartId, int productId, int quantity) {
+    public CartItem(int cartId, int productId, int quantity) {
         this.cartId = cartId;
         this.productId = productId;
         this.quantity = quantity;
-        this.addedAt = Instant.now();
+        this.addedAt = new Timestamp(System.currentTimeMillis());
     }
     
-    public CartItem(long cartId, int productId, int quantity, Instant addedAt) {
+    public CartItem(int cartId, int productId, int quantity, Timestamp addedAt) {
         this.cartId = cartId;
         this.productId = productId;
         this.quantity = quantity;
@@ -32,11 +32,11 @@ public class CartItem {
     }
     
     // Getters and Setters
-    public long getCartId() {
+    public int getCartId() {
         return cartId;
     }
     
-    public void setCartId(long cartId) {
+    public void setCartId(int cartId) {
         this.cartId = cartId;
     }
     
@@ -56,11 +56,11 @@ public class CartItem {
         this.quantity = quantity;
     }
     
-    public Instant getAddedAt() {
+    public Timestamp getAddedAt() {
         return addedAt;
     }
     
-    public void setAddedAt(Instant addedAt) {
+    public void setAddedAt(Timestamp addedAt) {
         this.addedAt = addedAt;
     }
     

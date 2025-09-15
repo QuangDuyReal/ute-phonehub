@@ -5,7 +5,8 @@ package com.utephonehub.model.user;
  */
 public enum UserStatus {
     active,
-    locked;
+    locked,
+    disabled;
 
     public static UserStatus fromDatabase(String value) {
         if (value == null) return active;

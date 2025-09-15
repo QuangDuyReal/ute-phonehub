@@ -1,6 +1,6 @@
 package com.utephonehub.model.review;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a product review. Mirrors the `reviews` table.
@@ -12,8 +12,8 @@ public class Review {
     private int userId;
     private int rating;  // CHECK constraint: 1-5
     private String comment;
-    private Instant createdAt;  // Changed from Timestamp to Instant
-    private Instant updatedAt;  // Added missing field from database schema
+    private Timestamp createdAt;  // Changed from Instant to Timestamp for JDBC compatibility
+    private Timestamp updatedAt;  // Added missing field from database schema
 
     // Constructors
     public Review() {}
@@ -23,11 +23,11 @@ public class Review {
         this.userId = userId;
         this.setRating(rating);  // Use setter for validation
         this.comment = comment;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
 
-    public Review(int id, int productId, int userId, int rating, String comment, Instant createdAt, Instant updatedAt) {
+    public Review(int id, int productId, int userId, int rating, String comment, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.productId = productId;
         this.userId = userId;
@@ -82,19 +82,19 @@ public class Review {
         this.comment = comment; 
     }
 
-    public Instant getCreatedAt() { 
+    public Timestamp getCreatedAt() { 
         return createdAt; 
     }
     
-    public void setCreatedAt(Instant createdAt) { 
+    public void setCreatedAt(Timestamp createdAt) { 
         this.createdAt = createdAt; 
     }
     
-    public Instant getUpdatedAt() { 
+    public Timestamp getUpdatedAt() { 
         return updatedAt; 
     }
     
-    public void setUpdatedAt(Instant updatedAt) { 
+    public void setUpdatedAt(Timestamp updatedAt) { 
         this.updatedAt = updatedAt; 
     }
     

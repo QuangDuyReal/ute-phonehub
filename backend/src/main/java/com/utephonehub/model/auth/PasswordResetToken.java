@@ -1,31 +1,51 @@
 package com.utephonehub.model.auth;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a password reset token. Mirrors the `password_reset_tokens` table.
  */
 public class PasswordResetToken {
 
-    private long id;
-    private long userId;
+    private int id;
+    private int userId;
     private String token;
-    private Instant expiryDate;
-    private Instant createdAt;
+    private Timestamp expiryDate;
+    private Timestamp createdAt;
 
-    public long getId() {
+    // Constructors
+    public PasswordResetToken() {
+    }
+
+    public PasswordResetToken(int userId, String token, Timestamp expiryDate) {
+        this.userId = userId;
+        this.token = token;
+        this.expiryDate = expiryDate;
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+    }
+
+    public PasswordResetToken(int id, int userId, String token, Timestamp expiryDate, Timestamp createdAt) {
+        this.id = id;
+        this.userId = userId;
+        this.token = token;
+        this.expiryDate = expiryDate;
+        this.createdAt = createdAt;
+    }
+
+    // Getters and Setters
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -37,23 +57,35 @@ public class PasswordResetToken {
         this.token = token;
     }
 
-    public Instant getExpiryDate() {
+    public Timestamp getExpiryDate() {
         return expiryDate;
     }
 
-    public void setExpiryDate(Instant expiryDate) {
+    public void setExpiryDate(Timestamp expiryDate) {
         this.expiryDate = expiryDate;
     }
 
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
     public boolean isExpired() {
-        return Instant.now().isAfter(expiryDate);
+        return new Timestamp(System.currentTimeMillis()).after(expiryDate);
+    }
+
+    @Override
+    public String toString() {
+        return "PasswordResetToken{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", token='" + token + '\'' +
+                ", expiryDate=" + expiryDate +
+                ", createdAt=" + createdAt +
+                ", expired=" + isExpired() +
+                '}';
     }
 }

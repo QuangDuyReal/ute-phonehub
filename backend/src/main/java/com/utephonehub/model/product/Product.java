@@ -12,11 +12,14 @@ public class Product {
     private int categoryId;
     private int brandId;
     private String specifications; // JSON string for product technical specifications
+    private boolean status = true; // Product status (true = active, false = inactive)
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
     // Constructors, Getters, and Setters...
-    public Product() {}
+    public Product() {
+        this.status = true; // Default status - active
+    }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -34,6 +37,10 @@ public class Product {
     public void setBrandId(int brandId) { this.brandId = brandId; }
     public String getSpecifications() { return specifications; }
     public void setSpecifications(String specifications) { this.specifications = specifications; }
+    public boolean getStatus() { return status; }
+    public void setStatus(boolean status) { this.status = status; }
+    public boolean isActive() { return status; }
+    public void setActive(boolean active) { this.status = active; }
     public Timestamp getCreatedAt() { return createdAt; }
     public void setCreatedAt(Timestamp createdAt) { this.createdAt = createdAt; }
     public Timestamp getUpdatedAt() { return updatedAt; }

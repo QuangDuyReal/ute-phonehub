@@ -1,6 +1,6 @@
 package com.utephonehub.model.cart;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a shopping cart. Mirrors the `carts` table.
@@ -8,22 +8,22 @@ import java.time.Instant;
  */
 public class Cart {
     
-    private long id;
-    private long userId;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private int id;
+    private int userId;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     
     // Constructors
     public Cart() {
     }
     
-    public Cart(long userId) {
+    public Cart(int userId) {
         this.userId = userId;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
     
-    public Cart(long id, long userId, Instant createdAt, Instant updatedAt) {
+    public Cart(int id, int userId, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.userId = userId;
         this.createdAt = createdAt;
@@ -31,35 +31,35 @@ public class Cart {
     }
     
     // Getters and Setters
-    public long getId() {
+    public int getId() {
         return id;
     }
     
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
     
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
     
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
     
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
     
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
     
-    public Instant getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
     
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
     

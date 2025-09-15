@@ -2,22 +2,27 @@ package com.utephonehub.model.order;
 
 /**
  * Enum representing different states of an Order
+ * Mirrors the `order_status` enum in PostgreSQL database
  */
 public enum OrderStatus {
-    PENDING("pending"),
-    PROCESSING("processing"), 
-    SHIPPED("shipped"),
-    COMPLETED("completed"),
-    CANCELLED("cancelled");
+    pending("pending"),
+    processing("processing"), 
+    shipped("shipped"),
+    completed("completed"),
+    cancelled("cancelled");
 
-    private final String displayName;
+    private final String dbValue;
 
-    OrderStatus(String displayName) {
-        this.displayName = displayName;
+    OrderStatus(String dbValue) {
+        this.dbValue = dbValue;
     }
 
+    public String getDbValue() {
+        return dbValue;
+    }
+    
     public String getDisplayName() {
-        return displayName;
+        return dbValue;
     }
 
     /**
@@ -25,14 +30,37 @@ public enum OrderStatus {
      */
     public static OrderStatus fromString(String status) {
         if (status == null) {
-            return PENDING;
+            return pending;
         }
         
         try {
-            return OrderStatus.valueOf(status.toUpperCase());
+            return OrderStatus.valueOf(status.toLowerCase());
         } catch (IllegalArgumentException e) {
-            return PENDING;
+            return pending;
         }
+    }
+    
+    /**
+     * Convert database string value to enum
+     */
+    public static OrderStatus fromDatabase(String value) {
+        if (value == null) {
+            return pending;
+        }
+        
+        for (OrderStatus status : values()) {
+            if (status.dbValue.equals(value)) {
+                return status;
+            }
+        }
+        return pending; // default fallback
+    }
+    
+    /**
+     * Convert enum to database string value
+     */
+    public String toDatabase() {
+        return this.dbValue;
     }
 
     /**
@@ -40,12 +68,12 @@ public enum OrderStatus {
      */
     public String getVietnameseDisplayName() {
         switch (this) {
-            case PENDING: return "Chờ xử lý";
-            case PROCESSING: return "Đang xử lý";
-            case SHIPPED: return "Đang giao hàng";
-            case COMPLETED: return "Hoàn thành";
-            case CANCELLED: return "Đã hủy";
-            default: return displayName;
+            case pending: return "Chờ xử lý";
+            case processing: return "Đang xử lý";
+            case shipped: return "Đang giao hàng";
+            case completed: return "Hoàn thành";
+            case cancelled: return "Đã hủy";
+            default: return dbValue;
         }
     }
 }

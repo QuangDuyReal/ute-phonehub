@@ -1,27 +1,27 @@
 package com.utephonehub.model.user;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a user account. Mirrors the `users` table.
  */
 public class User {
 
-    private long id;
+    private int id;
     private String fullName;
     private String email;
     private String passwordHash;
     private String phoneNumber;
     private UserRole role;
     private UserStatus status;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -73,19 +73,19 @@ public class User {
         this.status = status;
     }
 
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

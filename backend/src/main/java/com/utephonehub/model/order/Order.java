@@ -9,27 +9,29 @@ import java.sql.Timestamp;
  */
 public class Order {
     private int id;
-    private int userId;
+    private Integer userId;
     private Timestamp orderDate;
     private OrderStatus status;
     private BigDecimal totalAmount;
     private String shippingAddress;
     private String recipientName;
     private String recipientPhone;
+    private String email; // Email for order confirmation
     private Integer voucherId;
 
     // Default constructor
     public Order() {}
 
     // Constructor with essential fields
-    public Order(int userId, BigDecimal totalAmount, String shippingAddress, 
-                 String recipientName, String recipientPhone) {
+    public Order(Integer userId, BigDecimal totalAmount, String shippingAddress, 
+                 String recipientName, String recipientPhone, String email, OrderStatus status) {
         this.userId = userId;
         this.totalAmount = totalAmount;
         this.shippingAddress = shippingAddress;
         this.recipientName = recipientName;
         this.recipientPhone = recipientPhone;
-        this.status = OrderStatus.PENDING;
+        this.email = email;
+        this.status = OrderStatus.pending;
         this.orderDate = new Timestamp(System.currentTimeMillis());
     }
 
@@ -42,11 +44,11 @@ public class Order {
         this.id = id;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -98,6 +100,14 @@ public class Order {
         this.recipientPhone = recipientPhone;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public Integer getVoucherId() {
         return voucherId;
     }
@@ -117,6 +127,7 @@ public class Order {
                 ", shippingAddress='" + shippingAddress + '\'' +
                 ", recipientName='" + recipientName + '\'' +
                 ", recipientPhone='" + recipientPhone + '\'' +
+                ", email='" + email + '\'' +
                 ", voucherId=" + voucherId +
                 '}';
     }

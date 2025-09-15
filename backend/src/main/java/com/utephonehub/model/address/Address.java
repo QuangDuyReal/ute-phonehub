@@ -1,35 +1,35 @@
 package com.utephonehub.model.address;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a user address. Mirrors the `addresses` table.
  */
 public class Address {
 
-    private long id;
-    private long userId;
+    private int id;
+    private int userId;
     private String recipientName;
     private String phoneNumber;
     private String streetAddress;
     private String city;
     private boolean isDefault;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public long getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
@@ -73,19 +73,19 @@ public class Address {
         isDefault = aDefault;
     }
 
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Instant getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 }

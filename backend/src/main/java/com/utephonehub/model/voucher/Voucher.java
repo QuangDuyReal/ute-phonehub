@@ -7,7 +7,7 @@ public class Voucher {
 
     private int id;
     private String code;
-    private String discountType; // 'percentage' hoặc 'fixed_amount'
+    private DiscountType discountType; // 'percentage' hoặc 'fixed_amount'
     private BigDecimal discountValue;
     private int maxUsage;
     private int currentUsage;
@@ -40,11 +40,11 @@ public class Voucher {
         this.code = code;
     }
 
-    public String getDiscountType() {
+    public DiscountType getDiscountType() {
         return discountType;
     }
 
-    public void setDiscountType(String discountType) {
+    public void setDiscountType(DiscountType discountType) {
         this.discountType = discountType;
     }
 

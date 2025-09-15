@@ -1,6 +1,6 @@
 package com.utephonehub.model.product;
 
-import java.time.Instant;
+import java.sql.Timestamp;
 
 /**
  * Domain model representing a product image. Mirrors the `product_images` table.
@@ -8,29 +8,29 @@ import java.time.Instant;
  */
 public class ProductImage {
     
-    private long id;
-    private long productId;
+    private int id;
+    private int productId;
     private String imageUrl;
     private boolean isThumbnail;
     private long displayOrder;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private Timestamp createdAt;
+    private Timestamp updatedAt;
     
     // Constructors
     public ProductImage() {
     }
     
-    public ProductImage(long productId, String imageUrl, boolean isThumbnail, long displayOrder) {
+    public ProductImage(int productId, String imageUrl, boolean isThumbnail, long displayOrder) {
         this.productId = productId;
         this.imageUrl = imageUrl;
         this.isThumbnail = isThumbnail;
         this.displayOrder = displayOrder;
-        this.createdAt = Instant.now();
-        this.updatedAt = Instant.now();
+        this.createdAt = new Timestamp(System.currentTimeMillis());
+        this.updatedAt = new Timestamp(System.currentTimeMillis());
     }
     
-    public ProductImage(long id, long productId, String imageUrl, boolean isThumbnail, 
-                       long displayOrder, Instant createdAt, Instant updatedAt) {
+    public ProductImage(int id, int productId, String imageUrl, boolean isThumbnail, 
+                       long displayOrder, Timestamp createdAt, Timestamp updatedAt) {
         this.id = id;
         this.productId = productId;
         this.imageUrl = imageUrl;
@@ -41,19 +41,19 @@ public class ProductImage {
     }
     
     // Getters and Setters
-    public long getId() {
+    public int getId() {
         return id;
     }
     
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
     
-    public long getProductId() {
+    public int getProductId() {
         return productId;
     }
     
-    public void setProductId(long productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
     
@@ -81,19 +81,19 @@ public class ProductImage {
         this.displayOrder = displayOrder;
     }
     
-    public Instant getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
     
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
     
-    public Instant getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
     
-    public void setUpdatedAt(Instant updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
     

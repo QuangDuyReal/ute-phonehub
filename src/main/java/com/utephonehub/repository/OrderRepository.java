@@ -1,0 +1,125 @@
+package com.utephonehub.repository;
+
+import com.utephonehub.config.DatabaseConfig;
+import com.utephonehub.entity.Order;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.NoResultException;
+
+import java.util.List;
+import java.util.Optional;
+
+public class OrderRepository {
+    
+    public Order save(Order order) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            if (order.getId() == null) {
+                em.persist(order);
+            } else {
+                order = em.merge(order);
+            }
+            tx.commit();
+            return order;
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public Optional<Order> findById(Long orderId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Order order = em.createQuery(
+                "SELECT o FROM Order o " +
+                "LEFT JOIN FETCH o.items oi " +
+                "LEFT JOIN FETCH oi.product p " +
+                "LEFT JOIN FETCH p.category " +
+                "LEFT JOIN FETCH p.brand " +
+                "LEFT JOIN FETCH o.voucher " +
+                "WHERE o.id = :orderId", Order.class)
+                .setParameter("orderId", orderId)
+                .getSingleResult();
+            return Optional.of(order);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public Optional<Order> findByOrderCodeAndEmail(String orderCode, String email) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Order order = em.createQuery(
+                "SELECT o FROM Order o " +
+                "LEFT JOIN FETCH o.items oi " +
+                "LEFT JOIN FETCH oi.product p " +
+                "LEFT JOIN FETCH p.category " +
+                "LEFT JOIN FETCH p.brand " +
+                "LEFT JOIN FETCH o.voucher " +
+                "WHERE o.orderCode = :orderCode AND o.email = :email", Order.class)
+                .setParameter("orderCode", orderCode)
+                .setParameter("email", email)
+                .getSingleResult();
+            return Optional.of(order);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public List<Order> findByUserId(Long userId, int page, int limit) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT o FROM Order o " +
+                "WHERE o.user.id = :userId " +
+                "ORDER BY o.createdAt DESC", Order.class)
+                .setParameter("userId", userId)
+                .setFirstResult((page - 1) * limit)
+                .setMaxResults(limit)
+                .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public long countByUserId(Long userId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT COUNT(o) FROM Order o WHERE o.user.id = :userId", Long.class)
+                .setParameter("userId", userId)
+                .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public String generateOrderCode() {
+        // Format: UTEHUB-timestamp
+        long timestamp = System.currentTimeMillis() / 1000;
+        return "UTEHUB-" + timestamp;
+    }
+    
+    public List<Order> findAll() {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT o FROM Order o " +
+                "LEFT JOIN FETCH o.user " +
+                "ORDER BY o.createdAt DESC", Order.class)
+                .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+}

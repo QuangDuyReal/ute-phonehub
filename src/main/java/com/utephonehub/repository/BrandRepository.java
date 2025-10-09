@@ -1,0 +1,128 @@
+package com.utephonehub.repository;
+
+import com.utephonehub.entity.Brand;
+import com.utephonehub.config.DatabaseConfig;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Repository for Brand entity
+ */
+public class BrandRepository {
+    
+    private static final Logger logger = LogManager.getLogger(BrandRepository.class);
+    
+    /**
+     * Find all brands
+     */
+    public List<Brand> findAll() {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            TypedQuery<Brand> query = em.createQuery(
+                "SELECT b FROM Brand b ORDER BY b.name ASC", 
+                Brand.class
+            );
+            return query.getResultList();
+        } catch (Exception e) {
+            logger.error("Error finding all brands", e);
+            throw new RuntimeException("Error finding all brands", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
+     * Find brand by ID
+     */
+    public Optional<Brand> findById(Long id) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Brand brand = em.find(Brand.class, id);
+            return Optional.ofNullable(brand);
+        } catch (Exception e) {
+            logger.error("Error finding brand by id: {}", id, e);
+            throw new RuntimeException("Error finding brand", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
+     * Save brand
+     */
+    public Brand save(Brand brand) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            DatabaseConfig.beginTransaction();
+            
+            if (brand.getId() == null) {
+                em.persist(brand);
+            } else {
+                brand = em.merge(brand);
+            }
+            
+            DatabaseConfig.commitTransaction();
+            return brand;
+        } catch (Exception e) {
+            DatabaseConfig.rollbackTransaction();
+            logger.error("Error saving brand", e);
+            throw new RuntimeException("Error saving brand", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
+     * Delete brand
+     */
+    public void delete(Long id) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            DatabaseConfig.beginTransaction();
+            Brand brand = em.find(Brand.class, id);
+            if (brand != null) {
+                em.remove(brand);
+            }
+            DatabaseConfig.commitTransaction();
+        } catch (Exception e) {
+            DatabaseConfig.rollbackTransaction();
+            logger.error("Error deleting brand with id: {}", id, e);
+            throw new RuntimeException("Error deleting brand", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
+     * Delete brand by ID
+     */
+    public void deleteById(Long id) {
+        delete(id);
+    }
+    
+    /**
+     * Find brand by name
+     */
+    public Optional<Brand> findByName(String name) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            TypedQuery<Brand> query = em.createQuery(
+                "SELECT b FROM Brand b WHERE b.name = :name", 
+                Brand.class
+            );
+            query.setParameter("name", name);
+            List<Brand> results = query.getResultList();
+            return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
+        } catch (Exception e) {
+            logger.error("Error finding brand by name: {}", name, e);
+            throw new RuntimeException("Error finding brand by name", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+}

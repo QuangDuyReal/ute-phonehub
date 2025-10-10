@@ -847,6 +847,42 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
 
     <!-- User Account JavaScript -->
     <script>
+      // Handle OAuth callback - extract access token from cookie and store in localStorage
+      (function handleOAuthCallback() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const oauthSuccess = urlParams.get("oauth_success");
+        
+        if (oauthSuccess === "true") {
+          // Read access token from cookie
+          const cookies = document.cookie.split(';');
+          let accessToken = null;
+          
+          for (let cookie of cookies) {
+            const [name, value] = cookie.trim().split('=');
+            if (name === 'accessToken') {
+              accessToken = value;
+              break;
+            }
+          }
+          
+          if (accessToken) {
+            // Store access token in localStorage
+            localStorage.setItem("accessToken", accessToken);
+            
+            // Delete access token cookie (we only use localStorage for access token)
+            document.cookie = "accessToken=; Path=/; Max-Age=0";
+            
+            // Clean URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            
+            // Reload to fetch user info via checkUserLogin()
+            window.location.reload();
+          } else {
+            console.error("No access token found in cookie after OAuth");
+          }
+        }
+      })();
+      
       // Check if user is logged in
       function checkUserLogin() {
         const token = localStorage.getItem("accessToken");

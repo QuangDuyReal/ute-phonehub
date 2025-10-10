@@ -252,7 +252,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
     <!-- Auth functions (logout, refresh token, etc) -->
     <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
-    
+
     <script src="${pageContext.request.contextPath}/static/js/profile.js"></script>
 
     <!-- Logout Handler -->

@@ -18,7 +18,7 @@ import java.util.Map;
  * Health Check Controller
  * Kiểm tra trạng thái hệ thống
  */
-// @WebServlet("/api/v1/health") // Using web.xml mapping instead
+@WebServlet("/api/v1/health")
 public class HealthController extends HttpServlet {
     
     private static final Logger logger = LogManager.getLogger(HealthController.class);

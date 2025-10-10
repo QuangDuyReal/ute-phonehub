@@ -4,6 +4,7 @@ import com.utephonehub.dto.response.BrandResponse;
 import com.utephonehub.service.BrandService;
 import com.utephonehub.util.JsonUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import java.util.Map;
  * Controller for Brand operations
  * Handles public endpoints for brands
  */
+@WebServlet("/api/v1/brands")
 public class BrandController extends HttpServlet {
     
     private static final Logger logger = LogManager.getLogger(BrandController.class);
@@ -34,23 +36,73 @@ public class BrandController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
             throws ServletException, IOException {
         
-        logger.info("BrandController GET request");
+        String pathInfo = request.getPathInfo();
+        logger.info("BrandController GET request: {}", pathInfo);
         
         try {
+            // GET /api/v1/brands/{id} - Get brand by ID
+            if (pathInfo != null && !pathInfo.equals("/")) {
+                handleGetBrandById(request, response, pathInfo);
+            } 
             // GET /api/v1/brands - Get all brands
-            List<BrandResponse> brands = brandService.getAllBrands();
-            
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("success", true);
-            responseData.put("message", "Lấy danh sách thương hiệu thành công.");
-            responseData.put("data", brands);
-            
-            sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+            else {
+                handleGetAllBrands(request, response);
+            }
             
         } catch (Exception e) {
             logger.error("Error in BrandController", e);
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
-                "Lỗi khi lấy danh sách thương hiệu");
+                "Lỗi khi xử lý yêu cầu");
+        }
+    }
+    
+    /**
+     * Handle GET /api/v1/brands - Get all brands
+     */
+    private void handleGetAllBrands(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        List<BrandResponse> brands = brandService.getAllBrands();
+        
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("success", true);
+        responseData.put("message", "Lấy danh sách thương hiệu thành công.");
+        responseData.put("data", brands);
+        
+        sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+    }
+    
+    /**
+     * Handle GET /api/v1/brands/{id} - Get brand by ID
+     */
+    private void handleGetBrandById(HttpServletRequest request, HttpServletResponse response, String pathInfo) 
+            throws IOException {
+        
+        try {
+            // Extract brand ID from path
+            String brandIdStr = pathInfo.substring(1); // Remove leading "/"
+            Long brandId = Long.parseLong(brandIdStr);
+            
+            // Get brand by ID
+            BrandResponse brand = brandService.getBrandById(brandId);
+            
+            if (brand == null) {
+                sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, 
+                    "Không tìm thấy thương hiệu với ID: " + brandId);
+                return;
+            }
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("success", true);
+            responseData.put("message", "Lấy thông tin thương hiệu thành công.");
+            responseData.put("data", brand);
+            
+            sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+            
+        } catch (NumberFormatException e) {
+            logger.error("Invalid brand ID format: {}", pathInfo, e);
+            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
+                "ID thương hiệu không hợp lệ");
         }
     }
     

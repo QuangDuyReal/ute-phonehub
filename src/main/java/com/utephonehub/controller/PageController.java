@@ -1,6 +1,7 @@
 package com.utephonehub.controller;
 
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import java.io.IOException;
  * Page Controller
  * Handle routing cho các trang view (login, profile, etc.)
  */
+@WebServlet(urlPatterns = {"/login", "/profile"})
 public class PageController extends HttpServlet {
 
     @Override

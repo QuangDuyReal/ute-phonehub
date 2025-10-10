@@ -1,12 +1,11 @@
 package com.utephonehub.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.utephonehub.dto.request.ValidateVoucherRequest;
 import com.utephonehub.dto.response.ValidateVoucherResponse;
 import com.utephonehub.dto.response.VoucherValidationResult;
 import com.utephonehub.entity.Voucher;
 import com.utephonehub.service.VoucherService;
+import com.utephonehub.util.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,9 +28,7 @@ import java.util.Map;
 public class VoucherController extends HttpServlet {
     
     private static final Logger logger = LogManager.getLogger(VoucherController.class);
-    private final Gson gson = new GsonBuilder()
-        .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-        .create();
+    private final JsonUtil jsonUtil = new JsonUtil();
     
     private final VoucherService voucherService;
     
@@ -180,7 +177,7 @@ public class VoucherController extends HttpServlet {
             String json = sb.toString();
             logger.debug("Request body: {}", json);
             
-            return gson.fromJson(json, clazz);
+            return jsonUtil.fromJson(json, clazz);
             
         } catch (Exception e) {
             logger.error("Failed to parse request body", e);
@@ -198,7 +195,7 @@ public class VoucherController extends HttpServlet {
         responseBody.put("success", true);
         responseBody.put("data", data);
         
-        String json = gson.toJson(responseBody);
+        String json = jsonUtil.toJson(responseBody);
         response.getWriter().write(json);
         
         logger.debug("Response: {}", json);
@@ -215,7 +212,7 @@ public class VoucherController extends HttpServlet {
         responseBody.put("success", false);
         responseBody.put("message", message);
         
-        String json = gson.toJson(responseBody);
+        String json = jsonUtil.toJson(responseBody);
         response.getWriter().write(json);
         
         logger.debug("Error response: {}", json);

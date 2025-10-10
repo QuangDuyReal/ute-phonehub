@@ -316,8 +316,13 @@ public class ProductRepository {
                                         String sortDirection, int limit, int offset) {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {
-            // Build dynamic query
-            StringBuilder jpql = new StringBuilder("SELECT p FROM Product p WHERE p.status = true");
+            // Build dynamic query with JOIN FETCH for lazy-loaded associations
+            StringBuilder jpql = new StringBuilder(
+                "SELECT DISTINCT p FROM Product p " +
+                "LEFT JOIN FETCH p.category " +
+                "LEFT JOIN FETCH p.brand " +
+                "WHERE p.status = true"
+            );
             
             if (categoryId != null) {
                 jpql.append(" AND p.category.id = :categoryId");

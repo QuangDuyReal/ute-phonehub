@@ -1,7 +1,7 @@
 package com.utephonehub.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.utephonehub.util.JsonUtil;
+
 import com.google.gson.JsonObject;
 import com.utephonehub.service.AddressService;
 import com.utephonehub.util.RequestUtil;
@@ -19,14 +19,11 @@ import java.util.*;
 public class AddressController extends HttpServlet {
     
     private final AddressService addressService;
-    private final Gson gson;
+    private final JsonUtil jsonUtil;
     
     public AddressController() {
         this.addressService = new AddressService();
-        this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                .create();
+        this.jsonUtil = new JsonUtil();
     }
     
     @Override
@@ -53,7 +50,7 @@ public class AddressController extends HttpServlet {
             responseData.put("data", addresses);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -86,7 +83,7 @@ public class AddressController extends HttpServlet {
                 sb.append(line);
             }
             
-            JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+            JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
             
             // Validate required fields
             if (!jsonRequest.has("recipientName") || !jsonRequest.has("phoneNumber") ||
@@ -124,7 +121,7 @@ public class AddressController extends HttpServlet {
             responseData.put("data", addressData);
             
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -169,7 +166,7 @@ public class AddressController extends HttpServlet {
                 sb.append(line);
             }
             
-            JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+            JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
             
             String recipientName = jsonRequest.has("recipientName") ? 
                 jsonRequest.get("recipientName").getAsString() : null;
@@ -206,7 +203,7 @@ public class AddressController extends HttpServlet {
             responseData.put("data", addressData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (NumberFormatException e) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
@@ -260,7 +257,7 @@ public class AddressController extends HttpServlet {
             responseData.put("data", null);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (NumberFormatException e) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
@@ -294,6 +291,7 @@ public class AddressController extends HttpServlet {
         errorResponse.put("message", message);
         
         response.setStatus(statusCode);
-        response.getWriter().write(gson.toJson(errorResponse));
+        response.getWriter().write(jsonUtil.toJson(errorResponse));
     }
 }
+

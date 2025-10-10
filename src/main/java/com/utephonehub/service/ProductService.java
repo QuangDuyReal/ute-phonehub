@@ -1,5 +1,6 @@
 package com.utephonehub.service;
 
+import com.utephonehub.dto.response.ProductResponse;
 import com.utephonehub.entity.Product;
 import com.utephonehub.repository.ProductRepository;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Product Service
@@ -79,9 +81,14 @@ public class ProductService {
             
             int totalPages = (int) Math.ceil((double) totalItems / pageSize);
             
+            // Convert entities to DTOs
+            List<ProductResponse> productResponses = products.stream()
+                    .map(this::convertToProductResponse)
+                    .collect(Collectors.toList());
+            
             // Build response
             Map<String, Object> response = new HashMap<>();
-            response.put("products", products);
+            response.put("products", productResponses);
             
             Map<String, Object> pagination = new HashMap<>();
             pagination.put("page", currentPage);
@@ -195,5 +202,40 @@ public class ProductService {
             logger.error("Error decreasing stock for product: {}", productId, e);
             return false;
         }
+    }
+    
+    /**
+     * Convert Product entity to ProductResponse DTO
+     * 
+     * @param product Product entity
+     * @return ProductResponse DTO
+     */
+    private ProductResponse convertToProductResponse(Product product) {
+        ProductResponse response = new ProductResponse();
+        response.setId(product.getId());
+        response.setName(product.getName());
+        response.setDescription(product.getDescription());
+        response.setPrice(product.getPrice());
+        response.setStockQuantity(product.getStockQuantity());
+        response.setThumbnailUrl(product.getThumbnailUrl());
+        response.setSpecifications(product.getSpecifications());
+        response.setStatus(product.getStatus());
+        
+        // Category info
+        if (product.getCategory() != null) {
+            response.setCategoryId(product.getCategory().getId());
+            response.setCategoryName(product.getCategory().getName());
+        }
+        
+        // Brand info
+        if (product.getBrand() != null) {
+            response.setBrandId(product.getBrand().getId());
+            response.setBrandName(product.getBrand().getName());
+        }
+        
+        response.setCreatedAt(product.getCreatedAt());
+        response.setUpdatedAt(product.getUpdatedAt());
+        
+        return response;
     }
 }

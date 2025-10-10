@@ -34,6 +34,17 @@ public class BrandService {
     }
     
     /**
+     * Get brand by ID
+     */
+    public BrandResponse getBrandById(Long id) {
+        logger.info("Getting brand by ID: {}", id);
+        
+        return brandRepository.findById(id)
+            .map(this::convertToResponse)
+            .orElse(null);
+    }
+    
+    /**
      * Convert Brand entity to BrandResponse DTO
      */
     private BrandResponse convertToResponse(Brand brand) {

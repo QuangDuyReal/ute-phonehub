@@ -7,6 +7,7 @@ import com.utephonehub.repository.ProductRepository;
 import com.utephonehub.repository.UserRepository;
 import com.utephonehub.util.JsonUtil;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
  * Admin Dashboard Controller
  * Thống kê dữ liệu cho admin dashboard
  */
+@WebServlet("/api/v1/admin/dashboard/*")
 public class AdminDashboardController extends HttpServlet {
     
     private static final Logger logger = LogManager.getLogger(AdminDashboardController.class);
@@ -274,15 +276,15 @@ public class AdminDashboardController extends HttpServlet {
     private boolean isAdmin(HttpServletRequest request, HttpServletResponse response) 
             throws IOException {
         
-        String userIdHeader = request.getHeader("X-User-Id");
+        // Get userId from request attribute (set by JwtAuthenticationFilter)
+        Long userId = (Long) request.getAttribute("currentUserId");
         
-        if (userIdHeader == null || userIdHeader.trim().isEmpty()) {
+        if (userId == null) {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - Missing user ID");
             return false;
         }
         
         try {
-            Long userId = Long.parseLong(userIdHeader);
             User user = userRepository.findById(userId).orElse(null);
             
             if (user == null) {
@@ -298,8 +300,9 @@ public class AdminDashboardController extends HttpServlet {
             
             return true;
             
-        } catch (NumberFormatException e) {
-            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID");
+        } catch (Exception e) {
+            logger.error("Error checking admin role", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
             return false;
         }
     }

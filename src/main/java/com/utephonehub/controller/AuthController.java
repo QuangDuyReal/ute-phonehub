@@ -26,7 +26,7 @@ import java.util.Map;
  * Authentication Controller
  * Xử lý các request liên quan đến authentication
  */
-// @WebServlet("/api/v1/auth/*") // Using web.xml mapping instead
+@WebServlet("/api/v1/auth/*")
 public class AuthController extends HttpServlet {
     
     private static final Logger logger = LogManager.getLogger(AuthController.class);

@@ -1,7 +1,7 @@
 package com.utephonehub.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.utephonehub.util.JsonUtil;
+
 import com.google.gson.JsonObject;
 import com.utephonehub.service.CartService;
 import com.utephonehub.util.RequestUtil;
@@ -20,14 +20,11 @@ import java.util.Map;
 public class CartController extends HttpServlet {
     
     private final CartService cartService;
-    private final Gson gson;
+    private final JsonUtil jsonUtil;
     
     public CartController() {
         this.cartService = new CartService();
-        this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                .create();
+        this.jsonUtil = new JsonUtil();
     }
     
     @Override
@@ -56,7 +53,7 @@ public class CartController extends HttpServlet {
             responseData.put("data", cartData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,7 +179,7 @@ public class CartController extends HttpServlet {
             sb.append(line);
         }
         
-        JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+        JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
         
         if (!jsonRequest.has("productId") || !jsonRequest.has("quantity")) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
@@ -208,7 +205,7 @@ public class CartController extends HttpServlet {
             responseData.put("data", cartData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy sản phẩm")) {
@@ -232,7 +229,7 @@ public class CartController extends HttpServlet {
             sb.append(line);
         }
         
-        JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+        JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
         
         if (!jsonRequest.has("quantity")) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Thiếu thông tin quantity");
@@ -256,7 +253,7 @@ public class CartController extends HttpServlet {
             responseData.put("data", cartData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy")) {
@@ -281,7 +278,7 @@ public class CartController extends HttpServlet {
             responseData.put("data", cartData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy")) {
@@ -306,6 +303,7 @@ public class CartController extends HttpServlet {
         errorResponse.put("message", message);
         
         response.setStatus(statusCode);
-        response.getWriter().write(gson.toJson(errorResponse));
+        response.getWriter().write(jsonUtil.toJson(errorResponse));
     }
 }
+

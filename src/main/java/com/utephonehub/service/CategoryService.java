@@ -34,6 +34,17 @@ public class CategoryService {
     }
     
     /**
+     * Get category by ID
+     */
+    public CategoryResponse getCategoryById(Long id) {
+        logger.info("Getting category by ID: {}", id);
+        
+        return categoryRepository.findById(id)
+            .map(this::convertToResponse)
+            .orElse(null);
+    }
+    
+    /**
      * Convert Category entity to CategoryResponse DTO
      */
     private CategoryResponse convertToResponse(Category category) {

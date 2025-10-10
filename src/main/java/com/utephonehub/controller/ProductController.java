@@ -1,9 +1,8 @@
 package com.utephonehub.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.utephonehub.entity.Product;
 import com.utephonehub.service.ProductService;
+import com.utephonehub.util.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -27,9 +26,7 @@ import java.util.Optional;
 public class ProductController extends HttpServlet {
     
     private static final Logger logger = LogManager.getLogger(ProductController.class);
-    private final Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-            .create();
+    private final JsonUtil jsonUtil = new JsonUtil();
     private ProductService productService;
     
     @Override
@@ -214,7 +211,7 @@ public class ProductController extends HttpServlet {
         }
         
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(gson.toJson(responseBody));
+        response.getWriter().write(jsonUtil.toJson(responseBody));
     }
     
     /**
@@ -227,7 +224,7 @@ public class ProductController extends HttpServlet {
         responseBody.put("message", message);
         
         response.setStatus(status);
-        response.getWriter().write(gson.toJson(responseBody));
+        response.getWriter().write(jsonUtil.toJson(responseBody));
     }
     
     // Helper methods for parsing parameters

@@ -1,7 +1,7 @@
 package com.utephonehub.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.utephonehub.util.JsonUtil;
+
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.utephonehub.service.OrderService;
@@ -21,14 +21,11 @@ import java.util.*;
 public class OrderController extends HttpServlet {
     
     private final OrderService orderService;
-    private final Gson gson;
+    private final JsonUtil jsonUtil;
     
     public OrderController() {
         this.orderService = new OrderService();
-        this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                .create();
+        this.jsonUtil = new JsonUtil();
     }
     
     @Override
@@ -99,7 +96,7 @@ public class OrderController extends HttpServlet {
             sb.append(line);
         }
         
-        JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+        JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
         
         // Validate required fields
         if (!jsonRequest.has("shippingInfo") || !jsonRequest.has("paymentMethod")) {
@@ -134,7 +131,7 @@ public class OrderController extends HttpServlet {
             responseData.put("data", orderData);
             
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("trống") || 
@@ -171,7 +168,7 @@ public class OrderController extends HttpServlet {
         responseData.put("data", orders);
         
         response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(gson.toJson(responseData));
+        response.getWriter().write(jsonUtil.toJson(responseData));
     }
     
     private void handleGetOrderDetail(HttpServletRequest request, HttpServletResponse response)
@@ -199,7 +196,7 @@ public class OrderController extends HttpServlet {
             responseData.put("data", orderData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (NumberFormatException e) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "ID đơn hàng không hợp lệ");
@@ -225,7 +222,7 @@ public class OrderController extends HttpServlet {
             sb.append(line);
         }
         
-        JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+        JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
         
         if (!jsonRequest.has("orderCode") || !jsonRequest.has("email")) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
@@ -245,7 +242,7 @@ public class OrderController extends HttpServlet {
             responseData.put("data", orderData);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy")) {
@@ -281,6 +278,7 @@ public class OrderController extends HttpServlet {
         errorResponse.put("message", message);
         
         response.setStatus(statusCode);
-        response.getWriter().write(gson.toJson(errorResponse));
+        response.getWriter().write(jsonUtil.toJson(errorResponse));
     }
 }
+

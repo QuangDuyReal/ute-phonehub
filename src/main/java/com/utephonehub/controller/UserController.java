@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-// @WebServlet("/api/v1/user/*")
+@WebServlet("/api/v1/user/*")
 public class UserController extends HttpServlet {
     private final UserService userService = new UserService();
     private final JsonUtil jsonUtil = new JsonUtil();

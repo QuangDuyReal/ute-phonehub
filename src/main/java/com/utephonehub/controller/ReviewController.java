@@ -1,9 +1,8 @@
 package com.utephonehub.controller;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.utephonehub.service.ReviewService;
+import com.utephonehub.util.JsonUtil;
 import com.utephonehub.util.RequestUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,14 +19,11 @@ import java.util.Map;
 public class ReviewController extends HttpServlet {
     
     private final ReviewService reviewService;
-    private final Gson gson;
+    private final JsonUtil jsonUtil;
     
     public ReviewController() {
         this.reviewService = new ReviewService();
-        this.gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                .create();
+        this.jsonUtil = new JsonUtil();
     }
     
     @Override
@@ -161,7 +157,7 @@ public class ReviewController extends HttpServlet {
             responseData.put("metadata", result.get("metadata"));
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy sản phẩm")) {
@@ -205,7 +201,7 @@ public class ReviewController extends HttpServlet {
             sb.append(line);
         }
         
-        JsonObject jsonRequest = gson.fromJson(sb.toString(), JsonObject.class);
+        JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
         
         if (!jsonRequest.has("rating")) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Thiếu thông tin rating");
@@ -224,7 +220,7 @@ public class ReviewController extends HttpServlet {
             responseData.put("data", reviewData);
             
             response.setStatus(HttpServletResponse.SC_CREATED);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy sản phẩm")) {
@@ -276,7 +272,7 @@ public class ReviewController extends HttpServlet {
             responseData.put("data", result);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy đánh giá")) {
@@ -323,7 +319,7 @@ public class ReviewController extends HttpServlet {
             responseData.put("data", result);
             
             response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(gson.toJson(responseData));
+            response.getWriter().write(jsonUtil.toJson(responseData));
             
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Không tìm thấy đánh giá")) {
@@ -361,6 +357,7 @@ public class ReviewController extends HttpServlet {
         errorResponse.put("message", message);
         
         response.setStatus(statusCode);
-        response.getWriter().write(gson.toJson(errorResponse));
+        response.getWriter().write(jsonUtil.toJson(errorResponse));
     }
 }
+

@@ -16,7 +16,7 @@ public class Cart {
     private User user;
     
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private java.util.List<CartItem> items = new java.util.ArrayList<>();
+    private java.util.Set<CartItem> items = new java.util.HashSet<>();
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -58,11 +58,11 @@ public class Cart {
         this.user = user;
     }
     
-    public java.util.List<CartItem> getItems() {
+    public java.util.Set<CartItem> getItems() {
         return items;
     }
     
-    public void setItems(java.util.List<CartItem> items) {
+    public void setItems(java.util.Set<CartItem> items) {
         this.items = items;
     }
     

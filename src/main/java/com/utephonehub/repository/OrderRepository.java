@@ -114,8 +114,9 @@ public class OrderRepository {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {
             return em.createQuery(
-                "SELECT o FROM Order o " +
+                "SELECT DISTINCT o FROM Order o " +
                 "LEFT JOIN FETCH o.user " +
+                "LEFT JOIN FETCH o.items " +
                 "ORDER BY o.createdAt DESC", Order.class)
                 .getResultList();
         } finally {

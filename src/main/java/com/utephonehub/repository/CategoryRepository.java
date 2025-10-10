@@ -27,7 +27,13 @@ public class CategoryRepository {
                 "SELECT c FROM Category c ORDER BY c.name ASC", 
                 Category.class
             );
-            return query.getResultList();
+            List<Category> categories = query.getResultList();
+            // Force initialization of lazy collections before EntityManager closes
+            for (Category category : categories) {
+                category.getProducts().size(); // Initialize products collection
+                category.getChildren().size(); // Initialize children collection
+            }
+            return categories;
         } catch (Exception e) {
             logger.error("Error finding all categories", e);
             throw new RuntimeException("Error finding all categories", e);

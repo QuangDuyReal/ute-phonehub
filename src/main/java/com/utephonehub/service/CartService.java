@@ -6,7 +6,6 @@ import com.utephonehub.repository.ProductRepository;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CartService {
     
@@ -146,21 +145,11 @@ public class CartService {
                 BigDecimal lineTotal = product.getPrice().multiply(new BigDecimal(item.getQuantity()));
                 totalPrice = totalPrice.add(lineTotal);
                 
-                // Get thumbnail URL
-                String thumbnailUrl = null;
-                if (product.getImages() != null && !product.getImages().isEmpty()) {
-                    for (ProductImage img : product.getImages()) {
-                        if (img.getIsPrimary() != null && img.getIsPrimary()) {
-                            thumbnailUrl = img.getImageUrl();
-                            break;
-                        }
-                    }
-                    if (thumbnailUrl == null) {
-                        thumbnailUrl = product.getImages().get(0).getImageUrl();
-                    }
-                }
+                // Get thumbnail URL from product directly (avoid lazy loading images)
+                String thumbnailUrl = product.getThumbnailUrl();
                 
                 Map<String, Object> itemData = new HashMap<>();
+                itemData.put("cartItemId", item.getId());
                 itemData.put("productId", product.getId());
                 itemData.put("productName", product.getName());
                 itemData.put("thumbnailUrl", thumbnailUrl);

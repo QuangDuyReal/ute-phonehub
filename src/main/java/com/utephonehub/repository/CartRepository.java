@@ -17,12 +17,11 @@ public class CartRepository {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {
             Cart cart = em.createQuery(
-                "SELECT c FROM Cart c " +
+                "SELECT DISTINCT c FROM Cart c " +
                 "LEFT JOIN FETCH c.items i " +
                 "LEFT JOIN FETCH i.product p " +
                 "LEFT JOIN FETCH p.category " +
                 "LEFT JOIN FETCH p.brand " +
-                "LEFT JOIN FETCH p.images " +
                 "WHERE c.user.id = :userId", Cart.class)
                 .setParameter("userId", userId)
                 .getSingleResult();
@@ -62,7 +61,9 @@ public class CartRepository {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {
             CartItem item = em.createQuery(
-                "SELECT ci FROM CartItem ci WHERE ci.cart.id = :cartId AND ci.product.id = :productId", 
+                "SELECT ci FROM CartItem ci " +
+                "JOIN FETCH ci.product " +
+                "WHERE ci.cart.id = :cartId AND ci.product.id = :productId", 
                 CartItem.class)
                 .setParameter("cartId", cartId)
                 .setParameter("productId", productId)

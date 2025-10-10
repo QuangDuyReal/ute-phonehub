@@ -52,10 +52,10 @@ public class Product {
     private Brand brand;
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private java.util.List<ProductImage> images = new java.util.ArrayList<>();
+    private java.util.Set<ProductImage> images = new java.util.HashSet<>();
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private java.util.List<Review> reviews = new java.util.ArrayList<>();
+    private java.util.Set<Review> reviews = new java.util.HashSet<>();
     
     // Constructors
     public Product() {
@@ -174,19 +174,19 @@ public class Product {
         this.brand = brand;
     }
     
-    public java.util.List<ProductImage> getImages() {
+    public java.util.Set<ProductImage> getImages() {
         return images;
     }
     
-    public void setImages(java.util.List<ProductImage> images) {
+    public void setImages(java.util.Set<ProductImage> images) {
         this.images = images;
     }
     
-    public java.util.List<Review> getReviews() {
+    public java.util.Set<Review> getReviews() {
         return reviews;
     }
     
-    public void setReviews(java.util.List<Review> reviews) {
+    public void setReviews(java.util.Set<Review> reviews) {
         this.reviews = reviews;
     }
 }

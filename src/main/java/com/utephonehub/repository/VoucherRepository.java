@@ -94,9 +94,14 @@ public class VoucherRepository {
     public List<Voucher> findAll() {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {
-            return em.createQuery(
+            List<Voucher> vouchers = em.createQuery(
                 "SELECT v FROM Voucher v ORDER BY v.createdAt DESC", Voucher.class)
                 .getResultList();
+            // Force initialization of lazy collections before EntityManager closes
+            for (Voucher voucher : vouchers) {
+                voucher.getOrders().size(); // Initialize orders collection
+            }
+            return vouchers;
         } finally {
             em.close();
         }

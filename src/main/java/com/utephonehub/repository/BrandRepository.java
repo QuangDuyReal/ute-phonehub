@@ -27,7 +27,12 @@ public class BrandRepository {
                 "SELECT b FROM Brand b ORDER BY b.name ASC", 
                 Brand.class
             );
-            return query.getResultList();
+            List<Brand> brands = query.getResultList();
+            // Force initialization of lazy collections before EntityManager closes
+            for (Brand brand : brands) {
+                brand.getProducts().size(); // Initialize products collection
+            }
+            return brands;
         } catch (Exception e) {
             logger.error("Error finding all brands", e);
             throw new RuntimeException("Error finding all brands", e);

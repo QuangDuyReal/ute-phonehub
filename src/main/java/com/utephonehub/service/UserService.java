@@ -147,6 +147,78 @@ public class UserService {
     }
     
     /**
+     * Find or create user from Google OAuth
+     * @param email User email from Google
+     * @param name User full name from Google
+     * @param picture User profile picture URL from Google
+     * @param googleId Google user ID
+     * @return LoginResponse with access token
+     */
+    public LoginResponse findOrCreateOAuthUser(String email, String name, String picture, String googleId) {
+        logger.info("OAuth login attempt for email: {}", email);
+        
+        // Check if user exists by email
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        User user;
+        
+        if (userOpt.isPresent()) {
+            // User exists - just login
+            user = userOpt.get();
+            logger.info("Existing user found for OAuth login: {} (userId: {})", email, user.getId());
+        } else {
+            // Create new user from OAuth
+            logger.info("Creating new user from OAuth: {}", email);
+            
+            // Generate unique username from email
+            String username = generateUsernameFromEmail(email);
+            
+            user = new User();
+            user.setUsername(username);
+            user.setFullName(name != null && !name.isEmpty() ? name : email.split("@")[0]);
+            user.setEmail(email);
+            // OAuth users don't have password - set a random hash (they can't login with password)
+            user.setPasswordHash(passwordUtil.hashPassword(java.util.UUID.randomUUID().toString()));
+            user.setRole(User.UserRole.customer);
+            user.setStatus(User.UserStatus.active);
+            
+            user = userRepository.save(user);
+            logger.info("New OAuth user created: {} (userId: {})", email, user.getId());
+        }
+        
+        // Generate tokens
+        String accessToken = jwtUtil.generateToken(user.getEmail());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        
+        // Store refresh token in Redis
+        redisService.storeRefreshToken(user.getEmail(), refreshToken);
+        
+        logger.info("OAuth user logged in successfully: {} (userId: {}, role: {})", user.getEmail(), user.getId(), user.getRole());
+        
+        return new LoginResponse(
+            accessToken,
+            refreshToken,
+            convertToUserResponse(user)
+        );
+    }
+    
+    /**
+     * Generate unique username from email for OAuth users
+     */
+    private String generateUsernameFromEmail(String email) {
+        String baseUsername = email.split("@")[0].toLowerCase();
+        String username = baseUsername;
+        int suffix = 1;
+        
+        // Keep trying until we find a unique username
+        while (userRepository.existsByUsername(username)) {
+            username = baseUsername + suffix;
+            suffix++;
+        }
+        
+        return username;
+    }
+    
+    /**
      * Lấy thông tin user theo ID
      * @param id User ID
      * @return UserResponse

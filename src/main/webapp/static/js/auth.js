@@ -642,7 +642,7 @@ async function logout() {
   // Clear local storage (access token and user info only)
   localStorage.removeItem("accessToken");
   localStorage.removeItem("user");
-  
+
   // Legacy cleanup: remove refreshToken from localStorage if it exists
   // (Refresh token should be in HttpOnly cookie, not localStorage)
   localStorage.removeItem("refreshToken");
@@ -662,7 +662,7 @@ async function logout() {
 async function refreshAccessToken() {
   // Refresh token is sent automatically via HttpOnly cookie
   // No need to read from localStorage
-  
+
   try {
     const response = await fetch("/api/v1/auth/refresh", {
       method: "POST",

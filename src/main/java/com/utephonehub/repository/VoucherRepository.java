@@ -101,4 +101,50 @@ public class VoucherRepository {
             em.close();
         }
     }
+    
+    /**
+     * Count total times a voucher has been used
+     */
+    public long countVoucherUsage(Long voucherId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT COUNT(o) FROM Order o WHERE o.voucher.id = :voucherId", Long.class)
+                .setParameter("voucherId", voucherId)
+                .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Count how many times a specific user has used a voucher
+     */
+    public long countUserUsage(Long voucherId, Long userId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT COUNT(o) FROM Order o WHERE o.voucher.id = :voucherId AND o.user.id = :userId", 
+                Long.class)
+                .setParameter("voucherId", voucherId)
+                .setParameter("userId", userId)
+                .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Increment the used count for a voucher
+     * This method doesn't exist in entity yet, so we just track via orders count
+     * If you add usedCount field to Voucher entity, you can update it here
+     */
+    public void incrementUsedCount(Long voucherId) {
+        // For now, we just count via orders relationship
+        // If Voucher entity has a usedCount field, implement update here:
+        // UPDATE vouchers SET current_usage = current_usage + 1 WHERE id = :voucherId
+        
+        // Current implementation: No-op since we count dynamically
+        // This is safe for MVP, but consider adding usedCount field for performance
+    }
 }

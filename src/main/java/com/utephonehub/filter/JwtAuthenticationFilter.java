@@ -44,6 +44,9 @@ public class JwtAuthenticationFilter implements Filter {
         "/api/v1/brands",
         "/api/v1/brands/*",
         
+        // Voucher validation (public - can be used before login)
+        "/api/v1/vouchers/validate",
+        
         // Location/Address public data
         "/api/v1/location/*",
         

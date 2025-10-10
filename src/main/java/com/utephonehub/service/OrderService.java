@@ -1,32 +1,40 @@
 package com.utephonehub.service;
 
+import com.utephonehub.dto.response.VoucherValidationResult;
 import com.utephonehub.entity.*;
 import com.utephonehub.repository.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.util.*;
 
 public class OrderService {
     
+    private static final Logger logger = LogManager.getLogger(OrderService.class);
+    
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
-    private final VoucherRepository voucherRepository;
     private final ProductRepository productRepository;
+    private final VoucherService voucherService;
     
     public OrderService() {
         this.orderRepository = new OrderRepository();
         this.cartRepository = new CartRepository();
-        this.voucherRepository = new VoucherRepository();
         this.productRepository = new ProductRepository();
+        this.voucherService = new VoucherService();
     }
     
     public Map<String, Object> checkout(Long userId, Map<String, Object> shippingInfo, 
                                        String voucherCode, String paymentMethod) {
         
+        logger.info("Processing checkout for userId: {}, voucherCode: {}", userId, voucherCode);
+        
         // Get user's cart
         Optional<Cart> cartOpt = userId != null ? cartRepository.findByUserId(userId) : Optional.empty();
         
         if (cartOpt.isEmpty() || cartOpt.get().getItems().isEmpty()) {
+            logger.warn("Cart is empty for userId: {}", userId);
             throw new RuntimeException("Giỏ hàng trống");
         }
         
@@ -40,39 +48,29 @@ public class OrderService {
             totalAmount = totalAmount.add(lineTotal);
         }
         
+        logger.debug("Order total before discount: {}", totalAmount);
+        
         // Apply voucher if provided
         Voucher voucher = null;
+        BigDecimal finalAmount = totalAmount;
+        
         if (voucherCode != null && !voucherCode.isEmpty()) {
-            Optional<Voucher> voucherOpt = voucherRepository.findByCode(voucherCode);
-            if (voucherOpt.isEmpty()) {
-                throw new RuntimeException("Mã giảm giá không tồn tại");
+            // Use VoucherService for validation and discount calculation
+            VoucherValidationResult validation = voucherService.validateVoucher(
+                voucherCode, totalAmount, userId
+            );
+            
+            if (!validation.isValid()) {
+                logger.warn("Voucher validation failed: {}", validation.getErrorMessage());
+                throw new RuntimeException(validation.getErrorMessage());
             }
             
-            voucher = voucherOpt.get();
+            voucher = validation.getVoucher();
+            BigDecimal discount = voucherService.calculateDiscount(voucher, totalAmount);
+            finalAmount = totalAmount.subtract(discount);
             
-            if (!voucherRepository.isVoucherValid(voucher)) {
-                throw new RuntimeException("Mã giảm giá không hợp lệ hoặc đã hết hạn");
-            }
-            
-            // Check min order value
-            if (voucher.getMinOrderValue() != null && 
-                totalAmount.compareTo(voucher.getMinOrderValue()) < 0) {
-                throw new RuntimeException("Đơn hàng chưa đủ giá trị tối thiểu để áp dụng mã giảm giá");
-            }
-            
-            // Apply discount
-            if (voucher.getDiscountType() == Voucher.DiscountType.PERCENTAGE) {
-                BigDecimal discount = totalAmount.multiply(voucher.getDiscountValue())
-                    .divide(new BigDecimal(100));
-                totalAmount = totalAmount.subtract(discount);
-            } else if (voucher.getDiscountType() == Voucher.DiscountType.FIXED_AMOUNT) {
-                totalAmount = totalAmount.subtract(voucher.getDiscountValue());
-            }
-            
-            // Ensure total is not negative
-            if (totalAmount.compareTo(BigDecimal.ZERO) < 0) {
-                totalAmount = BigDecimal.ZERO;
-            }
+            logger.info("Voucher applied: {} - Discount: {} - Final amount: {}", 
+                voucherCode, discount, finalAmount);
         }
         
         // Create order
@@ -96,12 +94,13 @@ public class OrderService {
         // Set payment method
         order.setPaymentMethod(Order.PaymentMethod.valueOf(paymentMethod.toUpperCase()));
         
-        order.setTotalAmount(totalAmount);
+        order.setTotalAmount(finalAmount);
         order.setVoucher(voucher);
         order.setStatus(Order.OrderStatus.PENDING);
         
         // Save order first to get ID
         Order savedOrder = orderRepository.save(order);
+        logger.info("Order created with code: {}", savedOrder.getOrderCode());
         
         // Create order items from cart
         for (CartItem cartItem : cart.getItems()) {
@@ -122,10 +121,22 @@ public class OrderService {
         // Save order with items
         savedOrder = orderRepository.save(savedOrder);
         
+        // Apply voucher usage tracking (increment count)
+        if (voucher != null) {
+            try {
+                voucherService.applyVoucher(voucher.getId());
+            } catch (Exception e) {
+                logger.error("Failed to track voucher usage, but order is created", e);
+                // Don't fail the checkout, just log the error
+            }
+        }
+        
         // Clear cart
         for (CartItem item : new ArrayList<>(cart.getItems())) {
             cartRepository.deleteCartItem(item.getId());
         }
+        
+        logger.info("Checkout completed successfully for order: {}", savedOrder.getOrderCode());
         
         // Build response
         Map<String, Object> response = new HashMap<>();

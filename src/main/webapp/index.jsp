@@ -395,61 +395,7 @@
         </div>
       </section>
 
-      <!-- API Status Section -->
-      <section class="api-status">
-        <div class="card">
-          <div class="card-header">
-            <h3>Trạng thái hệ thống</h3>
-          </div>
-          <div class="card-body">
-            <div class="status-grid">
-              <div class="status-item">
-                <div class="status-icon success">
-                  <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="status-info">
-                  <h4>API Health</h4>
-                  <p>Hệ thống hoạt động bình thường</p>
-                </div>
-              </div>
-              <div class="status-item">
-                <div class="status-icon success">
-                  <i class="fas fa-database"></i>
-                </div>
-                <div class="status-info">
-                  <h4>Database</h4>
-                  <p>Kết nối ổn định</p>
-                </div>
-              </div>
-              <div class="status-item">
-                <div class="status-icon success">
-                  <i class="fas fa-server"></i>
-                </div>
-                <div class="status-info">
-                  <h4>Server</h4>
-                  <p>Phản hồi nhanh</p>
-                </div>
-              </div>
-            </div>
-            <div class="status-actions">
-              <a
-                href="${pageContext.request.contextPath}/api/v1/health"
-                class="btn btn-primary"
-              >
-                <i class="fas fa-heartbeat"></i>
-                Kiểm tra API
-              </a>
-              <a
-                href="${pageContext.request.contextPath}/docs/api/postman-collection.json"
-                class="btn btn-secondary"
-              >
-                <i class="fas fa-download"></i>
-                Postman Collection
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- API Status Section - REMOVED as per requirements -->
     </main>
 
     <%@ include file="/WEB-INF/views/common/footer.jspf" %>

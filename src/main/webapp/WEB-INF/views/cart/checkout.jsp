@@ -105,19 +105,13 @@
                                     <input type="email" class="form-control" id="email" name="email">
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-6 mb-3">
                                         <label for="city" class="form-label">Tỉnh/Thành phố <span class="text-danger">*</span></label>
                                         <select class="form-select" id="city" name="city" required>
                                             <option value="">Chọn tỉnh/thành</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="district" class="form-label">Quận/Huyện <span class="text-danger">*</span></label>
-                                        <select class="form-select" id="district" name="district" required>
-                                            <option value="">Chọn quận/huyện</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
+                                    <div class="col-md-6 mb-3">
                                         <label for="ward" class="form-label">Phường/Xã <span class="text-danger">*</span></label>
                                         <select class="form-select" id="ward" name="ward" required>
                                             <option value="">Chọn phường/xã</option>

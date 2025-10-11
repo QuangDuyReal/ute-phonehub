@@ -191,8 +191,9 @@
 /* Cart Summary */
 .cart-summary {
     position: sticky;
-    top: 100px;
+    top: 20px;
     height: fit-content;
+    z-index: 1;
 }
 
 .summary-card {

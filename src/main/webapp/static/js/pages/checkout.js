@@ -21,7 +21,6 @@ const contextPath = document.body.dataset.contextPath || '';
 let selectedAddressId = null;
 let cartData = null;
 let provinces = [];
-let districts = [];
 let wards = [];
 
 /**
@@ -98,7 +97,7 @@ async function loadSavedAddresses() {
  */
 async function loadProvinces() {
     try {
-        const response = await API.get('/provinces');
+        const response = await API.get('/location/provinces');
         if (response.success && response.data) {
             return response.data;
         }
@@ -138,7 +137,6 @@ function renderSavedAddresses(addresses) {
             <div class="address-detail">
                 ${escapeHtml(addr.streetAddress || '')}, 
                 ${escapeHtml(addr.ward || '')}, 
-                ${escapeHtml(addr.district || '')}, 
                 ${escapeHtml(addr.city || '')}
             </div>
             ${addr.isDefault ? '<div class="address-badges"><span class="badge bg-primary">Mặc định</span></div>' : ''}
@@ -211,40 +209,11 @@ function populateProvinces() {
 }
 
 /**
- * Load districts by province
+ * Load wards by province code
  */
-async function loadDistricts(provinceId) {
+async function loadWards(provinceCode) {
     try {
-        const response = await API.get(`/provinces/${provinceId}/districts`);
-        if (response.success && response.data) {
-            districts = response.data;
-            populateDistricts();
-        }
-    } catch (error) {
-        console.error('Error loading districts:', error);
-    }
-}
-
-/**
- * Populate districts dropdown
- */
-function populateDistricts() {
-    const districtSelect = document.getElementById('district');
-    if (!districtSelect) return;
-    
-    districtSelect.innerHTML = '<option value="">Chọn quận/huyện</option>' +
-        districts.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
-    
-    // Reset ward
-    document.getElementById('ward').innerHTML = '<option value="">Chọn phường/xã</option>';
-}
-
-/**
- * Load wards by district
- */
-async function loadWards(districtId) {
-    try {
-        const response = await API.get(`/districts/${districtId}/wards`);
+        const response = await API.get(`/location/provinces/${provinceCode}/wards`);
         if (response.success && response.data) {
             wards = response.data;
             populateWards();
@@ -295,20 +264,9 @@ function setupEventListeners() {
     
     // Province change
     document.getElementById('city').addEventListener('change', (e) => {
-        const provinceId = e.target.value;
-        if (provinceId) {
-            loadDistricts(provinceId);
-        } else {
-            document.getElementById('district').innerHTML = '<option value="">Chọn quận/huyện</option>';
-            document.getElementById('ward').innerHTML = '<option value="">Chọn phường/xã</option>';
-        }
-    });
-    
-    // District change
-    document.getElementById('district').addEventListener('change', (e) => {
-        const districtId = e.target.value;
-        if (districtId) {
-            loadWards(districtId);
+        const provinceCode = e.target.value;
+        if (provinceCode) {
+            loadWards(provinceCode);
         } else {
             document.getElementById('ward').innerHTML = '<option value="">Chọn phường/xã</option>';
         }
@@ -587,13 +545,15 @@ async function handlePlaceOrder() {
         
         // Collect form data
         const formData = new FormData(addressForm);
+        const citySelect = document.getElementById('city');
+        const wardSelect = document.getElementById('ward');
+        
         shippingData = {
             recipientName: formData.get('recipientName'),
             phoneNumber: formData.get('phoneNumber'),
             email: formData.get('email') || '',
-            city: document.getElementById('city').options[document.getElementById('city').selectedIndex].text,
-            district: document.getElementById('district').options[document.getElementById('district').selectedIndex].text,
-            ward: document.getElementById('ward').options[document.getElementById('ward').selectedIndex].text,
+            city: citySelect.options[citySelect.selectedIndex].text,
+            ward: wardSelect.options[wardSelect.selectedIndex].text,
             streetAddress: formData.get('streetAddress'),
             notes: formData.get('notes') || ''
         };
@@ -619,9 +579,9 @@ async function handlePlaceOrder() {
         }
     }
     
-    // Prepare checkout data
+    // Prepare checkout data with proper structure
     const checkoutData = {
-        ...shippingData,
+        shippingInfo: shippingData,  // Wrap shipping data in shippingInfo object
         paymentMethod: paymentMethod,
         voucherCode: document.getElementById('voucher-code').value.trim() || null
     };

@@ -265,10 +265,10 @@ if (registerForm) {
 document.querySelectorAll("input").forEach((input) => {
   input.addEventListener("input", function () {
     const form = this.closest("form");
-    if (form.id === "loginForm") {
+    if (form && form.id === "loginForm") {
       hideMessage("errorMessage");
       hideMessage("successMessage");
-    } else if (form.id === "registerForm") {
+    } else if (form && form.id === "registerForm") {
       hideMessage("regErrorMessage");
       hideMessage("regSuccessMessage");
     }
@@ -285,24 +285,34 @@ const closeForgotPassword = document.querySelector(".close-forgot-password");
 let currentStep = 1;
 let forgotEmail = "";
 
-// Open modal
-forgotPasswordLink.addEventListener("click", function (e) {
-  e.preventDefault();
-  forgotPasswordModal.classList.add("show");
-  resetForgotPasswordModal();
-});
+// Open modal - only if element exists
+if (forgotPasswordLink) {
+  forgotPasswordLink.addEventListener("click", function (e) {
+    e.preventDefault();
+    if (forgotPasswordModal) {
+      forgotPasswordModal.classList.add("show");
+      resetForgotPasswordModal();
+    }
+  });
+}
 
-// Close modal
-closeForgotPassword.addEventListener("click", function () {
-  forgotPasswordModal.classList.remove("show");
-});
+// Close modal - only if element exists
+if (closeForgotPassword) {
+  closeForgotPassword.addEventListener("click", function () {
+    if (forgotPasswordModal) {
+      forgotPasswordModal.classList.remove("show");
+    }
+  });
+}
 
-// Close on outside click
-window.addEventListener("click", function (e) {
-  if (e.target === forgotPasswordModal) {
-    forgotPasswordModal.classList.remove("show");
-  }
-});
+// Close on outside click - only if modal exists
+if (forgotPasswordModal) {
+  window.addEventListener("click", function (e) {
+    if (e.target === forgotPasswordModal) {
+      forgotPasswordModal.classList.remove("show");
+    }
+  });
+}
 
 // Reset modal to step 1
 function resetForgotPasswordModal() {
@@ -329,9 +339,9 @@ function showStep(step) {
 }
 
 // Step 1: Send OTP
-document
-  .getElementById("forgotPasswordForm")
-  .addEventListener("submit", async function (e) {
+const forgotPasswordForm = document.getElementById("forgotPasswordForm");
+if (forgotPasswordForm) {
+  forgotPasswordForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const email = document.getElementById("forgotEmail").value;
@@ -382,11 +392,12 @@ document
       sendOtpBtn.disabled = false;
     }
   });
+}
 
 // Step 2: Verify OTP
-document
-  .getElementById("verifyOtpForm")
-  .addEventListener("submit", async function (e) {
+const verifyOtpForm = document.getElementById("verifyOtpForm");
+if (verifyOtpForm) {
+  verifyOtpForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const otp = document.getElementById("otpCode").value;
@@ -443,11 +454,12 @@ document
       verifyOtpBtn.disabled = false;
     }
   });
+}
 
 // Resend OTP
-document
-  .getElementById("resendOtp")
-  .addEventListener("click", async function (e) {
+const resendOtpBtn = document.getElementById("resendOtp");
+if (resendOtpBtn) {
+  resendOtpBtn.addEventListener("click", async function (e) {
     e.preventDefault();
 
     const resendButton = this;
@@ -509,11 +521,12 @@ document
       resendButton.disabled = false;
     }
   });
+}
 
 // Step 3: Reset Password
-document
-  .getElementById("resetPasswordForm")
-  .addEventListener("submit", async function (e) {
+const resetPasswordForm = document.getElementById("resetPasswordForm");
+if (resetPasswordForm) {
+  resetPasswordForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const newPassword = document.getElementById("newPassword").value;
@@ -615,6 +628,7 @@ document
       resetPasswordBtn.disabled = false;
     }
   });
+}
 
 // ============================================
 // LOGOUT AND TOKEN MANAGEMENT

@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // Initialize Application
 function initializeApp() {
   initializeHeader();
+  initializeUserAccount(); // Add user account dropdown behavior
   
   // Only initialize if elements exist on page
   if (document.querySelector('.product-grid')) {
@@ -695,6 +696,59 @@ async function refreshAccessToken() {
     console.error("❌ Error refreshing token:", error);
     redirectToLogin();
     return null;
+  }
+}
+
+/**
+ * Initialize user account dropdown behavior
+ * - When NOT logged in: click goes to /login, no dropdown
+ * - When logged in: hover shows dropdown, click goes to /profile
+ */
+function initializeUserAccount() {
+  const userAccountBtn = document.getElementById('userAccountBtn');
+  const userAccountText = document.getElementById('userAccountText');
+  const accountDropdownMenu = document.getElementById('accountDropdownMenu');
+  const userAccountDropdown = document.getElementById('userAccountDropdown');
+  const logoutBtn = document.getElementById('logoutBtn');
+  
+  if (!userAccountBtn || !accountDropdownMenu || !userAccountDropdown) {
+    return;
+  }
+  
+  const isLoggedIn = !!localStorage.getItem('accessToken');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  
+  if (isLoggedIn && user.fullName) {
+    // User is logged in
+    userAccountText.textContent = user.fullName;
+    userAccountBtn.href = contextPath + '/profile';
+    
+    // Show dropdown on hover only
+    userAccountDropdown.addEventListener('mouseenter', function() {
+      accountDropdownMenu.style.display = 'block';
+    });
+    
+    userAccountDropdown.addEventListener('mouseleave', function() {
+      accountDropdownMenu.style.display = 'none';
+    });
+    
+    // Logout handler
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        logout();
+      });
+    }
+  } else {
+    // User is NOT logged in
+    userAccountText.textContent = 'Đăng nhập';
+    userAccountBtn.href = contextPath + '/login';
+    accountDropdownMenu.style.display = 'none';
+    
+    // Prevent dropdown on hover when not logged in
+    userAccountDropdown.addEventListener('mouseenter', function() {
+      accountDropdownMenu.style.display = 'none';
+    });
   }
 }
 

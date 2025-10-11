@@ -200,7 +200,7 @@ function updateCartSummary(cart) {
     
     document.getElementById('subtotal').textContent = formatPrice(subtotal);
     document.getElementById('shipping').textContent = shipping === 0 ? 'Miễn phí' : formatPrice(shipping);
-    document.getElementById('discount').textContent = discount > 0 ? '-' + formatPrice(discount) : '0₫';
+    document.getElementById('discount').textContent = discount > 0 ? '-' + formatPrice(discount) : formatPrice(0);
     document.getElementById('total').textContent = formatPrice(total);
 }
 

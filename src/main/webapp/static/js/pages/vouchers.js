@@ -49,7 +49,7 @@ async function loadVouchers(filter = 'all') {
     
     try {
         // Build API URL based on filter
-        let apiUrl = '/api/v1/vouchers?page=1&limit=50&status=ACTIVE';
+        let apiUrl = '/vouchers?page=1&limit=50&status=ACTIVE';
         
         // For 'saved' filter, we need to be logged in
         if (filter === 'saved') {

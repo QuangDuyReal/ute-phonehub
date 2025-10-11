@@ -109,11 +109,38 @@ public class OrderController extends HttpServlet {
         // Parse shipping info
         JsonObject shippingInfoJson = jsonRequest.getAsJsonObject("shippingInfo");
         Map<String, Object> shippingInfo = new HashMap<>();
-        shippingInfo.put("recipientName", shippingInfoJson.get("recipientName").getAsString());
-        shippingInfo.put("phoneNumber", shippingInfoJson.get("phoneNumber").getAsString());
-        shippingInfo.put("email", shippingInfoJson.get("email").getAsString());
-        shippingInfo.put("streetAddress", shippingInfoJson.get("streetAddress").getAsString());
-        shippingInfo.put("city", shippingInfoJson.get("city").getAsString());
+        
+        // Check if using saved address (addressId) or new address (form fields)
+        if (shippingInfoJson.has("addressId") && !shippingInfoJson.get("addressId").isJsonNull()) {
+            shippingInfo.put("addressId", shippingInfoJson.get("addressId").getAsLong());
+        } else {
+            // New address - validate and extract fields
+            if (shippingInfoJson.has("recipientName") && !shippingInfoJson.get("recipientName").isJsonNull()) {
+                shippingInfo.put("recipientName", shippingInfoJson.get("recipientName").getAsString());
+            }
+            if (shippingInfoJson.has("phoneNumber") && !shippingInfoJson.get("phoneNumber").isJsonNull()) {
+                shippingInfo.put("phoneNumber", shippingInfoJson.get("phoneNumber").getAsString());
+            }
+            if (shippingInfoJson.has("email") && !shippingInfoJson.get("email").isJsonNull()) {
+                shippingInfo.put("email", shippingInfoJson.get("email").getAsString());
+            }
+            if (shippingInfoJson.has("streetAddress") && !shippingInfoJson.get("streetAddress").isJsonNull()) {
+                shippingInfo.put("streetAddress", shippingInfoJson.get("streetAddress").getAsString());
+            }
+            // Support both 'city' and 'province' field names
+            if (shippingInfoJson.has("city") && !shippingInfoJson.get("city").isJsonNull()) {
+                shippingInfo.put("city", shippingInfoJson.get("city").getAsString());
+            } else if (shippingInfoJson.has("province") && !shippingInfoJson.get("province").isJsonNull()) {
+                shippingInfo.put("city", shippingInfoJson.get("province").getAsString());
+            }
+            // Ward info (no longer using district)
+            if (shippingInfoJson.has("ward") && !shippingInfoJson.get("ward").isJsonNull()) {
+                shippingInfo.put("ward", shippingInfoJson.get("ward").getAsString());
+            }
+            if (shippingInfoJson.has("notes") && !shippingInfoJson.get("notes").isJsonNull()) {
+                shippingInfo.put("notes", shippingInfoJson.get("notes").getAsString());
+            }
+        }
         
         String voucherCode = jsonRequest.has("voucherCode") ? 
             jsonRequest.get("voucherCode").getAsString() : null;

@@ -50,7 +50,7 @@
 
       <!-- Header Actions -->
       <div class="header-actions">
-        <!-- User Account - Show login or profile based on token -->
+        <!-- User Account - Show login link when not logged in, or dropdown when logged in -->
         <div class="user-account-dropdown" id="userAccountDropdown">
           <a
             href="${pageContext.request.contextPath}/login"
@@ -60,10 +60,11 @@
             <i class="fas fa-user"></i>
             <span id="userAccountText">Đăng nhập</span>
           </a>
-          <!-- Dropdown menu cho user đã đăng nhập -->
+          <!-- Dropdown menu - only shows when logged in AND hovering -->
           <div
             class="account-dropdown-menu"
             id="accountDropdownMenu"
+            style="display: none;"
           >
             <a
               href="${pageContext.request.contextPath}/profile"

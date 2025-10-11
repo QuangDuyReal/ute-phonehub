@@ -6,7 +6,12 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.NoResultException;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class OrderRepository {
@@ -118,6 +123,96 @@ public class OrderRepository {
                 "LEFT JOIN FETCH o.user " +
                 "LEFT JOIN FETCH o.items " +
                 "ORDER BY o.createdAt DESC", Order.class)
+                .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Get total revenue by date range (for Dashboard)
+     */
+    public BigDecimal getTotalRevenueByDateRange(LocalDate startDate, LocalDate endDate) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+            
+            BigDecimal result = em.createQuery(
+                "SELECT COALESCE(SUM(o.totalAmount), 0) FROM Order o " +
+                "WHERE o.createdAt BETWEEN :startDate AND :endDate " +
+                "AND o.status != :cancelledStatus", BigDecimal.class)
+                .setParameter("startDate", startDateTime)
+                .setParameter("endDate", endDateTime)
+                .setParameter("cancelledStatus", Order.OrderStatus.CANCELLED)
+                .getSingleResult();
+            
+            return result;
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Count orders by date range (for Dashboard)
+     */
+    public long countOrdersByDateRange(LocalDate startDate, LocalDate endDate) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            LocalDateTime startDateTime = startDate.atStartOfDay();
+            LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+            
+            return em.createQuery(
+                "SELECT COUNT(o) FROM Order o " +
+                "WHERE o.createdAt BETWEEN :startDate AND :endDate", Long.class)
+                .setParameter("startDate", startDateTime)
+                .setParameter("endDate", endDateTime)
+                .getSingleResult();
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Count orders by status (for Dashboard)
+     */
+    public Map<String, Long> countOrdersByStatus() {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            List<Object[]> results = em.createQuery(
+                "SELECT o.status, COUNT(o) FROM Order o GROUP BY o.status", Object[].class)
+                .getResultList();
+            
+            Map<String, Long> statusCounts = new HashMap<>();
+            for (Object[] result : results) {
+                Order.OrderStatus status = (Order.OrderStatus) result[0];
+                Long count = (Long) result[1];
+                statusCounts.put(status.name(), count);
+            }
+            
+            // Ensure all statuses are present (even with 0 count)
+            for (Order.OrderStatus status : Order.OrderStatus.values()) {
+                statusCounts.putIfAbsent(status.name(), 0L);
+            }
+            
+            return statusCounts;
+        } finally {
+            em.close();
+        }
+    }
+    
+    /**
+     * Find recent orders (for Dashboard)
+     */
+    public List<Order> findRecentOrders(int limit) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT DISTINCT o FROM Order o " +
+                "LEFT JOIN FETCH o.items oi " +
+                "LEFT JOIN FETCH oi.product " +
+                "ORDER BY o.createdAt DESC", Order.class)
+                .setMaxResults(limit)
                 .getResultList();
         } finally {
             em.close();

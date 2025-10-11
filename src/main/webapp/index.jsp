@@ -29,13 +29,6 @@
               <i class="fas fa-shopping-bag"></i>
               Mua sắm ngay
             </a>
-            <a
-              href="${pageContext.request.contextPath}/api/v1/health"
-              class="btn btn-secondary btn-lg"
-            >
-              <i class="fas fa-heartbeat"></i>
-              Kiểm tra API
-            </a>
           </div>
         </div>
       </section>

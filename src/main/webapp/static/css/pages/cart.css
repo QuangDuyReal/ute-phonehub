@@ -190,7 +190,9 @@
 
 /* Cart Summary */
 .cart-summary {
+    position: sticky;
     top: 100px;
+    height: fit-content;
 }
 
 .summary-card {
@@ -198,6 +200,7 @@
     border-radius: 12px;
     padding: 25px;
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 
 .summary-card h3 {

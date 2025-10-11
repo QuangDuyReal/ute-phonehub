@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Controller for public voucher operations
@@ -34,6 +35,31 @@ public class VoucherController extends HttpServlet {
     
     public VoucherController() {
         this.voucherService = new VoucherService();
+    }
+    
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        
+        String pathInfo = request.getPathInfo();
+        
+        try {
+            // GET /api/v1/vouchers - Get all active vouchers
+            if (pathInfo == null || pathInfo.equals("/")) {
+                getAllVouchers(request, response);
+            } else {
+                // GET /api/v1/vouchers/{code} - Get voucher by code
+                String voucherCode = pathInfo.substring(1);
+                getVoucherByCode(request, response, voucherCode);
+            }
+        } catch (Exception e) {
+            logger.error("Error in doGet", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Đã xảy ra lỗi: " + e.getMessage());
+        }
     }
     
     @Override
@@ -159,6 +185,96 @@ public class VoucherController extends HttpServlet {
             voucher.getCode(), discountAmount);
         
         sendSuccessResponse(response, voucherResponse);
+    }
+    
+    /**
+     * Get all active vouchers
+     */
+    private void getAllVouchers(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        try {
+            // Parse pagination parameters
+            int page = parseIntParam(request.getParameter("page"), 1);
+            int limit = parseIntParam(request.getParameter("limit"), 50);
+            String status = request.getParameter("status");
+            
+            // Get vouchers from service
+            Map<String, Object> result = voucherService.getAllVouchers(page, limit, status);
+            
+            // Send response
+            response.setStatus(HttpServletResponse.SC_OK);
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("success", true);
+            responseBody.put("message", "Lấy danh sách vouchers thành công");
+            responseBody.put("data", result.get("vouchers"));
+            responseBody.put("metadata", result.get("metadata"));
+            
+            response.getWriter().write(jsonUtil.toJson(responseBody));
+            
+        } catch (Exception e) {
+            logger.error("Error getting vouchers", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Không thể lấy danh sách vouchers");
+        }
+    }
+    
+    /**
+     * Get voucher by code
+     */
+    private void getVoucherByCode(HttpServletRequest request, HttpServletResponse response, 
+                                   String voucherCode) throws IOException {
+        
+        try {
+            Optional<Voucher> voucherOpt = voucherService.getVoucherByCode(voucherCode);
+            
+            if (voucherOpt.isEmpty()) {
+                sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, 
+                    "Không tìm thấy voucher");
+                return;
+            }
+            
+            Voucher voucher = voucherOpt.get();
+            
+            // Build voucher data
+            Map<String, Object> voucherData = new HashMap<>();
+            voucherData.put("id", voucher.getId());
+            voucherData.put("code", voucher.getCode());
+            voucherData.put("description", "Voucher giảm giá đặc biệt"); // Default description
+            voucherData.put("discountType", voucher.getDiscountType().toString());
+            voucherData.put("discountValue", voucher.getDiscountValue());
+            voucherData.put("minOrderAmount", voucher.getMinOrderValue());
+            voucherData.put("maxDiscount", null); // Not available in current entity
+            voucherData.put("startDate", voucher.getCreatedAt());
+            voucherData.put("expiryDate", voucher.getExpiryDate());
+            voucherData.put("usageLimit", voucher.getMaxUsage());
+            voucherData.put("usedCount", voucher.getOrders() != null ? voucher.getOrders().size() : 0);
+            
+            // Send response
+            response.setStatus(HttpServletResponse.SC_OK);
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("success", true);
+            responseBody.put("message", "Lấy thông tin voucher thành công");
+            responseBody.put("data", voucherData);
+            
+            response.getWriter().write(jsonUtil.toJson(responseBody));
+            
+        } catch (Exception e) {
+            logger.error("Error getting voucher by code", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Không thể lấy thông tin voucher");
+        }
+    }
+    
+    /**
+     * Parse int parameter
+     */
+    private int parseIntParam(String param, int defaultValue) {
+        try {
+            return param != null ? Integer.parseInt(param) : defaultValue;
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
     
     /**

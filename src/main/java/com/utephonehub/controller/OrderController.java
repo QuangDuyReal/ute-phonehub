@@ -1,5 +1,6 @@
 package com.utephonehub.controller;
 
+import com.utephonehub.dto.request.PaymentInfoRequest;
 import com.utephonehub.util.JsonUtil;
 
 import com.google.gson.JsonObject;
@@ -118,12 +119,24 @@ public class OrderController extends HttpServlet {
             jsonRequest.get("voucherCode").getAsString() : null;
         String paymentMethod = jsonRequest.get("paymentMethod").getAsString();
         
+        // Parse payment info (optional, only for BANK_TRANSFER)
+        PaymentInfoRequest paymentInfo = null;
+        if (jsonRequest.has("paymentInfo")) {
+            JsonObject paymentInfoJson = jsonRequest.getAsJsonObject("paymentInfo");
+            paymentInfo = new PaymentInfoRequest(
+                paymentInfoJson.has("cardNumber") ? paymentInfoJson.get("cardNumber").getAsString() : null,
+                paymentInfoJson.has("cardHolder") ? paymentInfoJson.get("cardHolder").getAsString() : null,
+                paymentInfoJson.has("expiryDate") ? paymentInfoJson.get("expiryDate").getAsString() : null,
+                paymentInfoJson.has("cvv") ? paymentInfoJson.get("cvv").getAsString() : null
+            );
+        }
+        
         // Get userId (null for guest checkout)
         Long userId = getUserIdFromRequest(request);
         
         try {
             Map<String, Object> orderData = orderService.checkout(
-                userId, shippingInfo, voucherCode, paymentMethod);
+                userId, shippingInfo, voucherCode, paymentMethod, paymentInfo);
             
             Map<String, Object> responseData = new HashMap<>();
             responseData.put("success", true);
@@ -137,7 +150,8 @@ public class OrderController extends HttpServlet {
             if (e.getMessage().contains("trống") || 
                 e.getMessage().contains("không hợp lệ") ||
                 e.getMessage().contains("không tồn tại") ||
-                e.getMessage().contains("chưa đủ")) {
+                e.getMessage().contains("chưa đủ") ||
+                e.getMessage().contains("cung cấp thông tin")) {
                 sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
             } else {
                 throw e;
@@ -280,5 +294,29 @@ public class OrderController extends HttpServlet {
         response.setStatus(statusCode);
         response.getWriter().write(jsonUtil.toJson(errorResponse));
     }
+    /**
+ * Gửi success response
+ */
+    private void sendSuccessResponse(HttpServletResponse response, String message, Object data) 
+            throws IOException {
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("success", true);
+        responseData.put("message", message);
+        responseData.put("data", data);
+
+        sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+    }
+    private void sendJsonResponse(HttpServletResponse response, int statusCode, Object data) 
+            throws IOException {
+        
+        response.setStatus(statusCode);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        
+        String jsonResponse = jsonUtil.toJson(data);
+        response.getWriter().write(jsonResponse);
+    }
+    
 }
 

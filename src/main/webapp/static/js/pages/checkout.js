@@ -314,11 +314,130 @@ function setupEventListeners() {
         }
     });
     
-    // Apply voucher
-    document.getElementById('apply-voucher-btn').addEventListener('click', handleApplyVoucher);
+    // Apply/Remove voucher
+    document.getElementById('apply-voucher-btn').addEventListener('click', function() {
+        if (this.classList.contains('btn-remove-voucher')) {
+            removeVoucher();
+        } else {
+            handleApplyVoucher();
+        }
+    });
+    
+    // Payment method change - show/hide payment form
+    const paymentMethods = document.querySelectorAll('input[name="paymentMethod"]');
+    paymentMethods.forEach(radio => {
+        radio.addEventListener('change', handlePaymentMethodChange);
+    });
+    
+    // Auto-format card number
+    const cardNumber = document.getElementById('cardNumber');
+    if (cardNumber) {
+        cardNumber.addEventListener('input', formatCardNumber);
+    }
+    
+    // Auto-format expiry date
+    const expiryDate = document.getElementById('expiryDate');
+    if (expiryDate) {
+        expiryDate.addEventListener('input', formatExpiryDate);
+    }
     
     // Place order
     document.getElementById('place-order-btn').addEventListener('click', handlePlaceOrder);
+}
+
+/**
+ * Handle payment method change
+ */
+function handlePaymentMethodChange(e) {
+    const paymentForm = document.getElementById('bank-transfer-form');
+    
+    if (e.target.value === 'BANK_TRANSFER') {
+        paymentForm.style.display = 'block';
+        // Mark fields as required
+        document.getElementById('cardNumber').required = true;
+        document.getElementById('cardHolder').required = true;
+        document.getElementById('expiryDate').required = true;
+        document.getElementById('cvv').required = true;
+    } else {
+        paymentForm.style.display = 'none';
+        // Remove required attribute
+        document.getElementById('cardNumber').required = false;
+        document.getElementById('cardHolder').required = false;
+        document.getElementById('expiryDate').required = false;
+        document.getElementById('cvv').required = false;
+    }
+}
+
+/**
+ * Format card number (add spaces every 4 digits)
+ */
+function formatCardNumber(e) {
+    let value = e.target.value.replace(/\s/g, '');
+    value = value.replace(/\D/g, ''); // Remove non-digits
+    value = value.substring(0, 16); // Max 16 digits
+    
+    // Add space every 4 digits
+    value = value.match(/.{1,4}/g)?.join(' ') || value;
+    
+    e.target.value = value;
+}
+
+/**
+ * Format expiry date (MM/YY format)
+ */
+function formatExpiryDate(e) {
+    let value = e.target.value.replace(/\//g, '');
+    value = value.replace(/\D/g, ''); // Remove non-digits
+    value = value.substring(0, 4); // Max 4 digits
+    
+    // Add slash after 2 digits
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + '/' + value.substring(2);
+    }
+    
+    e.target.value = value;
+}
+
+/**
+ * Validate payment info
+ */
+function validatePaymentInfo() {
+    const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+    const cardHolder = document.getElementById('cardHolder').value.trim();
+    const expiryDate = document.getElementById('expiryDate').value;
+    const cvv = document.getElementById('cvv').value;
+    
+    // Validate card number (13-19 digits)
+    if (cardNumber.length < 13 || cardNumber.length > 19) {
+        showToast('Số thẻ không hợp lệ', 'error');
+        return false;
+    }
+    
+    // Validate card holder
+    if (cardHolder.length < 2) {
+        showToast('Tên chủ thẻ không hợp lệ', 'error');
+        return false;
+    }
+    
+    // Validate expiry date format (MM/YY)
+    if (!/^\d{2}\/\d{2}$/.test(expiryDate)) {
+        showToast('Ngày hết hạn không hợp lệ (MM/YY)', 'error');
+        return false;
+    }
+    
+    const [month, year] = expiryDate.split('/');
+    if (parseInt(month) < 1 || parseInt(month) > 12) {
+        showToast('Tháng không hợp lệ', 'error');
+        return false;
+    }
+    
+    // Validate CVV (3 digits)
+    if (!/^\d{3}$/.test(cvv)) {
+        showToast('CVV không hợp lệ (3 chữ số)', 'error');
+        return false;
+    }
+    
+    return true;
 }
 
 /**
@@ -327,37 +446,122 @@ function setupEventListeners() {
 async function handleApplyVoucher() {
     const voucherCode = document.getElementById('voucher-code').value.trim();
     const messageDiv = document.getElementById('voucher-message');
+    const applyBtn = document.getElementById('apply-voucher-btn');
     
     if (!voucherCode) {
         messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Vui lòng nhập mã giảm giá';
-        messageDiv.className = 'error';
+        messageDiv.className = 'voucher-message error';
+        messageDiv.style.display = 'block';
         return;
     }
     
+    // Show loading
+    applyBtn.disabled = true;
+    applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    messageDiv.style.display = 'none';
+    
     try {
-        // TODO: Implement voucher API when available
-        messageDiv.innerHTML = '<i class="fas fa-info-circle"></i> Tính năng áp dụng mã giảm giá đang được phát triển';
-        messageDiv.className = 'error';
+        // Validate voucher
+        const response = await API.post('/vouchers/validate', { 
+            code: voucherCode,
+            totalAmount: cartData?.totalPrice || 0
+        });
         
-        /*
-        const response = await API.post('/vouchers/apply', { code: voucherCode });
-        
-        if (response.success) {
-            messageDiv.innerHTML = `<i class="fas fa-check-circle"></i> Đã áp dụng mã giảm giá: ${voucherCode}`;
-            messageDiv.className = 'success';
+        if (response.success && response.data) {
+            const voucher = response.data;
             
-            // Reload cart to get updated prices
-            cartData = await loadCart();
-            updateOrderSummary(cartData);
+            // Show success message
+            messageDiv.innerHTML = `<i class="fas fa-check-circle"></i> Đã áp dụng mã giảm giá: <strong>${voucherCode}</strong>`;
+            messageDiv.className = 'voucher-message success';
+            messageDiv.style.display = 'block';
+            
+            // Update order summary with discount
+            updateOrderSummaryWithVoucher(voucher);
+            
+            // Change button to remove
+            applyBtn.innerHTML = '<i class="fas fa-times"></i> Hủy';
+            applyBtn.classList.add('btn-remove-voucher');
+            applyBtn.disabled = false;
+            
+            // Store voucher data
+            window.appliedVoucher = voucher;
         } else {
-            messageDiv.innerHTML = `<i class="fas fa-times-circle"></i> ${response.message || 'Mã giảm giá không hợp lệ'}`;
-            messageDiv.className = 'error';
+            messageDiv.innerHTML = `<i class="fas fa-times-circle"></i> ${response.message || 'Mã giảm giá không hợp lệ hoặc không áp dụng được'}`;
+            messageDiv.className = 'voucher-message error';
+            messageDiv.style.display = 'block';
+            
+            applyBtn.innerHTML = '<i class="fas fa-check"></i> Áp dụng';
+            applyBtn.disabled = false;
         }
-        */
     } catch (error) {
         console.error('Error applying voucher:', error);
         messageDiv.innerHTML = '<i class="fas fa-times-circle"></i> Đã xảy ra lỗi khi áp dụng mã giảm giá';
-        messageDiv.className = 'error';
+        messageDiv.className = 'voucher-message error';
+        messageDiv.style.display = 'block';
+        
+        applyBtn.innerHTML = '<i class="fas fa-check"></i> Áp dụng';
+        applyBtn.disabled = false;
+    }
+}
+
+/**
+ * Update order summary with voucher discount
+ */
+function updateOrderSummaryWithVoucher(voucher) {
+    const subtotal = cartData?.totalPrice || 0;
+    let discount = 0;
+    
+    if (voucher.discountType === 'PERCENTAGE') {
+        discount = subtotal * (voucher.discountValue / 100);
+        if (voucher.maxDiscount && discount > voucher.maxDiscount) {
+            discount = voucher.maxDiscount;
+        }
+    } else {
+        discount = voucher.discountValue;
+    }
+    
+    const total = subtotal - discount;
+    
+    // Update summary display
+    document.getElementById('summary-subtotal').textContent = formatPrice(subtotal);
+    
+    // Show discount row
+    const discountRow = document.getElementById('discount-row');
+    if (discountRow) {
+        discountRow.style.display = 'flex !important';
+        discountRow.style.setProperty('display', 'flex', 'important');
+        document.getElementById('summary-discount').textContent = '- ' + formatPrice(discount);
+    }
+    
+    document.getElementById('summary-total').textContent = formatPrice(total);
+}
+
+/**
+ * Remove voucher
+ */
+function removeVoucher() {
+    const messageDiv = document.getElementById('voucher-message');
+    const applyBtn = document.getElementById('apply-voucher-btn');
+    
+    // Clear voucher
+    document.getElementById('voucher-code').value = '';
+    window.appliedVoucher = null;
+    
+    // Reset button
+    applyBtn.innerHTML = '<i class="fas fa-check"></i> Áp dụng';
+    applyBtn.classList.remove('btn-remove-voucher');
+    applyBtn.disabled = false;
+    
+    // Hide message
+    messageDiv.style.display = 'none';
+    
+    // Update summary without discount
+    updateOrderSummary(cartData);
+    
+    // Hide discount row
+    const discountRow = document.getElementById('discount-row');
+    if (discountRow) {
+        discountRow.style.setProperty('display', 'none', 'important');
     }
 }
 
@@ -408,12 +612,32 @@ async function handlePlaceOrder() {
     // Get payment method
     const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
     
+    // Validate payment info if BANK_TRANSFER
+    if (paymentMethod === 'BANK_TRANSFER') {
+        if (!validatePaymentInfo()) {
+            return;
+        }
+    }
+    
     // Prepare checkout data
     const checkoutData = {
         ...shippingData,
         paymentMethod: paymentMethod,
         voucherCode: document.getElementById('voucher-code').value.trim() || null
     };
+    
+    // Debug log
+    console.log('Checkout data:', checkoutData);
+    
+    // Add payment info if BANK_TRANSFER
+    if (paymentMethod === 'BANK_TRANSFER') {
+        checkoutData.paymentInfo = {
+            cardNumber: document.getElementById('cardNumber').value.replace(/\s/g, ''),
+            cardHolder: document.getElementById('cardHolder').value.trim().toUpperCase(),
+            expiryDate: document.getElementById('expiryDate').value,
+            cvv: document.getElementById('cvv').value
+        };
+    }
     
     // Show loading
     placeOrderBtn.classList.add('loading');

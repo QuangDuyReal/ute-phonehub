@@ -210,6 +210,8 @@ public class Order {
     }
     
     public enum PaymentMethod {
-        COD, BANK_TRANSFER, CREDIT_CARD
+        COD,            // Thanh toán khi nhận hàng
+        STORE_PICKUP,   // Nhận và thanh toán tại cửa hàng
+        BANK_TRANSFER   // Chuyển khoản ngân hàng (giả lập)
     }
 }

@@ -265,4 +265,41 @@ public class UserRepository {
             throw new RuntimeException("Failed to update user status", e);
         }
     }
+    
+    /**
+     * Count active users (for Dashboard)
+     */
+    public long countActiveUsers() {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT COUNT(u) FROM User u WHERE u.status = :status", Long.class)
+                .setParameter("status", User.UserStatus.active)
+                .getSingleResult();
+        } catch (Exception e) {
+            logger.error("Error counting active users", e);
+            throw new RuntimeException("Failed to count active users", e);
+        }
+    }
+    
+    /**
+     * Count new users by date range (for Dashboard)
+     */
+    public long countNewUsers(java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            java.time.LocalDateTime startDateTime = startDate.atStartOfDay();
+            java.time.LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+            
+            return em.createQuery(
+                "SELECT COUNT(u) FROM User u " +
+                "WHERE u.createdAt BETWEEN :startDate AND :endDate", Long.class)
+                .setParameter("startDate", startDateTime)
+                .setParameter("endDate", endDateTime)
+                .getSingleResult();
+        } catch (Exception e) {
+            logger.error("Error counting new users", e);
+            throw new RuntimeException("Failed to count new users", e);
+        }
+    }
 }

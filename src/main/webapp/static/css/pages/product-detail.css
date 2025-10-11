@@ -579,6 +579,90 @@
 .review-comment {
     line-height: 1.6;
     color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.review-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.review-actions .btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.review-actions .btn-outline-primary:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.review-actions .btn-outline-danger:hover {
+    background: #dc3545;
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Review Edit Form */
+.review-edit-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid var(--primary-color);
+}
+
+.review-edit-form h5 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.review-edit-form label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.rating-edit-input {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.rating-edit-input i {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.rating-edit-input i.fas {
+    color: var(--primary-color);
+}
+
+.rating-edit-input i:hover {
+    transform: scale(1.2);
+}
+
+.review-edit-form .btn-group {
+    display: flex;
+    gap: 8px;
+}
+
+.review-edit-form .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 8px;
+    font-weight: 600;
 }
 
 .no-reviews {

@@ -34,6 +34,7 @@ public class ReviewService {
             reviewData.put("comment", review.getComment());
             
             Map<String, Object> userData = new HashMap<>();
+            userData.put("id", review.getUser().getId());
             userData.put("fullName", review.getUser().getFullName());
             reviewData.put("user", userData);
             

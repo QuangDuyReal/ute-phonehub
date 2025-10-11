@@ -5,6 +5,7 @@ import com.utephonehub.entity.User;
 import com.utephonehub.repository.OrderRepository;
 import com.utephonehub.repository.ProductRepository;
 import com.utephonehub.repository.UserRepository;
+import com.utephonehub.service.DashboardService;
 import com.utephonehub.util.JsonUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -34,12 +36,14 @@ public class AdminDashboardController extends HttpServlet {
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final DashboardService dashboardService;
     private final JsonUtil jsonUtil;
     
     public AdminDashboardController() {
         this.orderRepository = new OrderRepository();
         this.productRepository = new ProductRepository();
         this.userRepository = new UserRepository();
+        this.dashboardService = new DashboardService();
         this.jsonUtil = new JsonUtil();
     }
     
@@ -59,12 +63,92 @@ public class AdminDashboardController extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/") || pathInfo.equals("/summary")) {
                 // GET /api/v1/admin/dashboard/summary - Dashboard summary statistics
                 handleGetDashboardSummary(request, response);
+            } else if (pathInfo.equals("/stats")) {
+                // GET /api/v1/admin/dashboard/stats - New stats using DashboardService
+                handleGetDashboardStats(request, response);
+            } else if (pathInfo.equals("/recent-orders")) {
+                // GET /api/v1/admin/dashboard/recent-orders
+                handleGetRecentOrders(request, response);
+            } else if (pathInfo.equals("/low-stock")) {
+                // GET /api/v1/admin/dashboard/low-stock
+                handleGetLowStockProducts(request, response);
             } else {
                 sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "Endpoint not found");
             }
         } catch (Exception e) {
             logger.error("Error in AdminDashboardController GET", e);
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+    }
+    
+    /**
+     * Get dashboard stats using DashboardService (NEW)
+     */
+    private void handleGetDashboardStats(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        
+        try {
+            // Parse date range (optional)
+            String startDateStr = request.getParameter("startDate");
+            String endDateStr = request.getParameter("endDate");
+            
+            LocalDate startDate = startDateStr != null ? LocalDate.parse(startDateStr) : LocalDate.now().minusDays(30);
+            LocalDate endDate = endDateStr != null ? LocalDate.parse(endDateStr) : LocalDate.now();
+            
+            // Get stats from service
+            Map<String, Object> stats = dashboardService.getDashboardStats(startDate, endDate);
+            
+            sendSuccessResponse(response, "Lấy thống kê dashboard thành công", stats);
+            
+        } catch (Exception e) {
+            logger.error("Error getting dashboard stats", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Lỗi khi lấy thống kê dashboard");
+        }
+    }
+    
+    /**
+     * Get recent orders (NEW)
+     */
+    private void handleGetRecentOrders(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        
+        try {
+            int limit = request.getParameter("limit") != null ? 
+                Integer.parseInt(request.getParameter("limit")) : 10;
+            
+            List<Map<String, Object>> recentOrders = dashboardService.getRecentOrders(limit);
+            
+            sendSuccessResponse(response, "Lấy đơn hàng gần đây thành công", recentOrders);
+            
+        } catch (Exception e) {
+            logger.error("Error getting recent orders", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Lỗi khi lấy đơn hàng gần đây");
+        }
+    }
+    
+    /**
+     * Get low stock products (NEW)
+     */
+    private void handleGetLowStockProducts(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        
+        try {
+            int threshold = request.getParameter("threshold") != null ? 
+                Integer.parseInt(request.getParameter("threshold")) : 10;
+            int limit = request.getParameter("limit") != null ? 
+                Integer.parseInt(request.getParameter("limit")) : 10;
+            
+            List<Map<String, Object>> lowStockProducts = 
+                dashboardService.getLowStockProducts(threshold, limit);
+            
+            sendSuccessResponse(response, "Lấy sản phẩm sắp hết hàng thành công", lowStockProducts);
+            
+        } catch (Exception e) {
+            logger.error("Error getting low stock products", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Lỗi khi lấy sản phẩm sắp hết hàng");
         }
     }
     
@@ -332,5 +416,15 @@ public class AdminDashboardController extends HttpServlet {
         errorData.put("message", message);
         
         sendJsonResponse(response, statusCode, errorData);
+    }
+    private void sendSuccessResponse(HttpServletResponse response, String message, Object data) 
+            throws IOException {
+
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("success", true);
+        responseData.put("message", message);
+        responseData.put("data", data);
+
+        sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
     }
 }

@@ -1,8 +1,10 @@
 package com.utephonehub.service;
 
+import com.utephonehub.dto.request.PaymentInfoRequest;
 import com.utephonehub.dto.response.VoucherValidationResult;
 import com.utephonehub.entity.*;
 import com.utephonehub.repository.*;
+import com.utephonehub.util.JsonUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,18 +19,51 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final VoucherService voucherService;
+    private final RedisService redisService;
+    private final EmailService emailService;
+    private final JsonUtil jsonUtil;
     
     public OrderService() {
         this.orderRepository = new OrderRepository();
         this.cartRepository = new CartRepository();
         this.productRepository = new ProductRepository();
         this.voucherService = new VoucherService();
+        this.redisService = new RedisService();
+        this.emailService = new EmailService();
+        this.jsonUtil = new JsonUtil();
     }
     
+    /**
+     * Checkout với payment info (Redis-based, không lưu vào DB)
+     * @param userId User ID (null cho guest checkout)
+     * @param shippingInfo Thông tin giao hàng
+     * @param voucherCode Mã voucher (optional)
+     * @param paymentMethod Phương thức thanh toán (COD, STORE_PICKUP, BANK_TRANSFER)
+     * @param paymentInfo Thông tin thanh toán (chỉ cần cho BANK_TRANSFER)
+     * @return Order data
+     */
     public Map<String, Object> checkout(Long userId, Map<String, Object> shippingInfo, 
-                                       String voucherCode, String paymentMethod) {
+                                       String voucherCode, String paymentMethod,
+                                       PaymentInfoRequest paymentInfo) {
         
-        logger.info("Processing checkout for userId: {}, voucherCode: {}", userId, voucherCode);
+        logger.info("Processing checkout for userId: {}, paymentMethod: {}", userId, paymentMethod);
+        
+        // Validate payment method
+        Order.PaymentMethod method;
+        try {
+            method = Order.PaymentMethod.valueOf(paymentMethod.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Phương thức thanh toán không hợp lệ: " + paymentMethod);
+        }
+        
+        // Validate payment info for BANK_TRANSFER
+        if (method == Order.PaymentMethod.BANK_TRANSFER) {
+            if (paymentInfo == null) {
+                throw new RuntimeException("Vui lòng cung cấp thông tin thanh toán");
+            }
+            paymentInfo.validate(); // Will throw exception if invalid
+            logger.info("Payment info validated: {}", paymentInfo);
+        }
         
         // Get user's cart
         Optional<Cart> cartOpt = userId != null ? cartRepository.findByUserId(userId) : Optional.empty();
@@ -40,7 +75,7 @@ public class OrderService {
         
         Cart cart = cartOpt.get();
         
-        // Calculate total
+        // Calculate total (NO shipping fee as per requirement)
         BigDecimal totalAmount = BigDecimal.ZERO;
         for (CartItem item : cart.getItems()) {
             BigDecimal lineTotal = item.getProduct().getPrice()
@@ -55,7 +90,6 @@ public class OrderService {
         BigDecimal finalAmount = totalAmount;
         
         if (voucherCode != null && !voucherCode.isEmpty()) {
-            // Use VoucherService for validation and discount calculation
             VoucherValidationResult validation = voucherService.validateVoucher(
                 voucherCode, totalAmount, userId
             );
@@ -92,7 +126,7 @@ public class OrderService {
         order.setCity((String) shippingInfo.get("city"));
         
         // Set payment method
-        order.setPaymentMethod(Order.PaymentMethod.valueOf(paymentMethod.toUpperCase()));
+        order.setPaymentMethod(method);
         
         order.setTotalAmount(finalAmount);
         order.setVoucher(voucher);
@@ -101,6 +135,19 @@ public class OrderService {
         // Save order first to get ID
         Order savedOrder = orderRepository.save(order);
         logger.info("Order created with code: {}", savedOrder.getOrderCode());
+        
+        // Store payment info in Redis if BANK_TRANSFER (TTL 24h)
+        if (method == Order.PaymentMethod.BANK_TRANSFER && paymentInfo != null) {
+            try {
+                String key = "payment_info:" + savedOrder.getId();
+                String value = jsonUtil.toJson(paymentInfo);
+                redisService.set(key, value, 86400); // 24 hours TTL
+                logger.info("Payment info stored in Redis for order: {}", savedOrder.getId());
+            } catch (Exception e) {
+                logger.error("Failed to store payment info in Redis", e);
+                // Don't fail checkout, just log the error
+            }
+        }
         
         // Create order items from cart
         for (CartItem cartItem : cart.getItems()) {
@@ -138,11 +185,22 @@ public class OrderService {
         
         logger.info("Checkout completed successfully for order: {}", savedOrder.getOrderCode());
         
+        // Send email notifications (async, don't fail checkout if email fails)
+        try {
+            emailService.sendOrderConfirmationToCustomer(savedOrder);
+            emailService.sendNewOrderNotificationToAdmin(savedOrder);
+            logger.info("Order notification emails sent for order: {}", savedOrder.getOrderCode());
+        } catch (Exception e) {
+            logger.error("Failed to send order notification emails, but checkout succeeded", e);
+            // Don't throw exception, checkout is already successful
+        }
+        
         // Build response
         Map<String, Object> response = new HashMap<>();
         response.put("orderId", savedOrder.getId());
         response.put("orderCode", savedOrder.getOrderCode());
         response.put("totalAmount", savedOrder.getTotalAmount());
+        response.put("paymentMethod", savedOrder.getPaymentMethod().name());
         
         return response;
     }

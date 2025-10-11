@@ -328,21 +328,43 @@ function renderReviews(reviews, productId) {
     
     // Render review items
     reviewsList.innerHTML = '';
+    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUserId = currentUser.id;
+    
     reviews.forEach(review => {
         const reviewItem = document.createElement('div');
         reviewItem.className = 'review-item';
+        reviewItem.dataset.reviewId = review.id;
         
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
             starsHtml += '<i class="fas fa-star' + (i <= review.rating ? '' : ' text-muted') + '"></i>';
         }
         
-        reviewItem.innerHTML = '<div class="review-header">' +
-            '<div class="review-user"><i class="fas fa-user-circle"></i> ' + escapeHtml(review.userName || 'Anonymous') + '</div>' +
-            '<div class="review-date">' + formatDate(review.createdAt) + '</div>' +
-            '</div>' +
-            '<div class="review-rating">' + starsHtml + '</div>' +
-            '<div class="review-comment">' + escapeHtml(review.comment) + '</div>';
+        // Check if this review belongs to current user
+        const isOwnReview = currentUserId && review.user && review.user.id === currentUserId;
+        const actionsHtml = isOwnReview ? `
+            <div class="review-actions">
+                <button class="btn btn-sm btn-outline-primary edit-review-btn" data-review-id="${review.id}">
+                    <i class="fas fa-edit"></i> Sửa
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-review-btn" data-review-id="${review.id}">
+                    <i class="fas fa-trash"></i> Xóa
+                </button>
+            </div>
+        ` : '';
+        
+        reviewItem.innerHTML = `
+            <div class="review-header">
+                <div class="review-user">
+                    <i class="fas fa-user-circle"></i> ${escapeHtml(review.user?.fullName || 'Anonymous')}
+                </div>
+                <div class="review-date">${formatDate(review.createdAt)}</div>
+            </div>
+            <div class="review-rating">${starsHtml}</div>
+            <div class="review-comment">${escapeHtml(review.comment)}</div>
+            ${actionsHtml}
+        `;
         
         reviewsList.appendChild(reviewItem);
     });
@@ -468,6 +490,21 @@ function setupEventListeners(productId) {
             await handleSubmitReview(productId);
         });
     }
+    
+    // Edit/Delete review buttons (event delegation)
+    document.addEventListener('click', function(e) {
+        // Edit review
+        if (e.target.closest('.edit-review-btn')) {
+            const reviewId = e.target.closest('.edit-review-btn').dataset.reviewId;
+            handleEditReview(productId, reviewId);
+        }
+        
+        // Delete review
+        if (e.target.closest('.delete-review-btn')) {
+            const reviewId = e.target.closest('.delete-review-btn').dataset.reviewId;
+            handleDeleteReview(productId, reviewId);
+        }
+    });
 }
 
 /**
@@ -549,6 +586,138 @@ async function handleSubmitReview(productId) {
     } catch (error) {
         console.error('Error submitting review:', error);
         showToast('Đã xảy ra lỗi. Vui lòng thử lại.', 'danger');
+    }
+}
+
+/**
+ * Handle edit review
+ */
+async function handleEditReview(productId, reviewId) {
+    // Find the review in the current list
+    const reviewItem = document.querySelector(`.review-item[data-review-id="${reviewId}"]`);
+    if (!reviewItem) return;
+    
+    // Get current review data
+    const ratingStars = reviewItem.querySelectorAll('.review-rating i.fas.fa-star').length;
+    const commentText = reviewItem.querySelector('.review-comment').textContent;
+    
+    // Show edit form (replace the review item temporarily)
+    const editFormHtml = `
+        <div class="review-edit-form" data-review-id="${reviewId}">
+            <h5>Chỉnh sửa đánh giá</h5>
+            <div class="mb-3">
+                <label>Đánh giá của bạn:</label>
+                <div class="rating-edit-input" id="rating-edit-input-${reviewId}">
+                    ${[1,2,3,4,5].map(i => `<i class="${i <= ratingStars ? 'fas' : 'far'} fa-star" data-rating="${i}"></i>`).join('')}
+                </div>
+                <input type="hidden" id="rating-edit-value-${reviewId}" value="${ratingStars}">
+            </div>
+            <div class="mb-3">
+                <label>Nhận xét:</label>
+                <textarea class="form-control" id="review-edit-comment-${reviewId}" rows="4" required>${commentText}</textarea>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-primary save-edit-btn" data-review-id="${reviewId}">
+                    <i class="fas fa-save"></i> Lưu
+                </button>
+                <button class="btn btn-sm btn-secondary cancel-edit-btn" data-review-id="${reviewId}">
+                    <i class="fas fa-times"></i> Hủy
+                </button>
+            </div>
+        </div>
+    `;
+    
+    // Replace review item with edit form
+    reviewItem.innerHTML = editFormHtml;
+    
+    // Add event listeners for edit form
+    const ratingEditInput = document.getElementById(`rating-edit-input-${reviewId}`);
+    ratingEditInput.querySelectorAll('i').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            document.getElementById(`rating-edit-value-${reviewId}`).value = rating;
+            
+            // Update stars display
+            ratingEditInput.querySelectorAll('i').forEach((s, index) => {
+                s.className = index < rating ? 'fas fa-star' : 'far fa-star';
+            });
+        });
+    });
+    
+    // Save edit
+    document.querySelector(`.save-edit-btn[data-review-id="${reviewId}"]`).addEventListener('click', async () => {
+        const newRating = parseInt(document.getElementById(`rating-edit-value-${reviewId}`).value);
+        const newComment = document.getElementById(`review-edit-comment-${reviewId}`).value.trim();
+        
+        if (newRating === 0) {
+            showToast('Vui lòng chọn số sao đánh giá', 'warning');
+            return;
+        }
+        
+        if (!newComment) {
+            showToast('Vui lòng nhập nhận xét', 'warning');
+            return;
+        }
+        
+        try {
+            const token = localStorage.getItem('accessToken');
+            const response = await fetch(`/api/v1/reviews/${reviewId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({ rating: newRating, comment: newComment })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast('Cập nhật đánh giá thành công!', 'success');
+                loadReviews(productId);
+            } else {
+                showToast(data.message || 'Không thể cập nhật đánh giá', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating review:', error);
+            showToast('Đã xảy ra lỗi. Vui lòng thử lại.', 'error');
+        }
+    });
+    
+    // Cancel edit
+    document.querySelector(`.cancel-edit-btn[data-review-id="${reviewId}"]`).addEventListener('click', () => {
+        loadReviews(productId);
+    });
+}
+
+/**
+ * Handle delete review
+ */
+async function handleDeleteReview(productId, reviewId) {
+    if (!confirm('Bạn có chắc chắn muốn xóa đánh giá này?')) {
+        return;
+    }
+    
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(`/api/v1/reviews/${reviewId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Xóa đánh giá thành công!', 'success');
+            loadReviews(productId);
+        } else {
+            showToast(data.message || 'Không thể xóa đánh giá', 'error');
+        }
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        showToast('Đã xảy ra lỗi. Vui lòng thử lại.', 'error');
     }
 }
 

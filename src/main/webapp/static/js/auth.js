@@ -92,13 +92,16 @@ function showMessage(elementId, message, isError = false) {
 }
 
 function hideMessage(elementId) {
-  document.getElementById(elementId).style.display = "none";
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.style.display = "none";
+  }
 }
 
 // Login form handler
-document
-  .getElementById("loginForm")
-  .addEventListener("submit", async function (e) {
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+  loginForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     hideMessage("errorMessage");
@@ -153,11 +156,12 @@ document
       showMessage("errorMessage", "Có lỗi xảy ra, vui lòng thử lại!", true);
     }
   });
+}
 
 // Register form handler
-document
-  .getElementById("registerForm")
-  .addEventListener("submit", async function (e) {
+const registerForm = document.getElementById("registerForm");
+if (registerForm) {
+  registerForm.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     hideMessage("regErrorMessage");
@@ -255,6 +259,7 @@ document
       showMessage("regErrorMessage", "Có lỗi xảy ra, vui lòng thử lại!", true);
     }
   });
+}
 
 // Auto-hide messages when user starts typing
 document.querySelectorAll("input").forEach((input) => {

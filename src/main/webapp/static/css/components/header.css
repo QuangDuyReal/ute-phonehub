@@ -322,7 +322,7 @@
     border-bottom: none;
 }
 
-/* Mobile Menu */
+/* Mobile Menu Button */
 .mobile-menu-btn {
     display: none;
     background: none;
@@ -330,59 +330,135 @@
     color: white;
     font-size: 24px;
     cursor: pointer;
-    padding: 10px;
+    padding: 8px;
     border-radius: 8px;
-    transition: background 0.3s;
+    transition: all 0.3s;
+    position: relative;
+    z-index: 1002;
 }
 
 .mobile-menu-btn:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.2);
 }
 
-.mobile-menu {
+.mobile-menu-btn:active {
+    transform: scale(0.95);
+}
+
+/* Mobile Navigation Overlay - ONLY show when active AND on mobile */
+.nav.mobile-active {
+    display: none !important; /* Hidden by default even when active */
+}
+
+@media (max-width: 768px) {
+    .nav.mobile-active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        z-index: 1001;
+        overflow-y: auto;
+        animation: slideInRight 0.3s ease-out;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Mobile Menu Header */
+.mobile-menu-header {
     display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    z-index: 1000;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #d70018 0%, #b8000f 100%);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.mobile-menu.active {
-    display: block;
+@media (max-width: 768px) {
+    .nav.mobile-active .mobile-menu-header {
+        display: flex;
+    }
 }
 
-.mobile-nav-list {
-    list-style: none;
-    margin: 0;
+.mobile-menu-title {
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mobile-menu-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    padding: 5px;
+    line-height: 1;
+}
+
+/* Mobile Navigation List */
+.nav.mobile-active .nav-container {
     padding: 0;
 }
 
-.mobile-nav-item {
+.nav.mobile-active .nav-list {
+    flex-direction: column;
+    padding: 10px 0;
+}
+
+.nav.mobile-active .nav-item {
+    width: 100%;
     border-bottom: 1px solid #f0f0f0;
 }
 
-.mobile-nav-link {
+.nav.mobile-active .nav-link {
     display: flex;
     align-items: center;
-    padding: 15px 20px;
+    padding: 16px 20px;
     color: #333;
-    text-decoration: none;
+    font-size: 16px;
     font-weight: 600;
-    transition: all 0.3s;
+    gap: 15px;
 }
 
-.mobile-nav-link:hover {
-    background: #f8f9fa;
-    color: #ff6b35;
+.nav.mobile-active .nav-link i {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
 }
 
-.mobile-nav-link i {
-    margin-right: 12px;
-    font-size: 18px;
-    width: 20px;
+.nav.mobile-active .nav-link:hover,
+.nav.mobile-active .nav-link.active {
+    background: #fff5f1;
+    color: #d70018;
+}
+
+.nav.mobile-active .nav-link.active::before {
+    display: none;
+}
+
+.nav.mobile-active .nav-link::after {
+    content: '\f054';
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
+    margin-left: auto;
+    font-size: 14px;
+    color: #999;
 }
 
 /* Responsive Design */
@@ -414,82 +490,207 @@
 }
 
 @media (max-width: 768px) {
+    .header-top {
+        padding: 6px 0;
+    }
+    
+    .header-top-content {
+        padding: 0 12px;
+        font-size: 11px;
+    }
+    
+    .header-main {
+        padding: 12px 0;
+    }
+    
     .header-content {
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-    
-    .search-container {
-        order: 3;
-        flex: 1 1 100%;
-        max-width: 100%;
-    }
-    
-    .header-actions {
-        order: 2;
+        flex-wrap: nowrap;
+        gap: 8px;
+        padding: 0 12px;
     }
     
     .logo {
         order: 1;
-        font-size: 24px;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+    
+    .logo span {
+        display: none; /* Ẩn text "UTE Phone Hub" trên mobile */
     }
     
     .logo-icon {
-        width: 35px;
-        height: 35px;
+        width: 36px;
+        height: 36px;
         font-size: 18px;
+        margin-right: 0; /* Xóa margin khi ẩn text */
     }
     
+    .search-container {
+        order: 2;
+        flex: 1;
+        max-width: none;
+    }
+    
+    .search-input {
+        font-size: 13px;
+        padding: 10px 45px 10px 14px;
+        border-radius: 20px;
+    }
+    
+    .search-btn {
+        padding: 8px 16px;
+        border-radius: 20px;
+    }
+    
+    .search-btn i {
+        font-size: 14px;
+    }
+    
+    .header-actions {
+        order: 3;
+        gap: 6px;
+        flex-shrink: 0;
+    }
+    
+    .header-action span {
+        display: none;
+    }
+    
+    .header-action {
+        min-width: auto;
+        padding: 8px 10px;
+        border-radius: 10px;
+    }
+    
+    .header-action i {
+        font-size: 22px;
+        margin-bottom: 0;
+    }
+    
+    /* Hide desktop nav, show mobile button */
     .nav {
         display: none;
     }
     
     .mobile-menu-btn {
-        display: block;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        order: 0;
+        margin-right: 6px;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
     }
     
-    .mobile-menu {
-        display: block;
+    .mobile-menu-btn i {
+        font-size: 22px;
     }
 }
 
 @media (max-width: 480px) {
+    .header-top {
+        padding: 5px 0;
+    }
+    
+    .header-top-content {
+        padding: 0 10px;
+        font-size: 10px;
+    }
+    
+    .header-promo {
+        font-size: 10px;
+    }
+    
+    .header-promo i {
+        font-size: 10px;
+    }
+    
+    .header-location {
+        font-size: 10px;
+    }
+    
+    .header-main {
+        padding: 10px 0;
+    }
+    
     .header-content {
-        padding: 0 15px;
+        padding: 0 10px;
+        gap: 6px;
     }
     
     .logo {
-        font-size: 20px;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+    
+    .logo span {
+        display: none; /* Ẩn text logo */
     }
     
     .logo-icon {
-        width: 30px;
-        height: 30px;
+        width: 32px;
+        height: 32px;
         font-size: 16px;
-        margin-right: 8px;
+        margin-right: 0;
     }
     
     .search-input {
-        padding: 12px 50px 12px 15px;
-        font-size: 14px;
+        padding: 9px 42px 9px 12px;
+        font-size: 12px;
+        border-radius: 18px;
     }
     
     .search-btn {
-        padding: 8px 15px;
-        font-size: 14px;
+        padding: 7px 14px;
+        font-size: 12px;
+        right: 3px;
+        border-radius: 18px;
+    }
+    
+    .search-btn i {
+        font-size: 13px;
+    }
+    
+    .header-actions {
+        gap: 4px;
+        flex-shrink: 0;
     }
     
     .header-action {
-        min-width: 60px;
-        padding: 6px 10px;
+        min-width: auto;
+        padding: 7px 8px;
+        border-radius: 8px;
     }
     
     .header-action i {
-        font-size: 18px;
+        font-size: 20px;
+        margin-bottom: 0;
     }
     
     .header-action span {
+        font-size: 9px;
+        display: none; /* Ẩn text trên mobile nhỏ */
+    }
+    
+    .cart-badge {
+        width: 18px;
+        height: 18px;
         font-size: 10px;
+        top: -3px;
+        right: -3px;
+    }
+    
+    .mobile-menu-btn {
+        padding: 7px;
+        margin-right: 4px;
+        width: 36px;
+        height: 36px;
+    }
+    
+    .mobile-menu-btn i {
+        font-size: 20px;
     }
 }
 

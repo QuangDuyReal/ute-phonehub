@@ -436,4 +436,62 @@ public class ProductRepository {
             throw new RuntimeException("Failed to count products with filters", e);
         }
     }
+    
+    /**
+     * Count active products (for Dashboard)
+     */
+    public long countActiveProducts() {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT COUNT(p) FROM Product p WHERE p.status = true", Long.class)
+                .getSingleResult();
+        } catch (Exception e) {
+            logger.error("Error counting active products", e);
+            throw new RuntimeException("Failed to count active products", e);
+        }
+    }
+    
+    /**
+     * Count new products by date range (for Dashboard)
+     */
+    public long countNewProducts(java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            java.time.LocalDateTime startDateTime = startDate.atStartOfDay();
+            java.time.LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+            
+            return em.createQuery(
+                "SELECT COUNT(p) FROM Product p " +
+                "WHERE p.createdAt BETWEEN :startDate AND :endDate", Long.class)
+                .setParameter("startDate", startDateTime)
+                .setParameter("endDate", endDateTime)
+                .getSingleResult();
+        } catch (Exception e) {
+            logger.error("Error counting new products", e);
+            throw new RuntimeException("Failed to count new products", e);
+        }
+    }
+    
+    /**
+     * Find low stock products (for Dashboard)
+     */
+    public List<Product> findLowStockProducts(int threshold, int limit) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            TypedQuery<Product> query = em.createQuery(
+                "SELECT p FROM Product p " +
+                "LEFT JOIN FETCH p.category " +
+                "LEFT JOIN FETCH p.brand " +
+                "WHERE p.status = true AND p.stockQuantity <= :threshold " +
+                "ORDER BY p.stockQuantity ASC", 
+                Product.class);
+            query.setParameter("threshold", threshold);
+            query.setMaxResults(limit);
+            return query.getResultList();
+        } catch (Exception e) {
+            logger.error("Error finding low stock products", e);
+            throw new RuntimeException("Failed to find low stock products", e);
+        }
+    }
 }

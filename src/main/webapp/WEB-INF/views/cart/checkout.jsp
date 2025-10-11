@@ -171,19 +171,78 @@
                                         <i class="fas fa-university fa-2x text-primary me-3"></i>
                                         <div>
                                             <strong>Chuyển khoản ngân hàng</strong>
-                                            <p class="text-muted small mb-0">Chuyển khoản qua ngân hàng (sẽ có hướng dẫn sau)</p>
+                                            <p class="text-muted small mb-0">Thanh toán bằng thẻ ngân hàng hoặc chuyển khoản</p>
                                         </div>
                                     </div>
                                 </label>
                             </div>
+                            
+                            <!-- Mock Payment Form for BANK_TRANSFER -->
+                            <div id="bank-transfer-form" class="payment-form-details mt-3 mb-3" style="display: none;">
+                                <div class="card border-primary">
+                                    <div class="card-body">
+                                        <h6 class="card-title mb-3">
+                                            <i class="fas fa-credit-card me-2"></i>Thông tin thanh toán
+                                        </h6>
+                                        <p class="text-muted small mb-3">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Đây là form giả lập, không thực hiện giao dịch thật
+                                        </p>
+                                        
+                                        <div class="mb-3">
+                                            <label for="cardNumber" class="form-label">Số thẻ <span class="text-danger">*</span></label>
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="cardNumber" 
+                                                   placeholder="1234 5678 9012 3456" 
+                                                   maxlength="19"
+                                                   pattern="[0-9\s]+"
+                                                   autocomplete="cc-number">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="cardHolder" class="form-label">Tên chủ thẻ <span class="text-danger">*</span></label>
+                                            <input type="text" 
+                                                   class="form-control text-uppercase" 
+                                                   id="cardHolder" 
+                                                   placeholder="NGUYEN VAN A"
+                                                   autocomplete="cc-name">
+                                        </div>
+                                        
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <label for="expiryDate" class="form-label">Ngày hết hạn <span class="text-danger">*</span></label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="expiryDate" 
+                                                       placeholder="MM/YY" 
+                                                       maxlength="5"
+                                                       pattern="[0-9/]+"
+                                                       autocomplete="cc-exp">
+                                            </div>
+                                            <div class="col-6">
+                                                <label for="cvv" class="form-label">CVV <span class="text-danger">*</span></label>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="cvv" 
+                                                       placeholder="123" 
+                                                       maxlength="3"
+                                                       pattern="[0-9]+"
+                                                       autocomplete="cc-csc">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div class="form-check payment-option">
-                                <input class="form-check-input" type="radio" name="paymentMethod" id="payment-card" value="CREDIT_CARD">
-                                <label class="form-check-label" for="payment-card">
+                                <input class="form-check-input" type="radio" name="paymentMethod" id="payment-store" value="STORE_PICKUP">
+                                <label class="form-check-label" for="payment-store">
                                     <div class="d-flex align-items-center">
-                                        <i class="fas fa-credit-card fa-2x text-info me-3"></i>
+                                        <i class="fas fa-store fa-2x text-success me-3"></i>
                                         <div>
-                                            <strong>Thẻ tín dụng/Ghi nợ</strong>
-                                            <p class="text-muted small mb-0">Visa, Mastercard, JCB (đang phát triển)</p>
+                                            <strong>Thanh toán tại cửa hàng</strong>
+                                            <p class="text-muted small mb-0">Nhận và thanh toán trực tiếp tại cửa hàng</p>
                                         </div>
                                     </div>
                                 </label>

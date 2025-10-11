@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service layer for voucher business logic
@@ -163,5 +163,69 @@ public class VoucherService {
      */
     public Optional<Voucher> getVoucherById(Long id) {
         return voucherRepository.findById(id);
+    }
+    
+    /**
+     * Get all vouchers with pagination and optional status filter
+     * 
+     * @param page Page number (starting from 1)
+     * @param limit Items per page
+     * @param status Optional status filter (ACTIVE, INACTIVE, EXPIRED)
+     * @return Map with vouchers list and metadata
+     */
+    public Map<String, Object> getAllVouchers(int page, int limit, String status) {
+        logger.debug("Getting vouchers - page: {}, limit: {}, status: {}", page, limit, status);
+        
+        // Get vouchers from repository
+        List<Voucher> allVouchers = voucherRepository.findAll();
+        
+        // Filter by status if provided
+        if (status != null && !status.isEmpty() && !"all".equalsIgnoreCase(status)) {
+            if ("ACTIVE".equalsIgnoreCase(status)) {
+                allVouchers = allVouchers.stream()
+                    .filter(v -> v.getStatus() == VoucherStatus.ACTIVE 
+                        && (v.getExpiryDate() == null || v.getExpiryDate().isAfter(LocalDateTime.now()))
+                        && (v.getMaxUsage() == null || v.getOrders().size() < v.getMaxUsage()))
+                    .toList();
+            } else if ("EXPIRED".equalsIgnoreCase(status)) {
+                allVouchers = allVouchers.stream()
+                    .filter(v -> v.getStatus() == VoucherStatus.EXPIRED 
+                        || (v.getExpiryDate() != null && v.getExpiryDate().isBefore(LocalDateTime.now()))
+                        || (v.getMaxUsage() != null && v.getOrders().size() >= v.getMaxUsage()))
+                    .toList();
+            } else if ("INACTIVE".equalsIgnoreCase(status)) {
+                allVouchers = allVouchers.stream()
+                    .filter(v -> v.getStatus() == VoucherStatus.INACTIVE)
+                    .toList();
+            }
+        }
+        
+        // Calculate pagination
+        int totalItems = allVouchers.size();
+        int totalPages = (int) Math.ceil((double) totalItems / limit);
+        int offset = (page - 1) * limit;
+        
+        // Get vouchers for current page
+        List<Voucher> pagedVouchers = allVouchers.stream()
+            .skip(offset)
+            .limit(limit)
+            .toList();
+        
+        // Build metadata
+        Map<String, Object> pagination = new HashMap<>();
+        pagination.put("page", page);
+        pagination.put("limit", limit);
+        pagination.put("totalItems", totalItems);
+        pagination.put("totalPages", totalPages);
+        
+        Map<String, Object> metadata = new HashMap<>();
+        metadata.put("pagination", pagination);
+        
+        // Build result
+        Map<String, Object> result = new HashMap<>();
+        result.put("vouchers", pagedVouchers);
+        result.put("metadata", metadata);
+        
+        return result;
     }
 }

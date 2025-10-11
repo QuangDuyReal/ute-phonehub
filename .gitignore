@@ -47,3 +47,5 @@ changelog/
 logs/
 *.log
 *.tmp
+.cursor/
+docker/

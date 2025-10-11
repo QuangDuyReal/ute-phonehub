@@ -100,10 +100,10 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             <i class="bx bxs-map"></i>
             <span>Địa chỉ giao hàng</span>
           </a>
-          <a href="#" class="nav-item" data-tab="orders">
+          <!-- <a href="${pageContext.request.contextPath}/orders" class="nav-item">
             <i class="bx bxs-shopping-bag"></i>
             <span>Đơn hàng của tôi</span>
-          </a>
+          </a> -->
         </nav>
       </div>
 
@@ -178,11 +178,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </div>
 
-        <!-- Tab: Đơn hàng -->
-        <div class="tab-content" id="tab-orders">
-          <h2>Đơn hàng của tôi</h2>
-          <p>Chức năng đang được phát triển...</p>
-        </div>
       </div>
     </div>
 

@@ -536,3 +536,128 @@
         transform: translateX(0);
     }
 }
+
+/* ================================================
+   USER ACCOUNT DROPDOWN - Enhanced for better UX
+   ================================================ */
+
+/* Wrapper để mở rộng vùng hover */
+.user-account-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* Mở rộng vùng nhạy cảm của dropdown */
+.user-account-dropdown::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -10px;
+    right: -10px;
+    bottom: -20px;
+    /* Vùng invisible nhưng vẫn trigger hover */
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* Dropdown menu - Ẩn mặc định */
+.account-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    min-width: 250px;
+    padding: 12px 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* Thêm arrow trỏ lên */
+.account-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+}
+
+/* Show dropdown khi hover vào wrapper */
+.user-account-dropdown:hover .account-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Dropdown items */
+.account-dropdown-menu .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.account-dropdown-menu .dropdown-item i {
+    font-size: 18px;
+    color: #666;
+    width: 24px;
+    text-align: center;
+}
+
+.account-dropdown-menu .dropdown-item:hover {
+    background: linear-gradient(90deg, rgba(255, 107, 53, 0.1) 0%, transparent 100%);
+    color: #ff6b35;
+}
+
+.account-dropdown-menu .dropdown-item:hover i {
+    color: #ff6b35;
+    transform: scale(1.1);
+}
+
+/* Logout item - Special styling */
+.account-dropdown-menu .dropdown-item#logoutBtn {
+    color: #dc3545;
+}
+
+.account-dropdown-menu .dropdown-item#logoutBtn:hover {
+    background: linear-gradient(90deg, rgba(220, 53, 69, 0.1) 0%, transparent 100%);
+    color: #c82333;
+}
+
+.account-dropdown-menu .dropdown-item#logoutBtn i {
+    color: #dc3545;
+}
+
+/* Horizontal line */
+.account-dropdown-menu hr {
+    margin: 8px 0;
+    border: none;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .account-dropdown-menu {
+        right: -10px;
+        min-width: 220px;
+    }
+    
+    .account-dropdown-menu::before {
+        right: 25px;
+    }
+}

@@ -9,9 +9,9 @@ import java.io.IOException;
 
 /**
  * Page Controller
- * Handle routing cho các trang view (login, profile, etc.)
+ * Handle routing cho các trang view (login, profile, products, etc.)
  */
-@WebServlet(urlPatterns = {"/login", "/profile"})
+@WebServlet(urlPatterns = {"/login", "/profile", "/cart", "/checkout", "/orders"})
 public class PageController extends HttpServlet {
 
     @Override
@@ -27,6 +27,18 @@ public class PageController extends HttpServlet {
                 
             case "/profile":
                 request.getRequestDispatcher("/WEB-INF/views/user/profile.jsp").forward(request, response);
+                break;
+                
+            case "/cart":
+                request.getRequestDispatcher("/WEB-INF/views/cart/index.jsp").forward(request, response);
+                break;
+                
+            case "/checkout":
+                request.getRequestDispatcher("/WEB-INF/views/cart/checkout.jsp").forward(request, response);
+                break;
+                
+            case "/orders":
+                request.getRequestDispatcher("/WEB-INF/views/user/orders.jsp").forward(request, response);
                 break;
                 
             default:

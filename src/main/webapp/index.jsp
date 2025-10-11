@@ -1,350 +1,16 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-pageEncoding="UTF-8"%> <%@ taglib prefix="c"
-uri="http://java.sun.com/jsp/jstl/core" %> <%@ taglib prefix="fmt"
-uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:set var="pageTitle" value="Trang chủ" scope="request"/>
+<c:set var="pageDescription" value="UTE Phone Hub - Cửa hàng điện thoại, laptop, phụ kiện chính hãng với giá tốt nhất" scope="request"/>
 <!DOCTYPE html>
 <html lang="vi">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>UTE Phone Hub - Cửa hàng điện thoại uy tín</title>
-    <meta
-      name="description"
-      content="UTE Phone Hub - Cửa hàng điện thoại, laptop, phụ kiện chính hãng với giá tốt nhất. Giao hàng nhanh, bảo hành chính hãng."
-    />
-    <meta
-      name="keywords"
-      content="điện thoại, laptop, phụ kiện, iPhone, Samsung, MacBook, iPad"
-    />
-
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/png"
-      href="${pageContext.request.contextPath}/static/favicon.png"
-    />
-    <link
-      rel="shortcut icon"
-      type="image/png"
-      href="${pageContext.request.contextPath}/static/favicon.png"
-    />
-    <link
-      rel="apple-touch-icon"
-      href="${pageContext.request.contextPath}/static/favicon.png"
-    />
-
-    <!-- CSS -->
-    <link
-      rel="stylesheet"
-      href="${pageContext.request.contextPath}/static/css/main.css"
-    />
-    <link
-      rel="stylesheet"
-      href="${pageContext.request.contextPath}/static/css/components/header.css"
-    />
-    <link
-      rel="stylesheet"
-      href="${pageContext.request.contextPath}/static/css/components/product.css"
-    />
-
-    <!-- Font Awesome -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-
-    <!-- Google Fonts - Roboto -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Favicon -->
-    <link
-      rel="icon"
-      type="image/x-icon"
-      href="${pageContext.request.contextPath}/static/images/favicon.ico"
-    />
+    <%@ include file="/WEB-INF/views/common/meta.jspf" %>
+    <title><c:out value="${pageTitle}"/> - UTE Phone Hub</title>
   </head>
   <body>
-    <!-- Header -->
-    <header class="header">
-      <!-- Header Top -->
-      <div class="header-top">
-        <div class="header-top-content">
-          <div class="header-promo">
-            <i class="fas fa-gift"></i>
-            <span>Khuyến mãi đặc biệt - Giảm giá lên đến 50%</span>
-          </div>
-          <div class="header-location">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Hồ Chí Minh</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Header Main -->
-      <div class="header-main">
-        <div class="header-content">
-          <!-- Logo -->
-          <a href="${pageContext.request.contextPath}/" class="logo">
-            <div class="logo-icon">U</div>
-            <span>UTE Phone Hub</span>
-          </a>
-
-          <!-- Search Bar -->
-          <div class="search-container">
-            <div class="search-bar">
-              <input
-                type="text"
-                class="search-input"
-                placeholder="Tìm kiếm điện thoại, laptop, phụ kiện..."
-              />
-              <button class="search-btn">
-                <i class="fas fa-search"></i>
-              </button>
-              <div class="search-suggestions"></div>
-            </div>
-          </div>
-
-          <!-- Header Actions -->
-          <div class="header-actions">
-            <!-- User Account - Show login or profile based on token -->
-            <div class="user-account-dropdown" id="userAccountDropdown">
-              <a
-                href="${pageContext.request.contextPath}/login"
-                class="header-action"
-                id="userAccountBtn"
-              >
-                <i class="fas fa-user"></i>
-                <span id="userAccountText">Đăng nhập</span>
-              </a>
-              <!-- Dropdown menu cho user đã đăng nhập -->
-              <div
-                class="account-dropdown-menu"
-                id="accountDropdownMenu"
-                style="display: none"
-              >
-                <a
-                  href="${pageContext.request.contextPath}/profile"
-                  class="dropdown-item"
-                >
-                  <i class="fas fa-user-circle"></i>
-                  Thông tin tài khoản
-                </a>
-                <a
-                  href="${pageContext.request.contextPath}/orders"
-                  class="dropdown-item"
-                >
-                  <i class="fas fa-box"></i>
-                  Đơn hàng của tôi
-                </a>
-                <a
-                  href="${pageContext.request.contextPath}/wishlist"
-                  class="dropdown-item"
-                >
-                  <i class="fas fa-heart"></i>
-                  Yêu thích
-                </a>
-                <hr
-                  style="
-                    margin: 5px 0;
-                    border: none;
-                    border-top: 1px solid #e0e0e0;
-                  "
-                />
-                <a href="#" class="dropdown-item" id="logoutBtn">
-                  <i class="fas fa-sign-out-alt"></i>
-                  Đăng xuất
-                </a>
-              </div>
-            </div>
-
-            <a
-              href="${pageContext.request.contextPath}/wishlist"
-              class="header-action"
-            >
-              <i class="fas fa-heart"></i>
-              <span>Yêu thích</span>
-              <span class="wishlist-badge" style="display: none">0</span>
-            </a>
-            <a
-              href="${pageContext.request.contextPath}/cart"
-              class="header-action"
-            >
-              <i class="fas fa-shopping-cart"></i>
-              <span>Giỏ hàng</span>
-              <span class="cart-badge" style="display: none">0</span>
-            </a>
-          </div>
-
-          <!-- Mobile Menu Button -->
-          <button class="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Navigation -->
-      <nav class="nav">
-        <div class="nav-container">
-          <ul class="nav-list">
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/"
-                class="nav-link active"
-              >
-                <i class="fas fa-home"></i>
-                <span>Trang chủ</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=phone"
-                class="nav-link"
-              >
-                <i class="fas fa-mobile-alt"></i>
-                <span>Điện thoại</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=laptop"
-                class="nav-link"
-              >
-                <i class="fas fa-laptop"></i>
-                <span>Laptop</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=accessories"
-                class="nav-link"
-              >
-                <i class="fas fa-headphones"></i>
-                <span>Phụ kiện</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=smartwatch"
-                class="nav-link"
-              >
-                <i class="fas fa-clock"></i>
-                <span>Smartwatch</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=tablet"
-                class="nav-link"
-              >
-                <i class="fas fa-tablet-alt"></i>
-                <span>Tablet</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=used"
-                class="nav-link"
-              >
-                <i class="fas fa-recycle"></i>
-                <span>Máy cũ</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=monitor"
-                class="nav-link"
-              >
-                <i class="fas fa-desktop"></i>
-                <span>Màn hình</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/products?category=sim"
-                class="nav-link"
-              >
-                <i class="fas fa-sim-card"></i>
-                <span>Sim, Thẻ cào</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                href="${pageContext.request.contextPath}/services"
-                class="nav-link"
-              >
-                <i class="fas fa-tools"></i>
-                <span>Dịch vụ</span>
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
-      <!-- Mobile Menu -->
-      <div class="mobile-menu">
-        <ul class="mobile-nav-list">
-          <li class="mobile-nav-item">
-            <a
-              href="${pageContext.request.contextPath}/"
-              class="mobile-nav-link"
-            >
-              <i class="fas fa-home"></i>
-              <span>Trang chủ</span>
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              href="${pageContext.request.contextPath}/products?category=phone"
-              class="mobile-nav-link"
-            >
-              <i class="fas fa-mobile-alt"></i>
-              <span>Điện thoại</span>
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              href="${pageContext.request.contextPath}/products?category=laptop"
-              class="mobile-nav-link"
-            >
-              <i class="fas fa-laptop"></i>
-              <span>Laptop</span>
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              href="${pageContext.request.contextPath}/products?category=accessories"
-              class="mobile-nav-link"
-            >
-              <i class="fas fa-headphones"></i>
-              <span>Phụ kiện</span>
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              href="${pageContext.request.contextPath}/products?category=smartwatch"
-              class="mobile-nav-link"
-            >
-              <i class="fas fa-clock"></i>
-              <span>Smartwatch</span>
-            </a>
-          </li>
-          <li class="mobile-nav-item">
-            <a
-              href="${pageContext.request.contextPath}/products?category=tablet"
-              class="mobile-nav-link"
-            >
-              <i class="fas fa-tablet-alt"></i>
-              <span>Tablet</span>
-            </a>
-          </li>
-        </ul>
-      </div>
-    </header>
+    <%@ include file="/WEB-INF/views/common/header.jspf" %>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -793,55 +459,11 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>Về UTE Phone Hub</h3>
-          <ul>
-            <li><a href="#">Giới thiệu</a></li>
-            <li><a href="#">Tuyển dụng</a></li>
-            <li><a href="#">Liên hệ</a></li>
-            <li><a href="#">Tin tức</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h3>Hỗ trợ khách hàng</h3>
-          <ul>
-            <li><a href="#">Hướng dẫn mua hàng</a></li>
-            <li><a href="#">Chính sách bảo hành</a></li>
-            <li><a href="#">Chính sách đổi trả</a></li>
-            <li><a href="#">FAQ</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h3>Dịch vụ</h3>
-          <ul>
-            <li><a href="#">Sửa chữa điện thoại</a></li>
-            <li><a href="#">Thu cũ đổi mới</a></li>
-            <li><a href="#">Bảo hành mở rộng</a></li>
-            <li><a href="#">Cài đặt phần mềm</a></li>
-          </ul>
-        </div>
-        <div class="footer-section">
-          <h3>Liên hệ</h3>
-          <ul>
-            <li><i class="fas fa-phone"></i> 1900 1234</li>
-            <li><i class="fas fa-envelope"></i> support@utephonehub.com</li>
-            <li>
-              <i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận 1,
-              TP.HCM
-            </li>
-            <li><i class="fas fa-clock"></i> 8:00 - 22:00 (T2-T7)</li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-bottom">
-        <p>&copy; 2024 UTE Phone Hub. Tất cả quyền được bảo lưu.</p>
-      </div>
-    </footer>
+    <%@ include file="/WEB-INF/views/common/footer.jspf" %>
 
     <!-- JavaScript -->
+    <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/main.js"></script>
 
@@ -922,17 +544,6 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
               userAccountBtn.href =
                 "${pageContext.request.contextPath}/profile";
 
-              // Also show dropdown menu on click (but don't prevent default navigation)
-              let clickTimeout;
-              userAccountBtn.addEventListener("click", (e) => {
-                // If clicking quickly, go to profile
-                // If hovering, show dropdown
-                clearTimeout(clickTimeout);
-                clickTimeout = setTimeout(() => {
-                  // Single click goes to profile (default behavior)
-                }, 200);
-              });
-
               // Show dropdown menu on hover
               userAccountDropdown.addEventListener("mouseenter", () => {
                 accountDropdownMenu.style.display = "block";
@@ -963,6 +574,12 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
       // Logout handler
       document.addEventListener("DOMContentLoaded", function () {
         checkUserLogin();
+        
+        // Load featured products
+        loadFeaturedProducts();
+        
+        // Initialize cart badge
+        updateCartBadge();
 
         const logoutBtn = document.getElementById("logoutBtn");
         if (logoutBtn) {
@@ -992,6 +609,160 @@ uri="http://java.sun.com/jsp/jstl/fmt" %>
           }
         });
       });
+      
+      // Load featured products from API
+      async function loadFeaturedProducts() {
+        try {
+          const response = await ProductAPI.getProducts({ 
+            page: 1, 
+            limit: 6,
+            sortBy: 'newest'
+          });
+          
+          if (response && response.success && response.data) {
+            renderProducts(response.data);
+          }
+        } catch (error) {
+          console.error('Error loading products:', error);
+          // Keep hardcoded products if API fails
+        }
+      }
+      
+      // Render products dynamically
+      function renderProducts(products) {
+        const productGrid = document.querySelector('.product-grid');
+        if (!productGrid || !products || products.length === 0) return;
+        
+        const contextPath = '${pageContext.request.contextPath}';
+        
+        productGrid.innerHTML = products.map(product => {
+          // Build product card HTML
+          let html = '<div class="product-card" data-product-id="' + product.id + '">';
+          html += '<div class="product-image-container">';
+          html += '<a href="' + contextPath + '/products/' + product.id + '">';
+          html += '<img src="' + escapeHtml(product.thumbnailUrl || 'https://via.placeholder.com/300x200/ff6b35/ffffff?text=' + encodeURIComponent(product.name)) + '" ';
+          html += 'alt="' + escapeHtml(product.name) + '" class="product-image" loading="lazy" />';
+          html += '</a>';
+          
+          // Discount badge
+          if (product.discount > 0) {
+            html += '<div class="product-badges">';
+            html += '<span class="badge badge-sale">-' + product.discount + '%</span>';
+            html += '</div>';
+          }
+          
+          html += '<button class="product-wishlist" onclick="addToWishlist(' + product.id + ')">';
+          html += '<i class="fas fa-heart"></i>';
+          html += '</button>';
+          html += '</div>';
+          
+          // Product info
+          html += '<div class="product-info">';
+          html += '<div class="product-category">' + escapeHtml(product.categoryName || 'Sản phẩm') + '</div>';
+          html += '<h3 class="product-title">';
+          html += '<a href="' + contextPath + '/products/' + product.id + '">';
+          html += escapeHtml(product.name);
+          html += '</a></h3>';
+          
+          // Rating
+          if (product.averageRating) {
+            html += '<div class="product-rating"><div class="rating-stars">';
+            for (let star = 1; star <= 5; star++) {
+              html += '<i class="fas fa-star ' + (star <= product.averageRating ? 'star' : 'star empty') + '"></i>';
+            }
+            html += '</div>';
+            html += '<span class="rating-text">(' + product.averageRating.toFixed(1) + ')</span>';
+            html += '</div>';
+          }
+          
+          // Price
+          html += '<div class="product-price">';
+          html += '<span class="price-current">' + formatPrice(product.price) + '</span>';
+          if (product.originalPrice && product.originalPrice > product.price) {
+            html += '<span class="price-original">' + formatPrice(product.originalPrice) + '</span>';
+            html += '<span class="discount-percent">-' + calculateDiscount(product.originalPrice, product.price) + '%</span>';
+          }
+          html += '</div>';
+          
+          // Stock
+          if (product.stockQuantity !== undefined) {
+            const stockPercent = Math.min(100, (product.stockQuantity / 10) * 100);
+            html += '<div class="product-stock">';
+            html += '<div class="stock-bar">';
+            html += '<div class="stock-progress" style="width: ' + stockPercent + '%"></div>';
+            html += '</div>';
+            html += '<div class="stock-text">Còn ' + product.stockQuantity + ' sản phẩm</div>';
+            html += '</div>';
+          }
+          
+          // Actions
+          html += '<div class="product-actions">';
+          html += '<button class="btn-add-cart" onclick="handleAddToCart(' + product.id + ')">Mua ngay</button>';
+          html += '<button class="btn-quick-view" onclick="quickView(' + product.id + ')">';
+          html += '<i class="fas fa-eye"></i>';
+          html += '</button>';
+          html += '</div>';
+          
+          html += '</div></div>';
+          return html;
+        }).join('');
+      }
+      
+      // Handle add to cart
+      async function handleAddToCart(productId) {
+        if (!isLoggedIn()) {
+          showToast('Vui lòng đăng nhập để thêm vào giỏ hàng', 'warning');
+          setTimeout(() => {
+            window.location.href = '${pageContext.request.contextPath}/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+          }, 1500);
+          return;
+        }
+        
+        try {
+          showLoading('Đang thêm vào giỏ hàng...');
+          await CartAPI.addItem(productId, 1);
+          showToast('Đã thêm vào giỏ hàng', 'success');
+          updateCartBadge();
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+          showToast(error.message || 'Không thể thêm vào giỏ hàng', 'error');
+        } finally {
+          hideLoading();
+        }
+      }
+      
+      // Update cart badge
+      async function updateCartBadge() {
+        if (!isLoggedIn()) {
+          const badge = document.getElementById('cartBadge');
+          if (badge) badge.style.display = 'none';
+          return;
+        }
+        
+        try {
+          const response = await CartAPI.getCart();
+          if (response && response.success && response.data) {
+            const totalItems = response.data.totalItems || 0;
+            const badge = document.getElementById('cartBadge');
+            if (badge) {
+              badge.textContent = totalItems;
+              badge.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+          }
+        } catch (error) {
+          console.error('Error fetching cart:', error);
+        }
+      }
+      
+      // Add to wishlist (placeholder)
+      function addToWishlist(productId) {
+        showToast('Tính năng đang được phát triển', 'info');
+      }
+      
+      // Quick view (placeholder)
+      function quickView(productId) {
+        window.location.href = '${pageContext.request.contextPath}/products/' + productId;
+      }
     </script>
 
     <!-- Additional Styles -->

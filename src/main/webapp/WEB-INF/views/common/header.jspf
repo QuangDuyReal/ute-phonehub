@@ -1,0 +1,273 @@
+<%@ page pageEncoding="UTF-8" %>
+<!-- Header -->
+<header class="header">
+  <!-- Header Top -->
+  <div class="header-top">
+    <div class="header-top-content">
+      <div class="header-promo">
+        <i class="fas fa-gift"></i>
+        <span>Khuyến mãi đặc biệt - Giảm giá lên đến 50%</span>
+      </div>
+      <div class="header-location">
+        <i class="fas fa-map-marker-alt"></i>
+        <span>Hồ Chí Minh</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header Main -->
+  <div class="header-main">
+    <div class="header-content">
+      <!-- Logo -->
+      <a href="${pageContext.request.contextPath}/" class="logo">
+        <div class="logo-icon">U</div>
+        <span>UTE Phone Hub</span>
+      </a>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <form action="${pageContext.request.contextPath}/products" method="get" class="search-form">
+          <div class="search-bar">
+            <input
+              type="text"
+              name="q"
+              class="search-input"
+              placeholder="Tìm kiếm điện thoại, laptop, phụ kiện..."
+              value="${param.q != null ? param.q : ''}"
+            />
+            <button type="submit" class="search-btn">
+              <i class="fas fa-search"></i>
+            </button>
+            <div class="search-suggestions" id="searchSuggestions" style="display: none;"></div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <!-- User Account - Show login or profile based on token -->
+        <div class="user-account-dropdown" id="userAccountDropdown">
+          <a
+            href="${pageContext.request.contextPath}/login"
+            class="header-action"
+            id="userAccountBtn"
+          >
+            <i class="fas fa-user"></i>
+            <span id="userAccountText">Đăng nhập</span>
+          </a>
+          <!-- Dropdown menu cho user đã đăng nhập -->
+          <div
+            class="account-dropdown-menu"
+            id="accountDropdownMenu"
+          >
+            <a
+              href="${pageContext.request.contextPath}/profile"
+              class="dropdown-item"
+            >
+              <i class="fas fa-user-circle"></i>
+              Thông tin tài khoản
+            </a>
+            <a
+              href="${pageContext.request.contextPath}/orders"
+              class="dropdown-item"
+            >
+              <i class="fas fa-box"></i>
+              Đơn hàng của tôi
+            </a>
+            <a
+              href="${pageContext.request.contextPath}/wishlist"
+              class="dropdown-item"
+            >
+              <i class="fas fa-heart"></i>
+              Yêu thích
+            </a>
+            <hr style="margin: 5px 0; border: none; border-top: 1px solid #e0e0e0;"/>
+            <a href="#" class="dropdown-item" id="logoutBtn">
+              <i class="fas fa-sign-out-alt"></i>
+              Đăng xuất
+            </a>
+          </div>
+        </div>
+
+        <a
+          href="${pageContext.request.contextPath}/wishlist"
+          class="header-action"
+        >
+          <i class="fas fa-heart"></i>
+          <span>Yêu thích</span>
+          <span class="wishlist-badge" id="wishlistBadge" style="display: none">0</span>
+        </a>
+        <a
+          href="${pageContext.request.contextPath}/cart"
+          class="header-action"
+        >
+          <i class="fas fa-shopping-cart"></i>
+          <span>Giỏ hàng</span>
+          <span class="cart-badge" id="cartBadge" style="display: none">0</span>
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-container">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/"
+            class="nav-link ${pageContext.request.servletPath == '/' || pageContext.request.servletPath == '/index.jsp' ? 'active' : ''}"
+          >
+            <i class="fas fa-home"></i>
+            <span>Trang chủ</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=phone"
+            class="nav-link ${param.category == 'phone' ? 'active' : ''}"
+          >
+            <i class="fas fa-mobile-alt"></i>
+            <span>Điện thoại</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=laptop"
+            class="nav-link ${param.category == 'laptop' ? 'active' : ''}"
+          >
+            <i class="fas fa-laptop"></i>
+            <span>Laptop</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=accessories"
+            class="nav-link ${param.category == 'accessories' ? 'active' : ''}"
+          >
+            <i class="fas fa-headphones"></i>
+            <span>Phụ kiện</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=smartwatch"
+            class="nav-link ${param.category == 'smartwatch' ? 'active' : ''}"
+          >
+            <i class="fas fa-clock"></i>
+            <span>Smartwatch</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=tablet"
+            class="nav-link ${param.category == 'tablet' ? 'active' : ''}"
+          >
+            <i class="fas fa-tablet-alt"></i>
+            <span>Tablet</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=used"
+            class="nav-link ${param.category == 'used' ? 'active' : ''}"
+          >
+            <i class="fas fa-recycle"></i>
+            <span>Máy cũ</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a
+            href="${pageContext.request.contextPath}/products?category=monitor"
+            class="nav-link ${param.category == 'monitor' ? 'active' : ''}"
+          >
+            <i class="fas fa-desktop"></i>
+            <span>Màn hình</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <ul class="mobile-nav-list">
+      <li class="mobile-nav-item">
+        <a
+          href="${pageContext.request.contextPath}/"
+          class="mobile-nav-link"
+        >
+          <i class="fas fa-home"></i>
+          <span>Trang chủ</span>
+        </a>
+      </li>
+      <li class="mobile-nav-item">
+        <a
+          href="${pageContext.request.contextPath}/products?category=phone"
+          class="mobile-nav-link"
+        >
+          <i class="fas fa-mobile-alt"></i>
+          <span>Điện thoại</span>
+        </a>
+      </li>
+      <li class="mobile-nav-item">
+        <a
+          href="${pageContext.request.contextPath}/products?category=laptop"
+          class="mobile-nav-link"
+        >
+          <i class="fas fa-laptop"></i>
+          <span>Laptop</span>
+        </a>
+      </li>
+      <li class="mobile-nav-item">
+        <a
+          href="${pageContext.request.contextPath}/products?category=accessories"
+          class="mobile-nav-link"
+        >
+          <i class="fas fa-headphones"></i>
+          <span>Phụ kiện</span>
+        </a>
+      </li>
+      <li class="mobile-nav-item">
+        <a
+          href="${pageContext.request.contextPath}/products?category=smartwatch"
+          class="mobile-nav-link"
+        >
+          <i class="fas fa-clock"></i>
+          <span>Smartwatch</span>
+        </a>
+      </li>
+      <li class="mobile-nav-item">
+        <a
+          href="${pageContext.request.contextPath}/products?category=tablet"
+          class="mobile-nav-link"
+        >
+          <i class="fas fa-tablet-alt"></i>
+          <span>Tablet</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<!-- Header Scripts -->
+<script>
+  // Mobile menu toggle
+  document.addEventListener('DOMContentLoaded', function() {
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', function() {
+        mobileMenu.classList.toggle('active');
+        this.classList.toggle('active');
+      });
+    }
+  });
+</script>
+

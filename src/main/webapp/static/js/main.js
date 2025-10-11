@@ -12,14 +12,29 @@ document.addEventListener("DOMContentLoaded", function () {
 // Initialize Application
 function initializeApp() {
   initializeHeader();
-  initializeProductGrid();
-  initializeSearch();
-  initializeCart();
-  initializeWishlist();
-  initializeFilters();
-  initializePagination();
-  updateCartBadge();
-  updateWishlistBadge();
+  
+  // Only initialize if elements exist on page
+  if (document.querySelector('.product-grid')) {
+    initializeProductGrid();
+  }
+  
+  if (document.querySelector('.cart-badge')) {
+    initializeCart();
+    updateCartBadge();
+  }
+  
+  if (document.querySelector('.wishlist-badge')) {
+    initializeWishlist();
+    updateWishlistBadge();
+  }
+  
+  if (document.querySelector('.filter-option')) {
+    initializeFilters();
+  }
+  
+  if (document.querySelector('.pagination-btn')) {
+    initializePagination();
+  }
 }
 
 // Header Functions

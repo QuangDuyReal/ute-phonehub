@@ -278,6 +278,32 @@ const OrderAPI = {
 };
 
 /**
+ * Voucher API
+ */
+const VoucherAPI = {
+    /**
+     * Get user vouchers
+     */
+    async getUserVouchers(page = 1, limit = 100) {
+        return await API.get('/vouchers/user', { page, limit });
+    },
+    
+    /**
+     * Get available vouchers
+     */
+    async getAvailableVouchers(page = 1, limit = 20) {
+        return await API.get('/vouchers', { page, limit });
+    },
+    
+    /**
+     * Claim a voucher
+     */
+    async claimVoucher(voucherCode) {
+        return await API.post('/vouchers/claim', { voucherCode });
+    }
+};
+
+/**
  * User API
  */
 const UserAPI = {

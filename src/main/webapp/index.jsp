@@ -95,8 +95,8 @@
                 <span class="badge badge-sale">-5%</span>
                 <span class="badge badge-ai">AI</span>
               </div>
-              <button class="product-wishlist">
-                <i class="fas fa-heart"></i>
+              <button class="product-add-to-cart" onclick="handleQuickAddToCart(this)" title="Thêm vào giỏ hàng">
+                <i class="fas fa-shopping-cart"></i>
               </button>
             </div>
             <div class="product-info">
@@ -124,8 +124,8 @@
                 <div class="stock-text">Còn 2/10 suất</div>
               </div>
               <div class="product-actions">
-                <button class="btn-add-cart">Mua ngay</button>
-                <button class="btn-quick-view">
+                <button class="btn-add-cart" onclick="handleBuyNow('samsung-galaxy-a16-5g')">Mua ngay</button>
+                <button class="btn-quick-view" onclick="viewProductDetail('samsung-galaxy-a16-5g')" title="Xem chi tiết">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
@@ -143,8 +143,8 @@
               <div class="product-badges">
                 <span class="badge badge-sale">-8%</span>
               </div>
-              <button class="product-wishlist">
-                <i class="fas fa-heart"></i>
+              <button class="product-add-to-cart" onclick="handleQuickAddToCart(this)" title="Thêm vào giỏ hàng">
+                <i class="fas fa-shopping-cart"></i>
               </button>
             </div>
             <div class="product-info">
@@ -172,8 +172,8 @@
                 <div class="stock-text">Còn 10/10 suất</div>
               </div>
               <div class="product-actions">
-                <button class="btn-add-cart">Mua ngay</button>
-                <button class="btn-quick-view">
+                <button class="btn-add-cart" onclick="handleBuyNow('vivo-v40-5g')">Mua ngay</button>
+                <button class="btn-quick-view" onclick="viewProductDetail('vivo-v40-5g')" title="Xem chi tiết">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
@@ -191,8 +191,8 @@
               <div class="product-badges">
                 <span class="badge badge-sale">-6%</span>
               </div>
-              <button class="product-wishlist">
-                <i class="fas fa-heart"></i>
+              <button class="product-add-to-cart" onclick="handleQuickAddToCart(this)" title="Thêm vào giỏ hàng">
+                <i class="fas fa-shopping-cart"></i>
               </button>
             </div>
             <div class="product-info">
@@ -226,8 +226,8 @@
                 <div class="stock-text">Còn 3/3 suất</div>
               </div>
               <div class="product-actions">
-                <button class="btn-add-cart">Mua ngay</button>
-                <button class="btn-quick-view">
+                <button class="btn-add-cart" onclick="handleBuyNow('airpods-max')">Mua ngay</button>
+                <button class="btn-quick-view" onclick="viewProductDetail('airpods-max')" title="Xem chi tiết">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
@@ -245,8 +245,8 @@
               <div class="product-badges">
                 <span class="badge badge-sale">-12%</span>
               </div>
-              <button class="product-wishlist">
-                <i class="fas fa-heart"></i>
+              <button class="product-add-to-cart" onclick="handleQuickAddToCart(this)" title="Thêm vào giỏ hàng">
+                <i class="fas fa-shopping-cart"></i>
               </button>
             </div>
             <div class="product-info">
@@ -280,8 +280,8 @@
                 <div class="stock-text">Còn 5/5 suất</div>
               </div>
               <div class="product-actions">
-                <button class="btn-add-cart">Mua ngay</button>
-                <button class="btn-quick-view">
+                <button class="btn-add-cart" onclick="handleBuyNow('thermal-printer')">Mua ngay</button>
+                <button class="btn-quick-view" onclick="viewProductDetail('thermal-printer')" title="Xem chi tiết">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
@@ -300,8 +300,8 @@
                 <span class="badge badge-sale">-63%</span>
                 <span class="badge badge-hot">HOT</span>
               </div>
-              <button class="product-wishlist">
-                <i class="fas fa-heart"></i>
+              <button class="product-add-to-cart" onclick="handleQuickAddToCart(this)" title="Thêm vào giỏ hàng">
+                <i class="fas fa-shopping-cart"></i>
               </button>
             </div>
             <div class="product-info">
@@ -337,8 +337,8 @@
                 <div class="stock-text">Còn 5/10 suất</div>
               </div>
               <div class="product-actions">
-                <button class="btn-add-cart">Mua ngay</button>
-                <button class="btn-quick-view">
+                <button class="btn-add-cart" onclick="handleBuyNow('befit-watch')">Mua ngay</button>
+                <button class="btn-quick-view" onclick="viewProductDetail('befit-watch')" title="Xem chi tiết">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
@@ -356,8 +356,8 @@
               <div class="product-badges">
                 <span class="badge badge-sale">-15%</span>
               </div>
-              <button class="product-wishlist">
-                <i class="fas fa-heart"></i>
+              <button class="product-add-to-cart" onclick="handleQuickAddToCart(this)" title="Thêm vào giỏ hàng">
+                <i class="fas fa-shopping-cart"></i>
               </button>
             </div>
             <div class="product-info">
@@ -385,8 +385,8 @@
                 <div class="stock-text">Còn 8/10 suất</div>
               </div>
               <div class="product-actions">
-                <button class="btn-add-cart">Mua ngay</button>
-                <button class="btn-quick-view">
+                <button class="btn-add-cart" onclick="handleBuyNow('realme-c75')">Mua ngay</button>
+                <button class="btn-quick-view" onclick="viewProductDetail('realme-c75')" title="Xem chi tiết">
                   <i class="fas fa-eye"></i>
                 </button>
               </div>
@@ -584,8 +584,8 @@
             html += '</div>';
           }
           
-          html += '<button class="product-wishlist" onclick="addToWishlist(' + product.id + ')">';
-          html += '<i class="fas fa-heart"></i>';
+          html += '<button class="product-add-to-cart" onclick="handleQuickAddToCart(' + product.id + ')" title="Thêm vào giỏ hàng">';
+          html += '<i class="fas fa-shopping-cart"></i>';
           html += '</button>';
           html += '</div>';
           
@@ -630,8 +630,8 @@
           
           // Actions
           html += '<div class="product-actions">';
-          html += '<button class="btn-add-cart" onclick="handleAddToCart(' + product.id + ')">Mua ngay</button>';
-          html += '<button class="btn-quick-view" onclick="quickView(' + product.id + ')">';
+          html += '<button class="btn-add-cart" onclick="handleBuyNow(' + product.id + ')">Mua ngay</button>';
+          html += '<button class="btn-quick-view" onclick="viewProductDetail(' + product.id + ')" title="Xem chi tiết">';
           html += '<i class="fas fa-eye"></i>';
           html += '</button>';
           html += '</div>';
@@ -641,8 +641,30 @@
         }).join('');
       }
       
-      // Handle add to cart
-      async function handleAddToCart(productId) {
+      // Handle buy now - Add to cart and redirect
+      async function handleBuyNow(productId) {
+        if (!isLoggedIn()) {
+          showToast('Vui lòng đăng nhập để mua hàng', 'warning');
+          setTimeout(() => {
+            window.location.href = '${pageContext.request.contextPath}/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+          }, 1500);
+          return;
+        }
+        
+        try {
+          showLoading('Đang thêm vào giỏ hàng...');
+          await CartAPI.addItem(productId, 1);
+          // Redirect to cart
+          window.location.href = '${pageContext.request.contextPath}/cart';
+        } catch (error) {
+          console.error('Error adding to cart:', error);
+          showToast(error.message || 'Không thể thêm vào giỏ hàng', 'error');
+          hideLoading();
+        }
+      }
+      
+      // Quick add to cart - without redirect
+      async function handleQuickAddToCart(productId) {
         if (!isLoggedIn()) {
           showToast('Vui lòng đăng nhập để thêm vào giỏ hàng', 'warning');
           setTimeout(() => {
@@ -662,6 +684,11 @@
         } finally {
           hideLoading();
         }
+      }
+      
+      // View product detail
+      function viewProductDetail(productId) {
+        window.location.href = '${pageContext.request.contextPath}/products/' + productId;
       }
       
       // Update cart badge
@@ -685,16 +712,6 @@
         } catch (error) {
           console.error('Error fetching cart:', error);
         }
-      }
-      
-      // Add to wishlist (placeholder)
-      function addToWishlist(productId) {
-        showToast('Tính năng đang được phát triển', 'info');
-      }
-      
-      // Quick view (placeholder)
-      function quickView(productId) {
-        window.location.href = '${pageContext.request.contextPath}/products/' + productId;
       }
     </script>
 

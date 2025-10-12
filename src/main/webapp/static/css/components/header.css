@@ -757,14 +757,14 @@
     right: -10px;
     bottom: -20px;
     /* Vùng invisible nhưng vẫn trigger hover */
-    pointer-events: auto;
-    z-index: 1;
+    pointer-events: none; /* FIXED: Không chặn click vào button */
+    z-index: -1; /* FIXED: Đưa xuống dưới để không chặn */
 }
 
 /* Dropdown menu - Ẩn mặc định */
 .account-dropdown-menu {
     position: absolute;
-    top: calc(100% + 10px);
+    top: calc(100% + 5px); /* Giảm khoảng cách để dễ hover */
     right: 0;
     background: white;
     border-radius: 12px;
@@ -794,6 +794,14 @@
 
 /* Show dropdown khi hover vào wrapper */
 .user-account-dropdown:hover .account-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Giữ dropdown hiển thị khi hover vào chính dropdown */
+.account-dropdown-menu:hover {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);

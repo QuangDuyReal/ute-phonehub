@@ -80,8 +80,8 @@ public class JwtAuthenticationFilter implements Filter {
         logger.debug("JWT Filter - {} {} (context: {}, full URI: {})", method, path, contextPath, requestURI);
         
         // Kiểm tra xem endpoint có public không
-        if (isPublicEndpoint(path)) {
-            logger.debug("Public endpoint, skipping authentication: {}", path);
+        if (isPublicEndpoint(path, method)) {
+            logger.debug("Public endpoint, skipping authentication: {} {}", method, path);
             chain.doFilter(request, response);
             return;
         }
@@ -153,9 +153,20 @@ public class JwtAuthenticationFilter implements Filter {
     /**
      * Kiểm tra endpoint có public không
      * @param requestURI Request URI
+     * @param method HTTP method (GET, POST, etc.)
      * @return true nếu là public endpoint
      */
-    private boolean isPublicEndpoint(String requestURI) {
+    private boolean isPublicEndpoint(String requestURI, String method) {
+        // Special case: POST /api/v1/products/{id}/reviews requires authentication
+        if ("POST".equals(method) && requestURI.matches("/api/v1/products/\\d+/reviews")) {
+            return false;
+        }
+        
+        // Special case: GET /api/v1/products/{id}/reviews is public (anyone can read reviews)
+        if ("GET".equals(method) && requestURI.matches("/api/v1/products/\\d+/reviews")) {
+            return true;
+        }
+        
         for (String endpoint : PUBLIC_ENDPOINTS) {
             // Exact match
             if (requestURI.equals(endpoint)) {

@@ -14,6 +14,12 @@ function initializeApp() {
   initializeHeader();
   initializeUserAccount(); // Add user account dropdown behavior
   
+  // Update cart and voucher badges for logged in users
+  if (isLoggedIn()) {
+    updateCartBadge();
+    updateVoucherBadge();
+  }
+  
   // Only initialize if elements exist on page
   if (document.querySelector('.product-grid')) {
     initializeProductGrid();
@@ -21,7 +27,6 @@ function initializeApp() {
   
   if (document.querySelector('.cart-badge')) {
     initializeCart();
-    updateCartBadge();
   }
   
   if (document.querySelector('.wishlist-badge')) {
@@ -282,12 +287,57 @@ function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-function updateCartBadge() {
-  const badge = document.querySelector(".cart-badge");
-  if (badge) {
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    badge.textContent = totalItems;
-    badge.style.display = totalItems > 0 ? "flex" : "none";
+/**
+ * Update cart badge from API
+ */
+async function updateCartBadge() {
+  const badge = document.getElementById('cartBadge');
+  if (!badge) return;
+  
+  // If not logged in, hide badge
+  if (!isLoggedIn()) {
+    badge.style.display = 'none';
+    return;
+  }
+  
+  try {
+    const response = await CartAPI.getCart();
+    if (response && response.success && response.data) {
+      const totalItems = response.data.totalItems || 0;
+      badge.textContent = totalItems;
+      badge.style.display = totalItems > 0 ? 'flex' : 'none';
+    }
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    // Hide badge on error
+    badge.style.display = 'none';
+  }
+}
+
+/**
+ * Update voucher badge from API
+ */
+async function updateVoucherBadge() {
+  const badge = document.getElementById('voucherBadge');
+  if (!badge) return;
+  
+  // If not logged in, hide badge
+  if (!isLoggedIn()) {
+    badge.style.display = 'none';
+    return;
+  }
+  
+  try {
+    const response = await VoucherAPI.getUserVouchers(1, 100);
+    if (response && response.success && response.data) {
+      const totalVouchers = response.data.length || 0;
+      badge.textContent = totalVouchers;
+      badge.style.display = totalVouchers > 0 ? 'flex' : 'none';
+    }
+  } catch (error) {
+    console.error('Error fetching vouchers:', error);
+    // Hide badge on error
+    badge.style.display = 'none';
   }
 }
 
@@ -585,8 +635,16 @@ function initializeSmoothScrolling() {
 
   links.forEach((link) => {
     link.addEventListener("click", function (e) {
+      const href = this.getAttribute("href");
+      
+      // Skip if href is just "#" or empty
+      if (!href || href === "#" || href.length <= 1) {
+        e.preventDefault();
+        return;
+      }
+      
       e.preventDefault();
-      const target = document.querySelector(this.getAttribute("href"));
+      const target = document.querySelector(href);
       if (target) {
         target.scrollIntoView({
           behavior: "smooth",
@@ -723,11 +781,8 @@ function initializeUserAccount() {
     userAccountText.textContent = user.fullName;
     userAccountBtn.href = contextPath + '/profile';
     
-    // Click handler for navigation
-    userAccountBtn.addEventListener('click', function(e) {
-      // Allow default navigation to /profile
-      window.location.href = contextPath + '/profile';
-    });
+    // KHÔNG preventDefault - để link hoạt động bình thường
+    // Chỉ xử lý hover để show/hide dropdown
     
     // Show dropdown on hover only
     userAccountDropdown.addEventListener('mouseenter', function() {
@@ -751,11 +806,8 @@ function initializeUserAccount() {
     userAccountBtn.href = contextPath + '/login';
     accountDropdownMenu.style.display = 'none';
     
-    // Click handler for navigation to login
-    userAccountBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = contextPath + '/login';
-    });
+    // KHÔNG preventDefault - để link hoạt động bình thường
+    // Link sẽ tự động redirect đến /login
     
     // Prevent dropdown on hover when not logged in
     userAccountDropdown.addEventListener('mouseenter', function() {

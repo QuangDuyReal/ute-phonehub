@@ -110,34 +110,11 @@
                                     <span id="shipping">0₫</span>
                                 </div>
 
-                                <div class="summary-row">
-                                    <span>Giảm giá:</span>
-                                    <span id="discount" class="text-success">-0₫</span>
-                                </div>
-
                                 <div class="summary-divider"></div>
 
                                 <div class="summary-row summary-total">
                                     <span>Tổng cộng:</span>
                                     <span id="total" class="text-danger">0₫</span>
-                                </div>
-
-                                <!-- Voucher Section -->
-                                <div class="voucher-section">
-                                    <label class="form-label">
-                                        <i class="fas fa-ticket-alt"></i>
-                                        Mã giảm giá
-                                    </label>
-                                    <div class="voucher-input">
-                                        <input type="text" 
-                                               id="voucher-code" 
-                                               class="form-control" 
-                                               placeholder="Nhập mã giảm giá">
-                                        <button class="btn btn-outline-primary" onclick="handleApplyVoucher()">
-                                            Áp dụng
-                                        </button>
-                                    </div>
-                                    <div id="voucher-message" class="voucher-message"></div>
                                 </div>
 
                                 <!-- Checkout Button -->

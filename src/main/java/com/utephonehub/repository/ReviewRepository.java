@@ -55,14 +55,14 @@ public class ReviewRepository {
                 saved = em.merge(review);
             }
             tx.commit();
+            em.close(); // Close AFTER commit
             return saved;
         } catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
+            em.close(); // Close AFTER rollback
             throw e;
-        } finally {
-            em.close();
         }
     }
     
@@ -178,6 +178,38 @@ public class ReviewRepository {
                 .setParameter("reviewId", reviewId)
                 .getSingleResult();
             return count.intValue();
+        } finally {
+            em.close();
+        }
+    }
+    
+    public void delete(Long reviewId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            Review review = em.find(Review.class, reviewId);
+            if (review != null) {
+                em.remove(review);
+            }
+            tx.commit();
+        } catch (Exception e) {
+            if (tx.isActive()) {
+                tx.rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+    
+    public Double getAverageRating(Long productId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            return em.createQuery(
+                "SELECT AVG(r.rating) FROM Review r WHERE r.product.id = :productId", Double.class)
+                .setParameter("productId", productId)
+                .getSingleResult();
         } finally {
             em.close();
         }

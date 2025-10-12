@@ -1,7 +1,9 @@
 /* User Orders Page Styles */
 /* Inspired by Thegioididong.com order tracking */
+/* Scoped to not conflict with profile page */
 
-* {
+/* Remove global resets - let profile page handle it */
+/* * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -12,9 +14,9 @@ body {
   background: #f5f5f5;
   color: #333;
   line-height: 1.6;
-}
+} */
 
-/* Orders Header */
+/* Orders Header - Only for standalone orders page */
 .orders-header {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;

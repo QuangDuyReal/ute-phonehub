@@ -825,34 +825,71 @@ document.addEventListener("DOMContentLoaded", function () {
   loadProfile();
   loadProvinces();
 
-  // Tab switching
-  const navItems = document.querySelectorAll(".nav-item");
-  const tabContents = document.querySelectorAll(".tab-content");
+  // Tab switching function
+  function switchToTab(tabName) {
+    console.log("Switching to tab:", tabName);
 
+    const navItems = document.querySelectorAll(".nav-item");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    // Update active nav item
+    navItems.forEach((nav) => {
+      if (nav.dataset.tab === tabName) {
+        nav.classList.add("active");
+      } else {
+        nav.classList.remove("active");
+      }
+    });
+
+    // Update active tab content
+    tabContents.forEach((content) => content.classList.remove("active"));
+    const activeTab = document.getElementById("tab-" + tabName);
+    if (activeTab) {
+      activeTab.classList.add("active");
+    }
+
+    // Load data for specific tabs
+    if (tabName === "addresses") {
+      loadAddresses();
+    } else if (tabName === "orders") {
+      // Load orders when switching to orders tab
+      if (typeof loadOrders === "function") {
+        loadOrders();
+      }
+    }
+
+    // Update URL hash without scrolling
+    history.replaceState(null, null, "#" + tabName);
+  }
+
+  // Tab switching via sidebar clicks
+  const navItems = document.querySelectorAll(".nav-item");
   navItems.forEach((item) => {
     item.addEventListener("click", function (e) {
       e.preventDefault();
-
       const tab = this.dataset.tab;
-      console.log("Switching to tab:", tab);
-
-      // Update active nav item
-      navItems.forEach((nav) => nav.classList.remove("active"));
-      this.classList.add("active");
-
-      // Update active tab content
-      tabContents.forEach((content) => content.classList.remove("active"));
-      const activeTab = document.getElementById(`tab-${tab}`);
-      if (activeTab) {
-        activeTab.classList.add("active");
-      }
-
-      // Load data for specific tabs
-      if (tab === "addresses") {
-        loadAddresses();
-      }
+      switchToTab(tab);
     });
   });
+
+  // Handle hash navigation on page load
+  function handleHashNavigation() {
+    const hash = window.location.hash.substring(1); // Remove #
+    const validTabs = ["info", "orders", "addresses", "password"];
+    
+    if (hash && validTabs.includes(hash)) {
+      switchToTab(hash);
+    } else {
+      // Default to info tab if no hash or invalid hash
+      switchToTab("info");
+    }
+  }
+
+  // Handle hash changes (browser back/forward)
+  window.addEventListener("hashchange", handleHashNavigation);
+
+  // Handle initial hash on page load
+  handleHashNavigation();
 
   // Update profile form
   const updateProfileForm = document.getElementById("updateProfileForm");

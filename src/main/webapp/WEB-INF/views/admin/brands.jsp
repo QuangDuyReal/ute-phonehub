@@ -179,6 +179,10 @@
             <input type="text" id="brandName" class="form-control" required>
           </div>
           <div class="form-group">
+            <label for="brandLogoUrl">Logo URL</label>
+            <input type="url" id="brandLogoUrl" class="form-control" placeholder="https://...">
+          </div>
+          <div class="form-group">
             <label for="brandDescription">Mô tả</label>
             <textarea id="brandDescription" class="form-control" rows="3"></textarea>
           </div>

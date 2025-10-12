@@ -297,7 +297,7 @@
 
                         <!-- Place Order Button -->
                         <button type="button" class="btn btn-danger btn-lg w-100" id="place-order-btn">
-                            <i class="fas fa-check-circle me-2"></i>Đặt hàng
+                            <i class="fas fa-check-circle me-2 btn-icon"></i>Đặt hàng
                         </button>
 
                         <div class="mt-3 text-center text-muted small">

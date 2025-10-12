@@ -13,7 +13,17 @@ let currentOrderId = null;
 
 // Check authentication
 document.addEventListener("DOMContentLoaded", () => {
-  // Check if user is logged in
+  // Only auto-initialize if we're on the standalone orders page (not profile page with tabs)
+  const isProfilePage = document.querySelector('.tab-content#tab-orders') !== null;
+  
+  if (isProfilePage) {
+    // On profile page, just setup event listeners but don't load yet
+    // Orders will be loaded when user clicks the "Đơn hàng của tôi" tab
+    setupEventListeners();
+    return;
+  }
+  
+  // Standalone orders page - check authentication and initialize
   const token = localStorage.getItem("accessToken");
   if (!token) {
     showToast("Vui lòng đăng nhập để xem đơn hàng", "warning");
@@ -175,37 +185,8 @@ function createOrderCard(order) {
         </div>
       </div>
 
-      <div class="order-items">
-        ${(order.items && Array.isArray(order.items))
-          ? order.items
-              .slice(0, 3)
-              .map(
-                (item) => `
-          <div class="order-item">
-            <img 
-              src="${escapeHtml(item.product?.thumbnailUrl || "https://via.placeholder.com/80x80/cccccc/666666?text=No+Image")}" 
-              alt="${escapeHtml(item.product?.name || "Product")}"
-              class="order-item-image"
-            />
-            <div class="order-item-info">
-              <div class="order-item-name">${escapeHtml(item.product?.name || "Sản phẩm")}</div>
-              <div class="order-item-quantity">Số lượng: ${item.quantity}</div>
-            </div>
-            <div class="order-item-price">${formatPrice(item.price * item.quantity)}</div>
-          </div>
-        `
-              )
-              .join("")
-          : '<div style="text-align: center; padding: 1rem; color: #999;">Không có sản phẩm</div>'
-        }
-        ${
-          (order.items && order.items.length > 3)
-            ? `<div style="text-align: center; color: #6c757d; padding: 0.5rem;">
-            +${order.items.length - 3} sản phẩm khác
-          </div>`
-            : ""
-        }
-      </div>
+      <!-- Items section removed - Backend doesn't return items in list API -->
+      <!-- Items are only shown in detail modal -->
 
       <div class="order-footer">
         <div class="order-total">
@@ -282,6 +263,9 @@ async function viewOrderDetail(orderId) {
  * Show order detail modal
  */
 function showOrderDetailModal(order) {
+  console.log("Order detail data:", order);
+  console.log("Shipping address:", order.shippingAddress);
+  
   const modal = document.getElementById("orderDetailModal");
   const statusClass = order.status.toLowerCase();
   const statusText = getStatusText(order.status);
@@ -301,29 +285,52 @@ function showOrderDetailModal(order) {
   statusBadge.className = "order-status-badge " + statusClass;
   statusBadge.textContent = statusText;
 
-  // Shipping address
-  if (order.shippingAddress) {
-    document.getElementById("modalRecipientName").textContent =
-      order.shippingAddress.recipientName || "";
-    document.getElementById("modalRecipientPhone").textContent =
-      order.shippingAddress.phoneNumber || "";
-    document.getElementById("modalRecipientAddress").textContent =
-      `${order.shippingAddress.streetAddress || ""}, ${order.shippingAddress.ward || ""}, ${order.shippingAddress.district || ""}, ${order.shippingAddress.city || ""}`;
+  // Shipping address - Backend returns "shippingInfo" not "shippingAddress"
+  const shippingAddr = order.shippingInfo || order.shippingAddress || order.deliveryAddress;
+  console.log("Resolved shipping address:", shippingAddr);
+  
+  if (shippingAddr) {
+    const addr = shippingAddr;
+    
+    // Backend fields: recipientName, phoneNumber, email, streetAddress, city
+    const recipientName = addr.recipientName || addr.fullName || addr.name || "";
+    const phoneNumber = addr.phoneNumber || addr.phone || "";
+    const streetAddress = addr.streetAddress || addr.street || addr.address || "";
+    const city = addr.city || addr.province || "";
+    
+    // Build full address
+    const addressParts = [streetAddress, city].filter(part => part && part.trim());
+    
+    console.log("Parsed address parts:", {
+      recipientName,
+      phoneNumber,
+      addressParts
+    });
+    
+    document.getElementById("modalRecipientName").textContent = recipientName || "Không có tên";
+    document.getElementById("modalRecipientPhone").textContent = phoneNumber || "Không có SĐT";
+    document.getElementById("modalRecipientAddress").textContent = 
+      addressParts.length > 0 ? addressParts.join(", ") : "Không có địa chỉ chi tiết";
+  } else {
+    // If no shipping address, show placeholder
+    document.getElementById("modalRecipientName").textContent = "Không có thông tin";
+    document.getElementById("modalRecipientPhone").textContent = "";
+    document.getElementById("modalRecipientAddress").textContent = "";
   }
 
-  // Order items
+  // Order items - Backend returns flat structure: productId, productName, quantity, price
   const modalOrderItems = document.getElementById("modalOrderItems");
   modalOrderItems.innerHTML = order.items
     .map(
       (item) => `
     <div class="order-item">
       <img 
-        src="${escapeHtml(item.product?.thumbnailUrl || "https://via.placeholder.com/80x80/cccccc/666666?text=No+Image")}" 
-        alt="${escapeHtml(item.product?.name || "Product")}"
+        src="${escapeHtml(item.thumbnailUrl || item.product?.thumbnailUrl || "https://via.placeholder.com/80x80/cccccc/666666?text=No+Image")}" 
+        alt="${escapeHtml(item.productName || item.product?.name || "Product")}"
         class="order-item-image"
       />
       <div class="order-item-info">
-        <div class="order-item-name">${escapeHtml(item.product?.name || "Sản phẩm")}</div>
+        <div class="order-item-name">${escapeHtml(item.productName || item.product?.name || "Sản phẩm")}</div>
         <div class="order-item-quantity">Số lượng: ${item.quantity}</div>
       </div>
       <div class="order-item-price">${formatPrice(item.price * item.quantity)}</div>
@@ -484,8 +491,12 @@ async function reorder(orderId) {
         `Đã thêm ${successCount}/${order.items.length} sản phẩm vào giỏ hàng!`,
         "success"
       );
+      // Update cart badge
+      if (typeof updateCartBadge === 'function') {
+        updateCartBadge();
+      }
       setTimeout(() => {
-        window.location.href = contextPath + "/cart";
+        window.location.href = contextPath + "/products";
       }, 1500);
     } else {
       showToast("Không thể thêm sản phẩm vào giỏ hàng", "error");
@@ -497,14 +508,51 @@ async function reorder(orderId) {
 }
 
 /**
- * Print invoice
+ * Print invoice - Send invoice via email
  */
-function printInvoice(orderId) {
-  // Open print-friendly page
-  window.open(
-    contextPath + "/orders/" + orderId + "/invoice",
-    "_blank"
-  );
+async function printInvoice(orderId) {
+  try {
+    // TODO: Implement send invoice API endpoint
+    // Endpoint: POST /api/v1/orders/{orderId}/send-invoice
+    showToast(
+      "Chức năng gửi hóa đơn qua email đang được phát triển. Vui lòng liên hệ hotline 1800.1234 để nhận hóa đơn.",
+      "info"
+    );
+    return;
+    
+    /* Uncomment when API is ready
+    showToast("Đang gửi hóa đơn qua email...", "info");
+    
+    const response = await fetch(
+      contextPath + "/api/v1/orders/" + orderId + "/send-invoice",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("accessToken"),
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (response.ok) {
+      const result = await response.json();
+      showToast("Hóa đơn đã được gửi đến email của bạn!", "success");
+    } else if (response.status === 404) {
+      showToast(
+        "Chức năng gửi hóa đơn qua email đang được phát triển. Vui lòng liên hệ hotline 1800.1234 để nhận hóa đơn.",
+        "info"
+      );
+    } else {
+      throw new Error("Failed to send invoice");
+    }
+    */
+  } catch (error) {
+    console.error("Error sending invoice:", error);
+    showToast(
+      "Có lỗi xảy ra. Vui lòng thử lại sau.",
+      "error"
+    );
+  }
 }
 
 /**

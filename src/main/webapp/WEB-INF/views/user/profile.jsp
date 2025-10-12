@@ -20,9 +20,18 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       href="${pageContext.request.contextPath}/static/favicon.png"
     />
 
+    <!-- Main CSS for footer and common styles -->
+    <link
+      rel="stylesheet"
+      href="${pageContext.request.contextPath}/static/css/main.css"
+    />
     <link
       rel="stylesheet"
       href="${pageContext.request.contextPath}/static/css/pages/profile-modern.css"
+    />
+    <link
+      rel="stylesheet"
+      href="${pageContext.request.contextPath}/static/css/pages/user-orders.css"
     />
 
     <!-- Google Fonts - Roboto -->
@@ -54,7 +63,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       <div class="profile-header-content">
         <!-- Logo -->
         <a href="${pageContext.request.contextPath}/" class="profile-logo">
-          <div class="logo-icon">U</div>
+          <img src="${pageContext.request.contextPath}/static/images/logo.png" alt="UTE Phone Hub" style="height: 45px; width: auto;">
           <span class="logo-text">UTE Phone Hub</span>
         </a>
 
@@ -92,18 +101,18 @@ uri="http://java.sun.com/jsp/jstl/core" %>
             <i class="bx bxs-user"></i>
             <span>Thông tin cá nhân</span>
           </a>
-          <a href="#" class="nav-item" data-tab="password">
-            <i class="bx bxs-lock-alt"></i>
-            <span>Đổi mật khẩu</span>
+          <a href="#" class="nav-item" data-tab="orders">
+            <i class="bx bxs-shopping-bag"></i>
+            <span>Đơn hàng của tôi</span>
           </a>
           <a href="#" class="nav-item" data-tab="addresses">
             <i class="bx bxs-map"></i>
             <span>Địa chỉ giao hàng</span>
           </a>
-          <!-- <a href="${pageContext.request.contextPath}/orders" class="nav-item">
-            <i class="bx bxs-shopping-bag"></i>
-            <span>Đơn hàng của tôi</span>
-          </a> -->
+          <a href="#" class="nav-item" data-tab="password">
+            <i class="bx bxs-lock-alt"></i>
+            <span>Đổi mật khẩu</span>
+          </a>
         </nav>
       </div>
 
@@ -178,6 +187,171 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           </div>
         </div>
 
+        <!-- Tab: Đơn hàng của tôi -->
+        <div class="tab-content" id="tab-orders">
+          <!-- Order Status Filter -->
+          <div class="order-filter">
+            <button class="filter-btn active" data-status="ALL">
+              <i class="bx bx-list-ul"></i>
+              Tất cả đơn
+            </button>
+            <button class="filter-btn" data-status="PENDING">
+              <i class="bx bx-time"></i>
+              Chờ xác nhận
+            </button>
+            <button class="filter-btn" data-status="CONFIRMED">
+              <i class="bx bx-check-circle"></i>
+              Đã xác nhận
+            </button>
+            <button class="filter-btn" data-status="SHIPPING">
+              <i class="bx bx-package"></i>
+              Đang giao
+            </button>
+            <button class="filter-btn" data-status="DELIVERED">
+              <i class="bx bx-check-double"></i>
+              Đã giao
+            </button>
+            <button class="filter-btn" data-status="CANCELLED">
+              <i class="bx bx-x-circle"></i>
+              Đã hủy
+            </button>
+          </div>
+
+          <!-- Loading State -->
+          <div id="loadingState" class="loading-state">
+            <div class="spinner"></div>
+            <p>Đang tải đơn hàng...</p>
+          </div>
+
+          <!-- Error State -->
+          <div id="errorState" class="error-state" style="display: none;">
+            <i class="bx bx-error-circle"></i>
+            <h3>Không thể tải đơn hàng</h3>
+            <p id="errorMessage">Đã xảy ra lỗi. Vui lòng thử lại sau.</p>
+            <button class="btn btn-primary" onclick="location.reload()">
+              <i class="bx bx-refresh"></i> Thử lại
+            </button>
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state" style="display: none;">
+            <i class="bx bx-cart"></i>
+            <h3>Chưa có đơn hàng nào</h3>
+            <p>Bạn chưa có đơn hàng nào. Hãy bắt đầu mua sắm ngay!</p>
+            <a href="${pageContext.request.contextPath}/products" class="btn btn-primary">
+              <i class="bx bx-shopping-bag"></i> Mua sắm ngay
+            </a>
+          </div>
+
+          <!-- Orders List -->
+          <div id="ordersList" class="orders-list">
+            <!-- Orders will be loaded dynamically -->
+          </div>
+
+          <!-- Pagination -->
+          <div id="pagination" class="pagination" style="display: none;">
+            <!-- Pagination will be loaded dynamically -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Order Detail Modal -->
+    <div id="orderDetailModal" class="modal">
+      <div class="modal-content modal-large">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+          <h2>Chi tiết đơn hàng</h2>
+          <div id="orderStatus" class="order-status-badge"></div>
+        </div>
+        <div class="modal-body">
+          <!-- Order Info -->
+          <div class="order-info-section">
+            <div class="info-row">
+              <span class="label">Mã đơn hàng:</span>
+              <span class="value" id="modalOrderCode"></span>
+            </div>
+            <div class="info-row">
+              <span class="label">Ngày đặt:</span>
+              <span class="value" id="modalOrderDate"></span>
+            </div>
+            <div class="info-row">
+              <span class="label">Trạng thái:</span>
+              <span class="value" id="modalOrderStatus"></span>
+            </div>
+            <div class="info-row">
+              <span class="label">Hình thức thanh toán:</span>
+              <span class="value" id="modalPaymentMethod"></span>
+            </div>
+          </div>
+
+          <!-- Shipping Address -->
+          <div class="shipping-address-section">
+            <h3><i class="bx bx-map"></i> Địa chỉ giao hàng</h3>
+            <div class="address-card">
+              <p class="recipient-name" id="modalRecipientName"></p>
+              <p class="recipient-phone" id="modalRecipientPhone"></p>
+              <p class="recipient-address" id="modalRecipientAddress"></p>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div class="order-items-section">
+            <h3><i class="bx bx-package"></i> Sản phẩm</h3>
+            <div id="modalOrderItems" class="modal-order-items">
+              <!-- Items will be loaded dynamically -->
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="order-summary-section">
+            <div class="summary-row">
+              <span class="label">Tổng tiền hàng:</span>
+              <span class="value" id="modalSubtotal"></span>
+            </div>
+            <div class="summary-row">
+              <span class="label">Phí vận chuyển:</span>
+              <span class="value" id="modalShippingFee"></span>
+            </div>
+            <div class="summary-row discount" id="modalDiscountRow" style="display: none;">
+              <span class="label">Giảm giá:</span>
+              <span class="value" id="modalDiscount"></span>
+            </div>
+            <div class="summary-row total">
+              <span class="label">Tổng thanh toán:</span>
+              <span class="value" id="modalTotal"></span>
+            </div>
+          </div>
+
+          <!-- Order Actions -->
+          <div class="order-actions-section" id="modalOrderActions">
+            <!-- Actions will be loaded dynamically based on order status -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Cancel Modal -->
+    <div id="confirmCancelModal" class="modal">
+      <div class="modal-content modal-small">
+        <span class="close">&times;</span>
+        <div class="modal-header">
+          <h3>Xác nhận hủy đơn hàng</h3>
+        </div>
+        <div class="modal-body">
+          <p>Bạn có chắc chắn muốn hủy đơn hàng này không?</p>
+          <div class="form-group">
+            <label for="cancelReason">Lý do hủy:</label>
+            <textarea id="cancelReason" rows="3" placeholder="Nhập lý do hủy đơn (không bắt buộc)"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="btnCancelNo">Không</button>
+            <button class="btn btn-danger" id="btnCancelYes">
+              <i class="bx bx-x"></i> Hủy đơn hàng
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -249,6 +423,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
     <!-- Page-specific JavaScript -->
     <script src="${pageContext.request.contextPath}/static/js/profile.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/pages/user-orders.js"></script>
 
     <!-- Logout Handler -->
     <script>

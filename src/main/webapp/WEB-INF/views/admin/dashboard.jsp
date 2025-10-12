@@ -101,23 +101,6 @@
 
         <!-- Charts & Recent Orders -->
         <div class="dashboard-grid">
-          <!-- Revenue Chart (Placeholder) -->
-          <div class="dashboard-card">
-            <div class="card-header">
-              <h3 class="card-title">
-                <i class="fas fa-chart-line"></i>
-                Doanh thu 7 ngày gần đây
-              </h3>
-            </div>
-            <div class="card-body">
-              <div class="chart-placeholder">
-                <i class="fas fa-chart-area"></i>
-                <p>Biểu đồ doanh thu</p>
-                <small>(Sẽ được triển khai sau)</small>
-              </div>
-            </div>
-          </div>
-
           <!-- Order Status Distribution -->
           <div class="dashboard-card">
             <div class="card-header">

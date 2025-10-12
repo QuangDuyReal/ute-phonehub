@@ -3,6 +3,7 @@ package com.utephonehub.repository;
 import com.utephonehub.entity.Brand;
 import com.utephonehub.config.DatabaseConfig;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -62,8 +63,9 @@ public class BrandRepository {
      */
     public Brand save(Brand brand) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             
             if (brand.getId() == null) {
                 em.persist(brand);
@@ -71,10 +73,12 @@ public class BrandRepository {
                 brand = em.merge(brand);
             }
             
-            DatabaseConfig.commitTransaction();
+            tx.commit();
             return brand;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error saving brand", e);
             throw new RuntimeException("Error saving brand", e);
         } finally {
@@ -87,15 +91,18 @@ public class BrandRepository {
      */
     public void delete(Long id) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             Brand brand = em.find(Brand.class, id);
             if (brand != null) {
                 em.remove(brand);
             }
-            DatabaseConfig.commitTransaction();
+            tx.commit();
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error deleting brand with id: {}", id, e);
             throw new RuntimeException("Error deleting brand", e);
         } finally {

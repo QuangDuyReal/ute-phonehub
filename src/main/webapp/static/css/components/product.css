@@ -86,6 +86,8 @@
     color: white;
 }
 
+/* Add to cart button (icon giỏ hàng thay wishlist) */
+.product-add-to-cart,
 .product-wishlist {
     position: absolute;
     top: 12px;
@@ -104,12 +106,14 @@
     backdrop-filter: blur(10px);
 }
 
+.product-add-to-cart:hover,
 .product-wishlist:hover {
     background: #ff6b35;
     color: white;
     transform: scale(1.1);
 }
 
+.product-add-to-cart.active,
 .product-wishlist.active {
     background: #ff6b35;
     color: white;

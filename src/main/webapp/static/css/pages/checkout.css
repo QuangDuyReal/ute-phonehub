@@ -345,22 +345,29 @@
 
 #place-order-btn.loading {
     position: relative;
-    color: transparent;
+    pointer-events: none;
 }
 
-#place-order-btn.loading::after {
-    content: '';
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 50%;
-    left: 50%;
-    margin-left: -10px;
-    margin-top: -10px;
-    border: 3px solid #ffffff;
-    border-radius: 50%;
-    border-top-color: transparent;
-    animation: spinner 0.8s linear infinite;
+#place-order-btn.loading .btn-icon {
+    display: none;
+}
+
+#place-order-btn.loading::before {
+    content: '\f110';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    margin-right: 8px;
+    display: inline-block;
+    animation: fa-spin 1s linear infinite;
+}
+
+@keyframes fa-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes spinner {

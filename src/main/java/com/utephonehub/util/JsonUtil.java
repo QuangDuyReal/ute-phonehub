@@ -29,18 +29,43 @@ public class JsonUtil {
     
     /**
      * Custom LocalDateTime adapter for Gson
+     * Supports multiple datetime formats:
+     * - "yyyy-MM-dd HH:mm:ss" (database format)
+     * - "yyyy-MM-dd'T'HH:mm:ss" (ISO-8601 with seconds)
+     * - "yyyy-MM-dd'T'HH:mm" (HTML5 datetime-local format)
      */
     private static class LocalDateTimeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
-        private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        private static final DateTimeFormatter OUTPUT_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        private static final DateTimeFormatter[] INPUT_FORMATTERS = {
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME,           // yyyy-MM-dd'T'HH:mm:ss
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"), // HTML5 datetime-local (no seconds)
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"), // Database format
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")   // Database format (no seconds)
+        };
         
         @Override
         public JsonElement serialize(LocalDateTime dateTime, java.lang.reflect.Type type, JsonSerializationContext context) {
-            return new JsonPrimitive(dateTime.format(FORMATTER));
+            return new JsonPrimitive(dateTime.format(OUTPUT_FORMATTER));
         }
         
         @Override
         public LocalDateTime deserialize(JsonElement json, java.lang.reflect.Type type, JsonDeserializationContext context) {
-            return LocalDateTime.parse(json.getAsString(), FORMATTER);
+            String dateTimeString = json.getAsString();
+            
+            // Try parsing with each formatter until one succeeds
+            for (DateTimeFormatter formatter : INPUT_FORMATTERS) {
+                try {
+                    return LocalDateTime.parse(dateTimeString, formatter);
+                } catch (Exception e) {
+                    // Try next formatter
+                }
+            }
+            
+            // If all formatters fail, throw exception with helpful message
+            throw new JsonParseException(
+                "Unable to parse datetime: " + dateTimeString + 
+                ". Expected formats: yyyy-MM-dd'T'HH:mm:ss, yyyy-MM-dd'T'HH:mm, yyyy-MM-dd HH:mm:ss, or yyyy-MM-dd HH:mm"
+            );
         }
     }
     

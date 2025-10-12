@@ -46,14 +46,14 @@ public class CartRepository {
                 saved = em.merge(cart);
             }
             tx.commit();
+            em.close(); // Close AFTER commit
             return saved;
         } catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
+            em.close(); // Close AFTER rollback
             throw e;
-        } finally {
-            em.close();
         }
     }
     

@@ -6,7 +6,7 @@
   <!-- Logo & Brand -->
   <div class="admin-brand">
     <div class="brand-logo">
-      <i class="fas fa-shield-alt"></i>
+      <img src="${pageContext.request.contextPath}/static/images/logo.png" alt="UTE Phone Hub" style="height: 40px; width: auto;">
     </div>
     <div class="brand-text">
       <h2>UTE Admin</h2>

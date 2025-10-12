@@ -5,18 +5,31 @@ import java.time.LocalDateTime;
 
 /**
  * Voucher Response DTO
+ * Fields matched to frontend expectations
  */
 public class VoucherResponse {
     
     private Long id;
     private String code;
+    private String description; // Optional description
     private String discountType;
     private BigDecimal discountValue;
-    private Integer maxUsage;
+    
+    // Frontend expects: usageLimit, usedCount
+    private Integer usageLimit; // maxUsage in entity
+    private Integer usedCount; // usageCount
+    
     private BigDecimal minOrderValue;
-    private LocalDateTime expiryDate;
-    private String status;
-    private Integer usageCount;
+    private BigDecimal maxDiscountAmount; // Optional max cap for percentage discounts
+    
+    // Frontend expects: startDate, endDate
+    private LocalDateTime startDate; // createdAt
+    private LocalDateTime endDate; // expiryDate
+    
+    // Frontend expects: isActive (boolean)
+    private Boolean isActive; // derived from status ENUM
+    
+    private String status; // Keep for reference
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
@@ -41,6 +54,14 @@ public class VoucherResponse {
         this.code = code;
     }
     
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
+    }
+    
     public String getDiscountType() {
         return discountType;
     }
@@ -57,12 +78,20 @@ public class VoucherResponse {
         this.discountValue = discountValue;
     }
     
-    public Integer getMaxUsage() {
-        return maxUsage;
+    public Integer getUsageLimit() {
+        return usageLimit;
     }
     
-    public void setMaxUsage(Integer maxUsage) {
-        this.maxUsage = maxUsage;
+    public void setUsageLimit(Integer usageLimit) {
+        this.usageLimit = usageLimit;
+    }
+    
+    public Integer getUsedCount() {
+        return usedCount;
+    }
+    
+    public void setUsedCount(Integer usedCount) {
+        this.usedCount = usedCount;
     }
     
     public BigDecimal getMinOrderValue() {
@@ -73,12 +102,36 @@ public class VoucherResponse {
         this.minOrderValue = minOrderValue;
     }
     
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
+    public BigDecimal getMaxDiscountAmount() {
+        return maxDiscountAmount;
     }
     
-    public void setExpiryDate(LocalDateTime expiryDate) {
-        this.expiryDate = expiryDate;
+    public void setMaxDiscountAmount(BigDecimal maxDiscountAmount) {
+        this.maxDiscountAmount = maxDiscountAmount;
+    }
+    
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+    
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+    
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+    
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+    
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
     
     public String getStatus() {
@@ -87,14 +140,6 @@ public class VoucherResponse {
     
     public void setStatus(String status) {
         this.status = status;
-    }
-    
-    public Integer getUsageCount() {
-        return usageCount;
-    }
-    
-    public void setUsageCount(Integer usageCount) {
-        this.usageCount = usageCount;
     }
     
     public LocalDateTime getCreatedAt() {

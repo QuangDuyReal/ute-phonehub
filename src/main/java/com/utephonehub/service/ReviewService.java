@@ -76,22 +76,21 @@ public class ReviewService {
             throw new RuntimeException("Người dùng đã đánh giá sản phẩm này trước đó");
         }
         
-        // Check if user has purchased this product
-        if (!reviewRepository.hasUserPurchasedProduct(userId, productId)) {
-            throw new RuntimeException("Người dùng chưa mua sản phẩm này hoặc đơn hàng chưa hoàn thành");
-        }
+        // NOTE: Người dùng đã đăng nhập có thể đánh giá KHÔNG CẦN mua hàng
+        // Đã bỏ kiểm tra hasUserPurchasedProduct()
         
         // Validate rating
         if (rating < 1 || rating > 5) {
             throw new RuntimeException("Đánh giá phải từ 1 đến 5 sao");
         }
         
+        // Get current user info
+        User currentUser = new User();
+        currentUser.setId(userId);
+        
         // Create review
         Review review = new Review();
-        
-        User user = new User();
-        user.setId(userId);
-        review.setUser(user);
+        review.setUser(currentUser);
         
         Product product = productOpt.get();
         review.setProduct(product);
@@ -101,20 +100,81 @@ public class ReviewService {
         
         Review savedReview = reviewRepository.save(review);
         
-        // Build response
+        // Build response - need to fetch user info separately
         Map<String, Object> reviewData = new HashMap<>();
         reviewData.put("id", savedReview.getId());
         reviewData.put("rating", savedReview.getRating());
         reviewData.put("comment", savedReview.getComment());
-        
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("fullName", user.getFullName());
-        reviewData.put("user", userData);
-        
         reviewData.put("likeCount", 0);
         reviewData.put("createdAt", savedReview.getCreatedAt());
         
         return reviewData;
+    }
+    
+    public Map<String, Object> updateReview(Long userId, Long reviewId, Integer rating, String comment) {
+        // Check if review exists
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
+        if (reviewOpt.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy đánh giá với ID: " + reviewId);
+        }
+        
+        Review review = reviewOpt.get();
+        
+        // Check if user owns this review
+        if (!review.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền sửa đánh giá này");
+        }
+        
+        // Validate rating
+        if (rating < 1 || rating > 5) {
+            throw new RuntimeException("Đánh giá phải từ 1 đến 5 sao");
+        }
+        
+        // Get user info BEFORE closing EntityManager
+        Long reviewUserId = review.getUser().getId();
+        String reviewUserFullName = review.getUser().getFullName();
+        int currentLikeCount = review.getLikes() != null ? review.getLikes().size() : 0;
+        
+        // Update review
+        review.setRating(rating);
+        review.setComment(comment);
+        
+        Review updatedReview = reviewRepository.save(review);
+        
+        // Build response using data collected before save
+        Map<String, Object> reviewData = new HashMap<>();
+        reviewData.put("id", updatedReview.getId());
+        reviewData.put("rating", updatedReview.getRating());
+        reviewData.put("comment", updatedReview.getComment());
+        
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("id", reviewUserId);
+        userData.put("fullName", reviewUserFullName);
+        reviewData.put("user", userData);
+        
+        reviewData.put("likeCount", currentLikeCount);
+        reviewData.put("createdAt", updatedReview.getCreatedAt());
+        reviewData.put("updatedAt", updatedReview.getUpdatedAt());
+        
+        return reviewData;
+    }
+    
+    public void deleteReview(Long userId, Long reviewId) {
+        // Check if review exists
+        Optional<Review> reviewOpt = reviewRepository.findById(reviewId);
+        if (reviewOpt.isEmpty()) {
+            throw new RuntimeException("Không tìm thấy đánh giá với ID: " + reviewId);
+        }
+        
+        Review review = reviewOpt.get();
+        
+        // Check if user owns this review
+        if (!review.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Bạn không có quyền xóa đánh giá này");
+        }
+        
+        // Delete review (cascade will delete likes)
+        reviewRepository.delete(reviewId);
     }
     
     public Map<String, Object> likeReview(Long userId, Long reviewId) {
@@ -174,5 +234,23 @@ public class ReviewService {
         result.put("likeCount", likeCount);
         
         return result;
+    }
+    
+    public Map<String, Object> getProductReviewStats(Long productId) {
+        Map<String, Object> stats = new HashMap<>();
+        
+        // Get review count
+        long reviewCount = reviewRepository.countByProductId(productId);
+        stats.put("reviewCount", reviewCount);
+        
+        // Get average rating
+        if (reviewCount > 0) {
+            Double averageRating = reviewRepository.getAverageRating(productId);
+            stats.put("averageRating", averageRating != null ? Math.round(averageRating * 10.0) / 10.0 : 0.0);
+        } else {
+            stats.put("averageRating", 0.0);
+        }
+        
+        return stats;
     }
 }

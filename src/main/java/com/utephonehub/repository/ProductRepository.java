@@ -3,6 +3,7 @@ package com.utephonehub.repository;
 import com.utephonehub.entity.Product;
 import com.utephonehub.config.DatabaseConfig;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,8 +27,9 @@ public class ProductRepository {
      */
     public Product save(Product product) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             if (product.getId() == null) {
                 em.persist(product);
                 logger.info("Created new product: {}", product.getName());
@@ -35,12 +37,16 @@ public class ProductRepository {
                 product = em.merge(product);
                 logger.info("Updated product: {}", product.getName());
             }
-            DatabaseConfig.commitTransaction();
+            tx.commit();
             return product;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error saving product: {}", product.getName(), e);
             throw new RuntimeException("Failed to save product", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
         }
     }
     
@@ -330,21 +336,26 @@ public class ProductRepository {
     
     public boolean deleteById(Long id) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             Product product = em.find(Product.class, id);
             if (product != null) {
                 em.remove(product);
-                DatabaseConfig.commitTransaction();
+                tx.commit();
                 logger.info("Deleted product: {}", product.getName());
                 return true;
             }
-            DatabaseConfig.rollbackTransaction();
+            tx.rollback();
             return false;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error deleting product by ID: {}", id, e);
             throw new RuntimeException("Failed to delete product", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
         }
     }
     
@@ -356,22 +367,27 @@ public class ProductRepository {
      */
     public boolean updateStock(Long id, Integer quantity) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             Product product = em.find(Product.class, id);
             if (product != null) {
                 product.setStockQuantity(quantity);
                 em.merge(product);
-                DatabaseConfig.commitTransaction();
+                tx.commit();
                 logger.info("Updated product stock: {} -> {}", product.getName(), quantity);
                 return true;
             }
-            DatabaseConfig.rollbackTransaction();
+            tx.rollback();
             return false;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error updating product stock: {}", id, e);
             throw new RuntimeException("Failed to update product stock", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
         }
     }
     

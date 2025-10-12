@@ -64,12 +64,6 @@ function setupCartEventListeners() {
         }
     });
     
-    // Apply voucher button
-    const applyVoucherBtn = document.getElementById('apply-voucher-btn');
-    if (applyVoucherBtn) {
-        applyVoucherBtn.addEventListener('click', handleApplyVoucher);
-    }
-    
     // Checkout button
     const checkoutBtn = document.getElementById('checkout-btn');
     if (checkoutBtn) {
@@ -195,12 +189,10 @@ function renderCart(cart) {
 function updateCartSummary(cart) {
     const subtotal = cart.totalPrice || 0;
     const shipping = subtotal >= 1000000 ? 0 : 30000; // Free shipping over 1M VND
-    const discount = cart.discountAmount || 0;
-    const total = subtotal + shipping - discount;
+    const total = subtotal + shipping;
     
     document.getElementById('subtotal').textContent = formatPrice(subtotal);
     document.getElementById('shipping').textContent = shipping === 0 ? 'Miễn phí' : formatPrice(shipping);
-    document.getElementById('discount').textContent = discount > 0 ? '-' + formatPrice(discount) : formatPrice(0);
     document.getElementById('total').textContent = formatPrice(total);
 }
 
@@ -280,45 +272,6 @@ async function handleClearCart() {
     } catch (error) {
         console.error('Error clearing cart:', error);
         showToast('Không thể xóa giỏ hàng', 'error');
-    }
-}
-
-/**
- * Handle apply voucher
- */
-async function handleApplyVoucher() {
-    const voucherCode = document.getElementById('voucher-code').value.trim();
-    const voucherMessage = document.getElementById('voucher-message');
-    
-    if (!voucherCode) {
-        voucherMessage.className = 'voucher-message error';
-        voucherMessage.textContent = 'Vui lòng nhập mã giảm giá';
-        return;
-    }
-    
-    try {
-        // TODO: Implement voucher API when available
-        // For now, show placeholder message
-        voucherMessage.className = 'voucher-message error';
-        voucherMessage.textContent = 'Tính năng áp dụng voucher đang được phát triển';
-        
-        // Mock implementation (remove when API is ready)
-        /*
-        const response = await API.post('/vouchers/apply', { code: voucherCode });
-        
-        if (response.success) {
-            voucherMessage.className = 'voucher-message success';
-            voucherMessage.textContent = `Đã áp dụng mã giảm giá ${voucherCode}`;
-            await loadCart(); // Reload to get updated discount
-        } else {
-            voucherMessage.className = 'voucher-message error';
-            voucherMessage.textContent = response.message || 'Mã giảm giá không hợp lệ';
-        }
-        */
-    } catch (error) {
-        console.error('Error applying voucher:', error);
-        voucherMessage.className = 'voucher-message error';
-        voucherMessage.textContent = 'Không thể áp dụng mã giảm giá';
     }
 }
 

@@ -243,48 +243,27 @@
                                  id="reviews" 
                                  role="tabpanel">
                                 <div class="reviews-section">
-                                    <!-- Reviews Summary -->
-                                    <div class="reviews-summary" id="reviews-summary">
-                                        <div class="rating-overview">
-                                            <div class="rating-score">
-                                                <span class="score" id="avg-rating">0.0</span>
-                                                <div class="stars" id="summary-stars">
-                                                    <!-- Stars -->
+                                    <!-- Reviews Summary & Write Review Button -->
+                                    <div class="reviews-header mb-4">
+                                        <div class="reviews-summary" id="reviews-summary">
+                                            <div class="rating-overview">
+                                                <div class="rating-score">
+                                                    <span class="score" id="avg-rating">0.0</span>
+                                                    <div class="stars" id="summary-stars">
+                                                        <!-- Stars -->
+                                                    </div>
+                                                    <span class="total-reviews" id="total-reviews">0 đánh giá</span>
                                                 </div>
-                                                <span class="total-reviews" id="total-reviews">0 đánh giá</span>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <!-- Write Review (for logged-in users) -->
-                                    <div class="write-review-section d-none" id="write-review-section">
-                                        <h3>Viết đánh giá của bạn</h3>
-                                        <form id="review-form">
-                                            <div class="mb-3">
-                                                <label>Đánh giá của bạn:</label>
-                                                <div class="rating-input" id="rating-input">
-                                                    <i class="far fa-star" data-rating="1"></i>
-                                                    <i class="far fa-star" data-rating="2"></i>
-                                                    <i class="far fa-star" data-rating="3"></i>
-                                                    <i class="far fa-star" data-rating="4"></i>
-                                                    <i class="far fa-star" data-rating="5"></i>
-                                                </div>
-                                                <input type="hidden" id="rating-value" name="rating" value="0">
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="review-comment">Nhận xét:</label>
-                                                <textarea class="form-control" 
-                                                          id="review-comment" 
-                                                          name="comment" 
-                                                          rows="4" 
-                                                          required 
-                                                          placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
-                                            </div>
-                                            <button type="submit" class="btn btn-primary">
-                                                <i class="fas fa-paper-plane"></i>
-                                                Gửi đánh giá
+                                        
+                                        <!-- Write Review Button (for logged-in users) -->
+                                        <div class="write-review-action d-none" id="write-review-action">
+                                            <button type="button" class="btn btn-primary" id="open-review-modal-btn">
+                                                <i class="fas fa-star"></i>
+                                                Đánh giá ngay
                                             </button>
-                                        </form>
+                                        </div>
                                     </div>
 
                                     <!-- Reviews List -->
@@ -310,10 +289,77 @@
         </div>
     </main>
     
+    <!-- Review Modal (giống form thêm sản phẩm admin) -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reviewModalLabel">
+                        <i class="fas fa-star text-warning"></i>
+                        Đánh giá sản phẩm
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="review-modal-form">
+                        <!-- Rating Stars -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">
+                                Đánh giá của bạn <span class="text-danger">*</span>
+                            </label>
+                            <div class="rating-input-modal d-flex gap-2 fs-3" id="rating-input-modal">
+                                <i class="far fa-star text-warning" data-rating="1" style="cursor: pointer;"></i>
+                                <i class="far fa-star text-warning" data-rating="2" style="cursor: pointer;"></i>
+                                <i class="far fa-star text-warning" data-rating="3" style="cursor: pointer;"></i>
+                                <i class="far fa-star text-warning" data-rating="4" style="cursor: pointer;"></i>
+                                <i class="far fa-star text-warning" data-rating="5" style="cursor: pointer;"></i>
+                            </div>
+                            <input type="hidden" id="rating-value-modal" name="rating" value="0">
+                            <div class="invalid-feedback d-block" id="rating-error" style="display: none !important;">
+                                Vui lòng chọn số sao đánh giá
+                            </div>
+                        </div>
+
+                        <!-- Comment Textarea -->
+                        <div class="mb-3">
+                            <label for="review-comment-modal" class="form-label fw-bold">
+                                Nhận xét của bạn <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" 
+                                      id="review-comment-modal" 
+                                      name="comment" 
+                                      rows="5" 
+                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
+                                      maxlength="1000"></textarea>
+                            <div class="form-text">Tối đa 1000 ký tự</div>
+                            <div class="invalid-feedback" id="comment-error">
+                                Vui lòng nhập nhận xét
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                        Hủy
+                    </button>
+                    <button type="button" class="btn btn-primary" id="submit-review-btn">
+                        <i class="fas fa-paper-plane"></i>
+                        Gửi đánh giá
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <%@ include file="/WEB-INF/views/common/footer.jspf" %>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Utility JS -->
+    <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
+    <!-- API JS -->
+    <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
     <!-- Page-specific JS -->
     <script src="${pageContext.request.contextPath}/static/js/pages/product-detail.js"></script>
 </body>

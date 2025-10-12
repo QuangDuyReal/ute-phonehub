@@ -233,8 +233,9 @@ function renderProducts(products) {
       html += '</div>';
     }
     
-    html += '<button class="product-wishlist" onclick="addToWishlist(' + product.id + ')">';
-    html += '<i class="fas fa-heart"></i>';
+    // Add to cart button (thay thế wishlist)
+    html += '<button class="product-add-to-cart" onclick="handleQuickAddToCart(' + product.id + ')" title="Thêm vào giỏ hàng">';
+    html += '<i class="fas fa-shopping-cart"></i>';
     html += '</button>';
     html += '</div>';
     
@@ -279,8 +280,8 @@ function renderProducts(products) {
     
     // Actions
     html += '<div class="product-actions">';
-    html += '<button class="btn-add-cart" onclick="handleAddToCart(' + product.id + ')">Mua ngay</button>';
-    html += '<button class="btn-quick-view" onclick="quickView(' + product.id + ')">';
+    html += '<button class="btn-add-cart" onclick="handleBuyNow(' + product.id + ')">Mua ngay</button>';
+    html += '<button class="btn-quick-view" onclick="viewProductDetail(' + product.id + ')" title="Xem chi tiết">';
     html += '<i class="fas fa-eye"></i>';
     html += '</button>';
     html += '</div>';
@@ -480,9 +481,33 @@ function updateURL() {
 }
 
 /**
- * Add to cart handler
+ * Add to cart handler - Mua ngay (redirect to cart)
  */
-async function handleAddToCart(productId) {
+async function handleBuyNow(productId) {
+  if (!isLoggedIn()) {
+    showToast('Vui lòng đăng nhập để mua hàng', 'warning');
+    setTimeout(() => {
+      window.location.href = '/login?returnUrl=' + encodeURIComponent(window.location.pathname);
+    }, 1500);
+    return;
+  }
+  
+  try {
+    showLoading('Đang thêm vào giỏ hàng...');
+    await CartAPI.addItem(productId, 1);
+    // Redirect to cart page
+    window.location.href = '/cart';
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    showToast(error.message || 'Không thể thêm vào giỏ hàng', 'error');
+    hideLoading();
+  }
+}
+
+/**
+ * Quick add to cart - Thêm vào giỏ không redirect
+ */
+async function handleQuickAddToCart(productId) {
   if (!isLoggedIn()) {
     showToast('Vui lòng đăng nhập để thêm vào giỏ hàng', 'warning');
     setTimeout(() => {
@@ -505,17 +530,11 @@ async function handleAddToCart(productId) {
 }
 
 /**
- * Add to wishlist (placeholder)
+ * View product detail - Navigate to product detail page
  */
-function addToWishlist(productId) {
-  showToast('Tính năng đang phát triển', 'info');
-}
-
-/**
- * Quick view (placeholder)
- */
-function quickView(productId) {
-  showToast('Tính năng đang phát triển', 'info');
+function viewProductDetail(productId) {
+  // Đơn giản chỉ cần navigate đến /products/{id}
+  window.location.href = '/products/' + productId;
 }
 
 /**
@@ -524,4 +543,5 @@ function quickView(productId) {
 function calculateDiscount(originalPrice, currentPrice) {
   return Math.round(((originalPrice - currentPrice) / originalPrice) * 100);
 }
+
 

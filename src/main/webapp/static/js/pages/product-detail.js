@@ -295,8 +295,40 @@ async function loadReviews(productId) {
             const totalReviews = data.metadata?.pagination?.totalItems || 0;
             document.getElementById('review-count-tab').textContent = totalReviews;
         }
+        
+        // Show write review button if user is logged in (regardless of reviews)
+        if (isLoggedIn()) {
+            const writeReviewAction = document.getElementById('write-review-action');
+            if (writeReviewAction) {
+                writeReviewAction.classList.remove('d-none');
+            }
+        }
     } catch (error) {
         console.error('Error loading reviews:', error);
+    }
+}
+
+/**
+ * Reload product info (to update rating stats after review changes)
+ */
+async function reloadProductInfo(productId) {
+    try {
+        const response = await fetch('/api/v1/products/' + productId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+            const product = data.data;
+            // Update rating display in header
+            renderRating(product.averageRating || 0, product.reviewCount || 0);
+        }
+    } catch (error) {
+        console.error('Error reloading product info:', error);
     }
 }
 
@@ -368,11 +400,6 @@ function renderReviews(reviews, productId) {
         
         reviewsList.appendChild(reviewItem);
     });
-    
-    // Show write review form if user is logged in
-    if (isLoggedIn()) {
-        document.getElementById('write-review-section').classList.remove('d-none');
-    }
 }
 
 /**
@@ -468,26 +495,35 @@ function setupEventListeners(productId) {
         showToast('Tính năng đang được phát triển', 'info');
     });
     
-    // Review form
-    const reviewForm = document.getElementById('review-form');
-    if (reviewForm) {
-        // Rating stars input
-        document.querySelectorAll('#rating-input i').forEach(star => {
-            star.addEventListener('click', function() {
-                const rating = this.getAttribute('data-rating');
-                document.getElementById('rating-value').value = rating;
-                
-                // Update stars display
-                document.querySelectorAll('#rating-input i').forEach((s, index) => {
-                    s.className = index < rating ? 'fas fa-star' : 'far fa-star';
-                });
-            });
+    // Open Review Modal
+    const openReviewModalBtn = document.getElementById('open-review-modal-btn');
+    if (openReviewModalBtn) {
+        openReviewModalBtn.addEventListener('click', () => {
+            openReviewModal(productId);
         });
-        
-        // Submit review
-        reviewForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await handleSubmitReview(productId);
+    }
+    
+    // Review Modal - Rating Stars
+    document.querySelectorAll('#rating-input-modal i').forEach(star => {
+        star.addEventListener('click', function() {
+            const rating = this.getAttribute('data-rating');
+            document.getElementById('rating-value-modal').value = rating;
+            
+            // Update stars display
+            document.querySelectorAll('#rating-input-modal i').forEach((s, index) => {
+                s.className = index < rating ? 'fas fa-star text-warning' : 'far fa-star text-warning';
+            });
+            
+            // Hide error if any
+            document.getElementById('rating-error').style.display = 'none';
+        });
+    });
+    
+    // Review Modal - Submit Button
+    const submitReviewBtn = document.getElementById('submit-review-btn');
+    if (submitReviewBtn) {
+        submitReviewBtn.addEventListener('click', async () => {
+            await handleSubmitReviewFromModal(productId);
         });
     }
     
@@ -675,6 +711,7 @@ async function handleEditReview(productId, reviewId) {
             if (data.success) {
                 showToast('Cập nhật đánh giá thành công!', 'success');
                 loadReviews(productId);
+                reloadProductInfo(productId); // Reload rating stats
             } else {
                 showToast(data.message || 'Không thể cập nhật đánh giá', 'error');
             }
@@ -712,12 +749,114 @@ async function handleDeleteReview(productId, reviewId) {
         if (data.success) {
             showToast('Xóa đánh giá thành công!', 'success');
             loadReviews(productId);
+            reloadProductInfo(productId); // Reload rating stats
         } else {
             showToast(data.message || 'Không thể xóa đánh giá', 'error');
         }
     } catch (error) {
         console.error('Error deleting review:', error);
         showToast('Đã xảy ra lỗi. Vui lòng thử lại.', 'error');
+    }
+}
+
+/**
+ * Open review modal
+ */
+function openReviewModal(productId) {
+    if (!isLoggedIn()) {
+        showToast('Vui lòng đăng nhập để đánh giá sản phẩm', 'warning');
+        const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf('/products'));
+        setTimeout(() => {
+            window.location.href = contextPath + '/login?redirect=' + encodeURIComponent(window.location.pathname);
+        }, 1500);
+        return;
+    }
+    
+    // Reset form
+    document.getElementById('review-modal-form').reset();
+    document.getElementById('rating-value-modal').value = '0';
+    document.querySelectorAll('#rating-input-modal i').forEach(s => {
+        s.className = 'far fa-star text-warning';
+    });
+    
+    // Hide errors
+    document.getElementById('rating-error').style.display = 'none';
+    document.getElementById('comment-error').style.display = 'none';
+    
+    // Show modal
+    const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
+    reviewModal.show();
+}
+
+/**
+ * Handle submit review from modal
+ */
+async function handleSubmitReviewFromModal(productId) {
+    const rating = parseInt(document.getElementById('rating-value-modal').value);
+    const comment = document.getElementById('review-comment-modal').value.trim();
+    
+    // Validate
+    let hasError = false;
+    
+    if (rating === 0) {
+        document.getElementById('rating-error').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('rating-error').style.display = 'none';
+    }
+    
+    if (!comment) {
+        document.getElementById('review-comment-modal').classList.add('is-invalid');
+        document.getElementById('comment-error').style.display = 'block';
+        hasError = true;
+    } else {
+        document.getElementById('review-comment-modal').classList.remove('is-invalid');
+        document.getElementById('comment-error').style.display = 'none';
+    }
+    
+    if (hasError) {
+        return;
+    }
+    
+    // Disable submit button
+    const submitBtn = document.getElementById('submit-review-btn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+    
+    try {
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch('/api/v1/products/' + productId + '/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ rating, comment })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            showToast('Cảm ơn bạn đã đánh giá!', 'success');
+            
+            // Close modal
+            const reviewModal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
+            reviewModal.hide();
+            
+            // Reload reviews and product info
+            loadReviews(productId);
+            reloadProductInfo(productId); // Reload rating stats
+        } else {
+            showToast(data.message || 'Không thể gửi đánh giá', 'danger');
+        }
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        showToast('Đã xảy ra lỗi. Vui lòng thử lại.', 'danger');
+    } finally {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
     }
 }
 

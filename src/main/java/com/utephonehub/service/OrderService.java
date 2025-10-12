@@ -222,10 +222,15 @@ public class OrderService {
         
         logger.info("Checkout completed successfully for order: {}", savedOrder.getOrderCode());
         
+        // Re-fetch order with EAGER loaded items to avoid LazyInitializationException in EmailService
+        final Long orderId = savedOrder.getId();
+        Order orderWithItems = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found after save: " + orderId));
+        
         // Send email notifications (async, don't fail checkout if email fails)
         try {
-            emailService.sendOrderConfirmationToCustomer(savedOrder);
-            emailService.sendNewOrderNotificationToAdmin(savedOrder);
+            emailService.sendOrderConfirmationToCustomer(orderWithItems);
+            emailService.sendNewOrderNotificationToAdmin(orderWithItems);
             logger.info("Order notification emails sent for order: {}", savedOrder.getOrderCode());
         } catch (Exception e) {
             logger.error("Failed to send order notification emails, but checkout succeeded", e);

@@ -27,14 +27,14 @@ public class OrderRepository {
                 order = em.merge(order);
             }
             tx.commit();
+            em.close(); // Close AFTER commit
             return order;
         } catch (Exception e) {
             if (tx.isActive()) {
                 tx.rollback();
             }
+            em.close(); // Close AFTER rollback
             throw e;
-        } finally {
-            em.close();
         }
     }
     

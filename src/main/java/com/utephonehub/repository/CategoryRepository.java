@@ -3,6 +3,7 @@ package com.utephonehub.repository;
 import com.utephonehub.entity.Category;
 import com.utephonehub.config.DatabaseConfig;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -87,8 +88,9 @@ public class CategoryRepository {
      */
     public Category save(Category category) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             
             if (category.getId() == null) {
                 em.persist(category);
@@ -96,10 +98,12 @@ public class CategoryRepository {
                 category = em.merge(category);
             }
             
-            DatabaseConfig.commitTransaction();
+            tx.commit();
             return category;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error saving category", e);
             throw new RuntimeException("Error saving category", e);
         } finally {
@@ -112,15 +116,18 @@ public class CategoryRepository {
      */
     public void delete(Long id) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             Category category = em.find(Category.class, id);
             if (category != null) {
                 em.remove(category);
             }
-            DatabaseConfig.commitTransaction();
+            tx.commit();
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error deleting category with id: {}", id, e);
             throw new RuntimeException("Error deleting category", e);
         } finally {

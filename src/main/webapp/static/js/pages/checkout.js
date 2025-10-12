@@ -158,9 +158,10 @@ function renderOrderSummary(cart) {
     if (itemsContainer) {
         itemsContainer.innerHTML = cart.items.map(item => `
             <div class="order-item-summary">
-                <img src="${escapeHtml(item.thumbnailUrl || 'placeholder')}" 
+                <img src="${escapeHtml(item.thumbnailUrl || 'https://via.placeholder.com/80x80/cccccc/666666?text=No+Image')}" 
                      alt="${escapeHtml(item.productName)}" 
-                     class="order-item-image">
+                     class="order-item-image"
+                     onerror="this.src='https://via.placeholder.com/80x80/cccccc/666666?text=Error'">
                 <div class="order-item-info">
                     <div class="order-item-name">${escapeHtml(item.productName)}</div>
                     <div class="order-item-quantity">Số lượng: ${item.quantity}</div>
@@ -418,6 +419,21 @@ function validatePaymentInfo() {
 }
 
 /**
+ * Calculate order total before discount
+ * @returns {number} Total amount in VND
+ */
+function calculateOrderTotal() {
+    if (!cartData || !cartData.totalPrice) {
+        return 0;
+    }
+    
+    const subtotal = cartData.totalPrice || 0;
+    const shipping = subtotal >= 1000000 ? 0 : 30000; // Free shipping > 1M VND
+    
+    return subtotal + shipping;
+}
+
+/**
  * Handle apply voucher
  */
 async function handleApplyVoucher() {
@@ -438,10 +454,22 @@ async function handleApplyVoucher() {
     messageDiv.style.display = 'none';
     
     try {
+        // Calculate total before discount
+        const orderTotal = calculateOrderTotal();
+        
+        if (!orderTotal || orderTotal <= 0) {
+            messageDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Không thể áp dụng mã giảm giá cho đơn hàng trống';
+            messageDiv.className = 'voucher-message error';
+            messageDiv.style.display = 'block';
+            applyBtn.innerHTML = '<i class="fas fa-check"></i> Áp dụng';
+            applyBtn.disabled = false;
+            return;
+        }
+        
         // Validate voucher
         const response = await API.post('/vouchers/validate', { 
             code: voucherCode,
-            totalAmount: cartData?.totalPrice || 0
+            orderTotal: orderTotal  // Backend expects: orderTotal, not totalAmount
         });
         
         if (response.success && response.data) {
@@ -483,34 +511,32 @@ async function handleApplyVoucher() {
 
 /**
  * Update order summary with voucher discount
+ * Backend already calculated discountAmount and finalAmount
  */
-function updateOrderSummaryWithVoucher(voucher) {
-    const subtotal = cartData?.totalPrice || 0;
-    let discount = 0;
+function updateOrderSummaryWithVoucher(voucherResponse) {
+    if (!voucherResponse || !cartData) return;
     
-    if (voucher.discountType === 'PERCENTAGE') {
-        discount = subtotal * (voucher.discountValue / 100);
-        if (voucher.maxDiscount && discount > voucher.maxDiscount) {
-            discount = voucher.maxDiscount;
-        }
-    } else {
-        discount = voucher.discountValue;
-    }
+    // Get values from backend response
+    const subtotal = cartData.totalPrice || 0;
+    const shipping = subtotal >= 1000000 ? 0 : 30000;
+    const discount = voucherResponse.discountAmount || 0;
+    const finalAmount = voucherResponse.finalAmount || 0;
     
-    const total = subtotal - discount;
+    // Calculate total with shipping
+    const total = finalAmount + shipping;
     
     // Update summary display
     document.getElementById('summary-subtotal').textContent = formatPrice(subtotal);
+    document.getElementById('summary-shipping').textContent = shipping === 0 ? 'Miễn phí' : formatPrice(shipping);
+    document.getElementById('summary-discount').textContent = '- ' + formatPrice(discount);
+    document.getElementById('summary-total').textContent = formatPrice(total);
     
     // Show discount row
     const discountRow = document.getElementById('discount-row');
     if (discountRow) {
-        discountRow.style.display = 'flex !important';
-        discountRow.style.setProperty('display', 'flex', 'important');
-        document.getElementById('summary-discount').textContent = '- ' + formatPrice(discount);
+        discountRow.classList.add('active');
+        discountRow.style.display = 'flex';
     }
-    
-    document.getElementById('summary-total').textContent = formatPrice(total);
 }
 
 /**

@@ -62,14 +62,14 @@ public class AddressRepository {
             }
             
             em.getTransaction().commit();
+            em.close(); // Close AFTER commit
             return address;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
+            em.close(); // Close AFTER rollback
             throw e;
-        } finally {
-            em.close();
         }
     }
     

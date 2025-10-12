@@ -449,11 +449,37 @@
     max-width: 800px;
 }
 
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .reviews-summary {
     background: var(--bg-light);
     padding: 30px;
     border-radius: 12px;
-    margin-bottom: 30px;
+    flex: 1;
+    min-width: 300px;
+}
+
+.write-review-action {
+    text-align: center;
+}
+
+.write-review-action .btn {
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.write-review-action .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(215, 0, 24, 0.3);
 }
 
 .rating-overview {
@@ -490,6 +516,15 @@
 .total-reviews {
     font-size: 14px;
     color: var(--text-secondary);
+}
+
+/* Review Modal */
+.rating-input-modal i {
+    transition: all 0.2s ease;
+}
+
+.rating-input-modal i:hover {
+    transform: scale(1.2);
 }
 
 /* Write Review Section */

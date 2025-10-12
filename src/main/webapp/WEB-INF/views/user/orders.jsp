@@ -52,7 +52,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       <div class="profile-header-content">
         <!-- Logo -->
         <a href="${pageContext.request.contextPath}/" class="profile-logo">
-          <div class="logo-icon">U</div>
+          <img src="${pageContext.request.contextPath}/static/images/logo.png" alt="UTE Phone Hub" style="height: 45px; width: auto;">
           <span class="logo-text">UTE Phone Hub</span>
         </a>
 

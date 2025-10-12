@@ -3,6 +3,7 @@ package com.utephonehub.repository;
 import com.utephonehub.entity.User;
 import com.utephonehub.config.DatabaseConfig;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.TypedQuery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,9 +26,10 @@ public class UserRepository {
      */
     public User save(User user) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         User savedUser = null;
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             if (user.getId() == null) {
                 em.persist(user);
                 em.flush();
@@ -42,7 +44,7 @@ public class UserRepository {
             // Get ID before commit
             Long userId = savedUser.getId();
             
-            DatabaseConfig.commitTransaction();
+            tx.commit();
             
             // Clear cache sau commit
             em.clear();
@@ -57,7 +59,9 @@ public class UserRepository {
             logger.warn("Could not refresh user, returning merged instance");
             return savedUser;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error saving user: {}", user != null ? user.getEmail() : "null", e);
             throw new RuntimeException("Failed to save user", e);
         }
@@ -221,21 +225,26 @@ public class UserRepository {
      */
     public boolean deleteById(Long id) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             User user = em.find(User.class, id);
             if (user != null) {
                 em.remove(user);
-                DatabaseConfig.commitTransaction();
+                tx.commit();
                 logger.info("Deleted user: {}", user.getEmail());
                 return true;
             }
-            DatabaseConfig.rollbackTransaction();
+            tx.rollback();
             return false;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error deleting user by ID: {}", id, e);
             throw new RuntimeException("Failed to delete user", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
         }
     }
     
@@ -247,22 +256,27 @@ public class UserRepository {
      */
     public boolean updateStatus(Long id, User.UserStatus status) {
         EntityManager em = DatabaseConfig.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
         try {
-            DatabaseConfig.beginTransaction();
+            tx.begin();
             User user = em.find(User.class, id);
             if (user != null) {
                 user.setStatus(status);
                 em.merge(user);
-                DatabaseConfig.commitTransaction();
+                tx.commit();
                 logger.info("Updated user status: {} -> {}", user.getEmail(), status);
                 return true;
             }
-            DatabaseConfig.rollbackTransaction();
+            tx.rollback();
             return false;
         } catch (Exception e) {
-            DatabaseConfig.rollbackTransaction();
+            if (tx.isActive()) {
+                tx.rollback();
+            }
             logger.error("Error updating user status: {}", id, e);
             throw new RuntimeException("Failed to update user status", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
         }
     }
     

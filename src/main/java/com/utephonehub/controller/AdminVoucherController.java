@@ -276,10 +276,23 @@ public class AdminVoucherController extends HttpServlet {
             voucher.setCode(voucherRequest.getCode().toUpperCase());
             voucher.setDiscountType(voucherRequest.getDiscountType());
             voucher.setDiscountValue(voucherRequest.getDiscountValue());
-            voucher.setMaxUsage(voucherRequest.getMaxUsage());
+            
+            // Map usageLimit → maxUsage
+            voucher.setMaxUsage(voucherRequest.getUsageLimit());
+            
             voucher.setMinOrderValue(voucherRequest.getMinOrderValue());
-            voucher.setExpiryDate(voucherRequest.getExpiryDate());
-            voucher.setStatus(voucherRequest.getStatus() != null ? voucherRequest.getStatus() : Voucher.VoucherStatus.ACTIVE);
+            
+            // Map endDate → expiryDate
+            voucher.setExpiryDate(voucherRequest.getEndDate());
+            
+            // Map isActive → status
+            if (voucherRequest.getIsActive() != null) {
+                voucher.setStatus(voucherRequest.getIsActive() 
+                    ? Voucher.VoucherStatus.ACTIVE 
+                    : Voucher.VoucherStatus.INACTIVE);
+            } else {
+                voucher.setStatus(Voucher.VoucherStatus.ACTIVE); // Default
+            }
             
             // Save voucher
             Voucher savedVoucher = voucherRepository.save(voucher);
@@ -345,20 +358,23 @@ public class AdminVoucherController extends HttpServlet {
                 voucher.setDiscountValue(voucherRequest.getDiscountValue());
             }
             
-            if (voucherRequest.getMaxUsage() != null) {
-                voucher.setMaxUsage(voucherRequest.getMaxUsage());
+            if (voucherRequest.getUsageLimit() != null) {
+                voucher.setMaxUsage(voucherRequest.getUsageLimit());
             }
             
             if (voucherRequest.getMinOrderValue() != null) {
                 voucher.setMinOrderValue(voucherRequest.getMinOrderValue());
             }
             
-            if (voucherRequest.getExpiryDate() != null) {
-                voucher.setExpiryDate(voucherRequest.getExpiryDate());
+            if (voucherRequest.getEndDate() != null) {
+                voucher.setExpiryDate(voucherRequest.getEndDate());
             }
             
-            if (voucherRequest.getStatus() != null) {
-                voucher.setStatus(voucherRequest.getStatus());
+            // Map isActive → status
+            if (voucherRequest.getIsActive() != null) {
+                voucher.setStatus(voucherRequest.getIsActive() 
+                    ? Voucher.VoucherStatus.ACTIVE 
+                    : Voucher.VoucherStatus.INACTIVE);
             }
             
             // Save updated voucher
@@ -455,21 +471,41 @@ public class AdminVoucherController extends HttpServlet {
     
     /**
      * Convert Voucher entity to VoucherResponse DTO
+     * Maps entity fields to frontend-expected field names
      */
     private VoucherResponse convertToVoucherResponse(Voucher voucher) {
         VoucherResponse response = new VoucherResponse();
         response.setId(voucher.getId());
         response.setCode(voucher.getCode());
+        response.setDescription("Voucher giảm giá đặc biệt"); // Default description - not in entity
         response.setDiscountType(voucher.getDiscountType().toString());
         response.setDiscountValue(voucher.getDiscountValue());
-        response.setMaxUsage(voucher.getMaxUsage());
-        response.setMinOrderValue(voucher.getMinOrderValue());
-        response.setExpiryDate(voucher.getExpiryDate());
-        response.setStatus(voucher.getStatus().toString());
+        
+        // Map maxUsage → usageLimit (frontend expects this name)
+        response.setUsageLimit(voucher.getMaxUsage());
+        
         // Query usage count from database instead of accessing lazy collection
-        response.setUsageCount((int) voucherRepository.countVoucherUsage(voucher.getId()));
+        // Map to usedCount (frontend expects this name)
+        response.setUsedCount((int) voucherRepository.countVoucherUsage(voucher.getId()));
+        
+        response.setMinOrderValue(voucher.getMinOrderValue());
+        response.setMaxDiscountAmount(null); // Not available in entity - future feature
+        
+        // Map createdAt → startDate (frontend expects this)
+        response.setStartDate(voucher.getCreatedAt());
+        
+        // Map expiryDate → endDate (frontend expects this)
+        response.setEndDate(voucher.getExpiryDate());
+        
+        // Map status ENUM → isActive boolean (frontend expects this)
+        response.setIsActive(voucher.getStatus() == Voucher.VoucherStatus.ACTIVE);
+        
+        // Keep status for reference
+        response.setStatus(voucher.getStatus().toString());
+        
         response.setCreatedAt(voucher.getCreatedAt());
         response.setUpdatedAt(voucher.getUpdatedAt());
+        
         return response;
     }
     

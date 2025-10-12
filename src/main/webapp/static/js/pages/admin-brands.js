@@ -73,6 +73,7 @@ function openModal(brand = null) {
   document.getElementById("modalTitle").textContent = brand ? "Sửa thương hiệu" : "Thêm thương hiệu";
   document.getElementById("brandId").value = brand ? brand.id : "";
   document.getElementById("brandName").value = brand ? brand.name : "";
+  document.getElementById("brandLogoUrl").value = brand ? brand.logoUrl || "" : "";
   document.getElementById("brandDescription").value = brand ? brand.description || "" : "";
   document.getElementById("brandModal").classList.add("show");
 }
@@ -86,6 +87,7 @@ async function saveBrand() {
   const id = document.getElementById("brandId").value;
   const name = document.getElementById("brandName").value.trim();
   const description = document.getElementById("brandDescription").value.trim();
+  const logoUrl = document.getElementById("brandLogoUrl").value.trim();
 
   if (!name) {
     alert("Vui lòng nhập tên thương hiệu!");
@@ -101,7 +103,7 @@ async function saveBrand() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + localStorage.getItem("accessToken"),
       },
-      body: JSON.stringify({ name, description }),
+      body: JSON.stringify({ name, description, logoUrl }),
     });
 
     if (response.ok) {

@@ -8,15 +8,30 @@ import java.time.LocalDateTime;
 /**
  * Voucher Request DTO
  * Dùng cho create và update voucher
+ * Fields match frontend naming conventions
  */
 public class VoucherRequest {
     
     private String code;
+    private String description;
+    
     private Voucher.DiscountType discountType;
     private BigDecimal discountValue;
-    private Integer maxUsage;
+    
+    // Frontend sends: usageLimit
+    private Integer usageLimit;
+    
+    private Integer usageLimitPerUser; // Future feature
     private BigDecimal minOrderValue;
-    private LocalDateTime expiryDate;
+    private BigDecimal maxDiscountAmount; // Future feature
+    
+    // Frontend sends: startDate, endDate
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    
+    // Frontend sends: isActive (boolean)
+    private Boolean isActive;
+    
     private Voucher.VoucherStatus status;
     
     // Constructors
@@ -30,6 +45,14 @@ public class VoucherRequest {
     
     public void setCode(String code) {
         this.code = code;
+    }
+    
+    public String getDescription() {
+        return description;
+    }
+    
+    public void setDescription(String description) {
+        this.description = description;
     }
     
     public Voucher.DiscountType getDiscountType() {
@@ -48,12 +71,20 @@ public class VoucherRequest {
         this.discountValue = discountValue;
     }
     
-    public Integer getMaxUsage() {
-        return maxUsage;
+    public Integer getUsageLimit() {
+        return usageLimit;
     }
     
-    public void setMaxUsage(Integer maxUsage) {
-        this.maxUsage = maxUsage;
+    public void setUsageLimit(Integer usageLimit) {
+        this.usageLimit = usageLimit;
+    }
+    
+    public Integer getUsageLimitPerUser() {
+        return usageLimitPerUser;
+    }
+    
+    public void setUsageLimitPerUser(Integer usageLimitPerUser) {
+        this.usageLimitPerUser = usageLimitPerUser;
     }
     
     public BigDecimal getMinOrderValue() {
@@ -64,12 +95,36 @@ public class VoucherRequest {
         this.minOrderValue = minOrderValue;
     }
     
-    public LocalDateTime getExpiryDate() {
-        return expiryDate;
+    public BigDecimal getMaxDiscountAmount() {
+        return maxDiscountAmount;
     }
     
-    public void setExpiryDate(LocalDateTime expiryDate) {
-        this.expiryDate = expiryDate;
+    public void setMaxDiscountAmount(BigDecimal maxDiscountAmount) {
+        this.maxDiscountAmount = maxDiscountAmount;
+    }
+    
+    public LocalDateTime getStartDate() {
+        return startDate;
+    }
+    
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
+    }
+    
+    public LocalDateTime getEndDate() {
+        return endDate;
+    }
+    
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
+    }
+    
+    public Boolean getIsActive() {
+        return isActive;
+    }
+    
+    public void setIsActive(Boolean isActive) {
+        this.isActive = isActive;
     }
     
     public Voucher.VoucherStatus getStatus() {

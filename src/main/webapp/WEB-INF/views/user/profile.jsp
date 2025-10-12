@@ -245,9 +245,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
     <!-- Choices.js for searchable select -->
     <script src="https://cdn.jsdelivr.net/npm/choices.js@10.2.0/public/assets/scripts/choices.min.js"></script>
 
-    <!-- Auth functions (logout, refresh token, etc) -->
-    <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
+    <%@ include file="/WEB-INF/views/common/footer.jspf" %>
 
+    <!-- Page-specific JavaScript -->
     <script src="${pageContext.request.contextPath}/static/js/profile.js"></script>
 
     <!-- Logout Handler -->

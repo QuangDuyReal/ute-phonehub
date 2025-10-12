@@ -2,7 +2,7 @@
  * Admin Brands Management
  */
 
-const contextPath = window.location.pathname.substring(0, window.location.pathname.indexOf("/admin")) || "";
+// contextPath is declared in admin-footer.jspf
 
 document.addEventListener("DOMContentLoaded", () => {
   checkAdminAuth();
@@ -119,7 +119,7 @@ async function saveBrand() {
 
 async function editBrand(id) {
   try {
-    const response = await fetch(`${contextPath}/api/v1/brands/${id}`, {
+    const response = await fetch(`${contextPath}/api/v1/admin/brands/${id}`, {
       headers: { Authorization: "Bearer " + localStorage.getItem("accessToken") },
     });
     if (response.ok) {

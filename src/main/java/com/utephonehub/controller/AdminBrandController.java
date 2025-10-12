@@ -323,8 +323,9 @@ public class AdminBrandController extends HttpServlet {
                 return;
             }
             
-            // Check if brand has products
-            if (!brand.getProducts().isEmpty()) {
+            // Check if brand has products - query database instead of accessing lazy collection
+            long productCount = brandRepository.countProductsByBrandId(brandId);
+            if (productCount > 0) {
                 sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
                     "Không thể xóa thương hiệu đang có sản phẩm");
                 return;
@@ -393,7 +394,8 @@ public class AdminBrandController extends HttpServlet {
         response.setName(brand.getName());
         response.setDescription(brand.getDescription());
         response.setLogoUrl(brand.getLogoUrl());
-        response.setProductCount(brand.getProducts().size());
+        // Query count from database instead of accessing lazy collection
+        response.setProductCount((int) brandRepository.countProductsByBrandId(brand.getId()));
         response.setCreatedAt(brand.getCreatedAt());
         response.setUpdatedAt(brand.getUpdatedAt());
         return response;

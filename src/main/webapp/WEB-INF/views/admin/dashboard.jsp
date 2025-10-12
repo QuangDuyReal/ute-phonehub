@@ -234,10 +234,9 @@
     </main>
   </div>
 
-  <!-- JavaScript -->
-  <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
+  <%@ include file="/WEB-INF/views/common/admin-footer.jspf" %>
+  
+  <!-- Page-specific JavaScript -->
   <script src="${pageContext.request.contextPath}/static/js/pages/admin-dashboard.js"></script>
 
   <script>

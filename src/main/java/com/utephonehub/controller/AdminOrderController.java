@@ -235,6 +235,10 @@ public class AdminOrderController extends HttpServlet {
                 order.setStatus(status);
                 Order updatedOrder = orderRepository.save(order);
                 
+                // Re-fetch với relations để tránh LazyInitializationException
+                updatedOrder = orderRepository.findById(updatedOrder.getId())
+                    .orElseThrow(() -> new RuntimeException("Order not found after save"));
+                
                 OrderResponse orderResponse = convertToOrderResponse(updatedOrder);
                 
                 Map<String, Object> responseData = new HashMap<>();

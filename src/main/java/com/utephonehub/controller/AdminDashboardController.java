@@ -189,12 +189,17 @@ public class AdminDashboardController extends HttpServlet {
             BigDecimal monthRevenue = calculateRevenueSince(allOrders, startOfMonth);
             BigDecimal yearRevenue = calculateRevenueSince(allOrders, startOfYear);
             
+            // Last 7 days revenue
+            LocalDateTime last7Days = now.minusDays(7);
+            BigDecimal last7DaysRevenue = calculateRevenueSince(allOrders, last7Days);
+            
             revenueStats.put("total", totalRevenue);
             revenueStats.put("today", todayRevenue);
             revenueStats.put("thisMonth", monthRevenue);
             revenueStats.put("thisYear", yearRevenue);
+            revenueStats.put("last7Days", last7DaysRevenue);
             revenueStats.put("averageOrderValue", 
-                allOrders.isEmpty() ? BigDecimal.ZERO : totalRevenue.divide(new BigDecimal(allOrders.size()), 2, BigDecimal.ROUND_HALF_UP));
+                allOrders.isEmpty() ? BigDecimal.ZERO : totalRevenue.divide(new BigDecimal(allOrders.size()), 2, java.math.RoundingMode.HALF_UP));
             
             // Users statistics
             Map<String, Object> usersStats = new HashMap<>();

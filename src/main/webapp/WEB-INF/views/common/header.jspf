@@ -53,7 +53,7 @@
         <!-- User Account - Show login link when not logged in, or dropdown when logged in -->
         <div class="user-account-dropdown" id="userAccountDropdown">
           <a
-            href="${pageContext.request.contextPath}/login"
+            href="${pageContext.request.contextPath}/profile"
             class="header-action"
             id="userAccountBtn"
           >
@@ -79,13 +79,6 @@
             >
               <i class="fas fa-box"></i>
               Đơn hàng của tôi
-            </a>
-            <a
-              href="${pageContext.request.contextPath}/wishlist"
-              class="dropdown-item"
-            >
-              <i class="fas fa-heart"></i>
-              Yêu thích
             </a>
             <hr style="margin: 5px 0; border: none; border-top: 1px solid #e0e0e0;"/>
             <a href="#" class="dropdown-item" id="logoutBtn">

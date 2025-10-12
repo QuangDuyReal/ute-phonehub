@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFilterTabs();
 });
 
-const contextPath = document.body.dataset.contextPath || '';
+// contextPath is already declared in footer.jspf
 let currentFilter = 'all';
 let currentVoucher = null;
 let savedVoucherCodes = new Set(); // Track saved vouchers

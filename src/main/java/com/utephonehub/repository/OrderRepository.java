@@ -118,12 +118,27 @@ public class OrderRepository {
     public List<Order> findAll() {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {
-            return em.createQuery(
+            // First fetch orders with user, items, and voucher
+            List<Order> orders = em.createQuery(
                 "SELECT DISTINCT o FROM Order o " +
                 "LEFT JOIN FETCH o.user " +
                 "LEFT JOIN FETCH o.items " +
+                "LEFT JOIN FETCH o.voucher " +
                 "ORDER BY o.createdAt DESC", Order.class)
                 .getResultList();
+            
+            // Second query to fetch products for items (avoid cartesian product)
+            if (!orders.isEmpty()) {
+                em.createQuery(
+                    "SELECT DISTINCT oi FROM OrderItem oi " +
+                    "LEFT JOIN FETCH oi.product p " +
+                    "WHERE oi.order IN :orders", 
+                    com.utephonehub.entity.OrderItem.class)
+                    .setParameter("orders", orders)
+                    .getResultList();
+            }
+            
+            return orders;
         } finally {
             em.close();
         }

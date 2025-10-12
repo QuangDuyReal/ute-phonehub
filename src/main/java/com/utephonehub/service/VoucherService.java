@@ -166,6 +166,15 @@ public class VoucherService {
     }
     
     /**
+     * Count how many times a voucher has been used
+     * @param voucherId Voucher ID
+     * @return Usage count
+     */
+    public long countVoucherUsage(Long voucherId) {
+        return voucherRepository.countVoucherUsage(voucherId);
+    }
+    
+    /**
      * Get all vouchers with pagination and optional status filter
      * 
      * @param page Page number (starting from 1)

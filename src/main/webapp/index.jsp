@@ -400,12 +400,6 @@
 
     <%@ include file="/WEB-INF/views/common/footer.jspf" %>
 
-    <!-- JavaScript -->
-    <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/main.js"></script>
-
     <!-- User Account JavaScript -->
     <script>
       // Handle OAuth callback - extract access token from cookie and store in localStorage

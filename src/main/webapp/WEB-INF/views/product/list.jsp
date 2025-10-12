@@ -156,9 +156,7 @@
 
   <%@ include file="/WEB-INF/views/common/footer.jspf" %>
 
-  <!-- JavaScript -->
-  <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
+  <!-- Page-specific JavaScript -->
   <script src="${pageContext.request.contextPath}/static/js/pages/product-list.js"></script>
   
   <script>

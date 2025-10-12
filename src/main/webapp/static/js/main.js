@@ -723,6 +723,12 @@ function initializeUserAccount() {
     userAccountText.textContent = user.fullName;
     userAccountBtn.href = contextPath + '/profile';
     
+    // Click handler for navigation
+    userAccountBtn.addEventListener('click', function(e) {
+      // Allow default navigation to /profile
+      window.location.href = contextPath + '/profile';
+    });
+    
     // Show dropdown on hover only
     userAccountDropdown.addEventListener('mouseenter', function() {
       accountDropdownMenu.style.display = 'block';
@@ -744,6 +750,12 @@ function initializeUserAccount() {
     userAccountText.textContent = 'Đăng nhập';
     userAccountBtn.href = contextPath + '/login';
     accountDropdownMenu.style.display = 'none';
+    
+    // Click handler for navigation to login
+    userAccountBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = contextPath + '/login';
+    });
     
     // Prevent dropdown on hover when not logged in
     userAccountDropdown.addEventListener('mouseenter', function() {

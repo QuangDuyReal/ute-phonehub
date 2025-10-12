@@ -4,10 +4,7 @@
  */
 
 // Global variables
-const contextPath = window.location.pathname.substring(
-  0,
-  window.location.pathname.indexOf("/orders")
-) || "";
+// contextPath is already declared in footer.jspf
 let allOrders = [];
 let currentFilter = "ALL";
 let currentPage = 1;
@@ -179,10 +176,11 @@ function createOrderCard(order) {
       </div>
 
       <div class="order-items">
-        ${order.items
-          .slice(0, 3)
-          .map(
-            (item) => `
+        ${(order.items && Array.isArray(order.items))
+          ? order.items
+              .slice(0, 3)
+              .map(
+                (item) => `
           <div class="order-item">
             <img 
               src="${escapeHtml(item.product?.thumbnailUrl || "https://via.placeholder.com/80x80/cccccc/666666?text=No+Image")}" 
@@ -196,10 +194,12 @@ function createOrderCard(order) {
             <div class="order-item-price">${formatPrice(item.price * item.quantity)}</div>
           </div>
         `
-          )
-          .join("")}
+              )
+              .join("")
+          : '<div style="text-align: center; padding: 1rem; color: #999;">Không có sản phẩm</div>'
+        }
         ${
-          order.items.length > 3
+          (order.items && order.items.length > 3)
             ? `<div style="text-align: center; color: #6c757d; padding: 0.5rem;">
             +${order.items.length - 3} sản phẩm khác
           </div>`

@@ -12,6 +12,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.util.*;
 @WebServlet(urlPatterns = {"/api/v1/checkout", "/api/v1/orders", "/api/v1/orders/*"})
 public class OrderController extends HttpServlet {
     
+    private static final Logger logger = LogManager.getLogger(OrderController.class);
     private final OrderService orderService;
     private final JsonUtil jsonUtil;
     
@@ -97,10 +100,14 @@ public class OrderController extends HttpServlet {
             sb.append(line);
         }
         
-        JsonObject jsonRequest = jsonUtil.fromJson(sb.toString(), JsonObject.class);
+        String jsonString = sb.toString();
+        logger.debug("Checkout request body: {}", jsonString);
+        
+        JsonObject jsonRequest = jsonUtil.fromJson(jsonString, JsonObject.class);
         
         // Validate required fields
-        if (!jsonRequest.has("shippingInfo") || !jsonRequest.has("paymentMethod")) {
+        if (!jsonRequest.has("shippingInfo") || jsonRequest.get("shippingInfo").isJsonNull() || 
+            !jsonRequest.has("paymentMethod") || jsonRequest.get("paymentMethod").isJsonNull()) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
                 "Thiếu thông tin bắt buộc");
             return;
@@ -142,19 +149,31 @@ public class OrderController extends HttpServlet {
             }
         }
         
-        String voucherCode = jsonRequest.has("voucherCode") ? 
-            jsonRequest.get("voucherCode").getAsString() : null;
+        // Handle voucherCode - check for null
+        String voucherCode = null;
+        if (jsonRequest.has("voucherCode") && !jsonRequest.get("voucherCode").isJsonNull()) {
+            voucherCode = jsonRequest.get("voucherCode").getAsString();
+            // Also check for empty string
+            if (voucherCode != null && voucherCode.trim().isEmpty()) {
+                voucherCode = null;
+            }
+        }
+        
         String paymentMethod = jsonRequest.get("paymentMethod").getAsString();
         
         // Parse payment info (optional, only for BANK_TRANSFER)
         PaymentInfoRequest paymentInfo = null;
-        if (jsonRequest.has("paymentInfo")) {
+        if (jsonRequest.has("paymentInfo") && !jsonRequest.get("paymentInfo").isJsonNull()) {
             JsonObject paymentInfoJson = jsonRequest.getAsJsonObject("paymentInfo");
             paymentInfo = new PaymentInfoRequest(
-                paymentInfoJson.has("cardNumber") ? paymentInfoJson.get("cardNumber").getAsString() : null,
-                paymentInfoJson.has("cardHolder") ? paymentInfoJson.get("cardHolder").getAsString() : null,
-                paymentInfoJson.has("expiryDate") ? paymentInfoJson.get("expiryDate").getAsString() : null,
-                paymentInfoJson.has("cvv") ? paymentInfoJson.get("cvv").getAsString() : null
+                paymentInfoJson.has("cardNumber") && !paymentInfoJson.get("cardNumber").isJsonNull() ? 
+                    paymentInfoJson.get("cardNumber").getAsString() : null,
+                paymentInfoJson.has("cardHolder") && !paymentInfoJson.get("cardHolder").isJsonNull() ? 
+                    paymentInfoJson.get("cardHolder").getAsString() : null,
+                paymentInfoJson.has("expiryDate") && !paymentInfoJson.get("expiryDate").isJsonNull() ? 
+                    paymentInfoJson.get("expiryDate").getAsString() : null,
+                paymentInfoJson.has("cvv") && !paymentInfoJson.get("cvv").isJsonNull() ? 
+                    paymentInfoJson.get("cvv").getAsString() : null
             );
         }
         

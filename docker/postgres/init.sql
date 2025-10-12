@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP(6) WITHOUT TIME ZONE,
     user_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
     voucher_id BIGINT REFERENCES vouchers(id) ON DELETE SET NULL,
-    CONSTRAINT orders_payment_method_check CHECK (((payment_method)::text = ANY ((ARRAY['COD'::character varying, 'BANK_TRANSFER'::character varying, 'CREDIT_CARD'::character varying])::text[]))),
+    CONSTRAINT orders_payment_method_check CHECK (((payment_method)::text = ANY ((ARRAY['COD'::character varying, 'BANK_TRANSFER'::character varying, 'STORE_PICKUP'::character varying])::text[]))),
     CONSTRAINT orders_status_check CHECK (((status)::text = ANY ((ARRAY['PENDING'::character varying, 'PROCESSING'::character varying, 'SHIPPED'::character varying, 'DELIVERED'::character varying, 'CANCELLED'::character varying])::text[])))
 );
 

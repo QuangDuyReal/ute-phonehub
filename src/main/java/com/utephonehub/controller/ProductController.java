@@ -124,8 +124,8 @@ public class ProductController extends HttpServlet {
             
             Long productId = Long.parseLong(pathParts[1]);
             
-            // Get product from service
-            Optional<Product> productOpt = productService.getProductById(productId);
+            // Get product from service with EAGER fetch images
+            Optional<Product> productOpt = productService.getProductByIdWithImages(productId);
             
             if (productOpt.isEmpty()) {
                 sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND,

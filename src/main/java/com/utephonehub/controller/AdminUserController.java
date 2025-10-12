@@ -4,6 +4,7 @@ import com.utephonehub.dto.response.UserResponse;
 import com.utephonehub.entity.User;
 import com.utephonehub.repository.UserRepository;
 import com.utephonehub.util.JsonUtil;
+import com.utephonehub.util.PasswordUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -50,6 +51,9 @@ public class AdminUserController extends HttpServlet {
             if (pathInfo == null || pathInfo.equals("/")) {
                 // GET /api/v1/admin/users - Lấy danh sách users
                 handleGetUsers(request, response);
+            } else if (pathInfo.equals("/stats")) {
+                // GET /api/v1/admin/users/stats - Thống kê users
+                handleGetUserStats(request, response);
             } else if (pathInfo.matches("/\\d+")) {
                 // GET /api/v1/admin/users/{id} - Chi tiết user
                 handleGetUserDetail(request, response, pathInfo);
@@ -58,6 +62,26 @@ public class AdminUserController extends HttpServlet {
             }
         } catch (Exception e) {
             logger.error("Error in AdminUserController GET", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+    }
+    
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Check admin authentication
+        if (!isAdmin(request, response)) {
+            return;
+        }
+        
+        logger.info("AdminUserController POST request");
+        
+        try {
+            // POST /api/v1/admin/users - Tạo user mới
+            handleCreateUser(request, response);
+        } catch (Exception e) {
+            logger.error("Error in AdminUserController POST", e);
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
@@ -86,6 +110,31 @@ public class AdminUserController extends HttpServlet {
             }
         } catch (Exception e) {
             logger.error("Error in AdminUserController PUT", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
+        }
+    }
+    
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) 
+            throws ServletException, IOException {
+        
+        // Check admin authentication
+        if (!isAdmin(request, response)) {
+            return;
+        }
+        
+        String pathInfo = request.getPathInfo();
+        logger.info("AdminUserController DELETE request: {}", pathInfo);
+        
+        try {
+            if (pathInfo != null && pathInfo.matches("/\\d+")) {
+                // DELETE /api/v1/admin/users/{id} - Xóa user
+                handleDeleteUser(request, response, pathInfo);
+            } else {
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "User ID is required");
+            }
+        } catch (Exception e) {
+            logger.error("Error in AdminUserController DELETE", e);
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
         }
     }
@@ -157,6 +206,145 @@ public class AdminUserController extends HttpServlet {
             logger.error("Error getting users", e);
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
                 "Lỗi khi lấy danh sách người dùng");
+        }
+    }
+    
+    /**
+     * Lấy thống kê users
+     */
+    private void handleGetUserStats(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        try {
+            List<User> allUsers = userRepository.findAll();
+            
+            long total = allUsers.size();
+            long active = allUsers.stream().filter(u -> u.getStatus() == User.UserStatus.active).count();
+            long locked = allUsers.stream().filter(u -> u.getStatus() == User.UserStatus.locked).count();
+            long pending = allUsers.stream().filter(u -> u.getStatus() == User.UserStatus.pending).count();
+            
+            Map<String, Object> stats = new HashMap<>();
+            stats.put("total", total);
+            stats.put("active", active);
+            stats.put("locked", locked);
+            stats.put("pending", pending);
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("success", true);
+            responseData.put("data", stats);
+            
+            sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+            
+        } catch (Exception e) {
+            logger.error("Error getting user stats", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Lỗi khi lấy thống kê người dùng");
+        }
+    }
+    
+    /**
+     * Tạo user mới
+     */
+    private void handleCreateUser(HttpServletRequest request, HttpServletResponse response) 
+            throws IOException {
+        
+        try {
+            // Parse request body
+            Map<String, Object> requestBody = jsonUtil.parseJson(request, Map.class);
+            
+            String email = (String) requestBody.get("email");
+            String username = (String) requestBody.get("username");
+            String fullName = (String) requestBody.get("fullName");
+            String password = (String) requestBody.get("password");
+            String phoneNumber = (String) requestBody.get("phoneNumber");
+            String roleStr = (String) requestBody.get("role");
+            String statusStr = (String) requestBody.get("status");
+            
+            // Validate required fields
+            if (email == null || email.trim().isEmpty()) {
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Email không được để trống");
+                return;
+            }
+            
+            // Username is optional, auto-generate from email if not provided
+            if (username == null || username.trim().isEmpty()) {
+                // Extract username from email (part before @)
+                username = email.split("@")[0];
+            }
+            
+            if (fullName == null || fullName.trim().isEmpty()) {
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Họ tên không được để trống");
+                return;
+            }
+            
+            if (password == null || password.trim().isEmpty()) {
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Mật khẩu không được để trống");
+                return;
+            }
+            
+            if (password.length() < 6) {
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Mật khẩu phải có ít nhất 6 ký tự");
+                return;
+            }
+            
+            // Check email uniqueness
+            if (userRepository.findByEmail(email).isPresent()) {
+                sendErrorResponse(response, HttpServletResponse.SC_CONFLICT, "Email đã tồn tại");
+                return;
+            }
+            
+            // Check username uniqueness
+            if (userRepository.findByUsername(username).isPresent()) {
+                sendErrorResponse(response, HttpServletResponse.SC_CONFLICT, "Username đã tồn tại");
+                return;
+            }
+            
+            // Create new user
+            User user = new User();
+            user.setEmail(email);
+            user.setUsername(username);
+            user.setFullName(fullName);
+            user.setPasswordHash(PasswordUtil.hashPassword(password));
+            user.setPhoneNumber(phoneNumber);
+            
+            // Set role
+            if (roleStr != null && !roleStr.trim().isEmpty()) {
+                try {
+                    User.UserRole role = User.UserRole.valueOf(roleStr.toLowerCase());
+                    user.setRole(role);
+                } catch (IllegalArgumentException e) {
+                    user.setRole(User.UserRole.customer);
+                }
+            } else {
+                user.setRole(User.UserRole.customer);
+            }
+            
+            // Set status
+            if (statusStr != null && !statusStr.trim().isEmpty()) {
+                try {
+                    User.UserStatus status = User.UserStatus.valueOf(statusStr.toLowerCase());
+                    user.setStatus(status);
+                } catch (IllegalArgumentException e) {
+                    user.setStatus(User.UserStatus.active);
+                }
+            } else {
+                user.setStatus(User.UserStatus.active);
+            }
+            
+            // Save user
+            User savedUser = userRepository.save(user);
+            UserResponse userResponse = convertToUserResponse(savedUser);
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("success", true);
+            responseData.put("message", "Tạo người dùng thành công");
+            responseData.put("data", userResponse);
+            
+            sendJsonResponse(response, HttpServletResponse.SC_CREATED, responseData);
+            
+        } catch (Exception e) {
+            logger.error("Error creating user", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Lỗi khi tạo người dùng");
         }
     }
     
@@ -324,6 +512,51 @@ public class AdminUserController extends HttpServlet {
             logger.error("Error updating user role", e);
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
                 "Lỗi khi cập nhật quyền người dùng");
+        }
+    }
+    
+    /**
+     * Xóa user
+     */
+    private void handleDeleteUser(HttpServletRequest request, HttpServletResponse response, String pathInfo) 
+            throws IOException {
+        
+        try {
+            Long userId = Long.parseLong(pathInfo.substring(1));
+            
+            // Check user exists
+            User user = userRepository.findById(userId)
+                .orElse(null);
+            
+            if (user == null) {
+                sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "Không tìm thấy người dùng");
+                return;
+            }
+            
+            // Prevent admin from deleting themselves
+            Long adminId = (Long) request.getAttribute("currentUserId");
+            if (adminId != null && userId.equals(adminId)) {
+                sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
+                    "Không thể xóa tài khoản của chính bạn");
+                return;
+            }
+            
+            // Soft delete: set status to inactive instead of actually deleting
+            user.setStatus(User.UserStatus.locked);
+            userRepository.save(user);
+            
+            Map<String, Object> responseData = new HashMap<>();
+            responseData.put("success", true);
+            responseData.put("message", "Xóa người dùng thành công");
+            
+            sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+            
+        } catch (NumberFormatException e) {
+            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "User ID không hợp lệ");
+        } catch (Exception e) {
+            logger.error("Error deleting user", e);
+            sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+                "Lỗi khi xóa người dùng");
         }
     }
     

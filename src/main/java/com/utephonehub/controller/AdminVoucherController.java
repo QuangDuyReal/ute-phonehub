@@ -466,7 +466,8 @@ public class AdminVoucherController extends HttpServlet {
         response.setMinOrderValue(voucher.getMinOrderValue());
         response.setExpiryDate(voucher.getExpiryDate());
         response.setStatus(voucher.getStatus().toString());
-        response.setUsageCount(voucher.getOrders().size());
+        // Query usage count from database instead of accessing lazy collection
+        response.setUsageCount((int) voucherRepository.countVoucherUsage(voucher.getId()));
         response.setCreatedAt(voucher.getCreatedAt());
         response.setUpdatedAt(voucher.getUpdatedAt());
         return response;

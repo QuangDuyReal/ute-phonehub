@@ -18,6 +18,8 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final AddressRepository addressRepository;
+    private final UserRepository userRepository;
     private final VoucherService voucherService;
     private final RedisService redisService;
     private final EmailService emailService;
@@ -27,6 +29,8 @@ public class OrderService {
         this.orderRepository = new OrderRepository();
         this.cartRepository = new CartRepository();
         this.productRepository = new ProductRepository();
+        this.addressRepository = new AddressRepository();
+        this.userRepository = new UserRepository();
         this.voucherService = new VoucherService();
         this.redisService = new RedisService();
         this.emailService = new EmailService();
@@ -118,12 +122,45 @@ public class OrderService {
             order.setUser(user);
         }
         
-        // Set shipping info
-        order.setEmail((String) shippingInfo.get("email"));
-        order.setRecipientName((String) shippingInfo.get("recipientName"));
-        order.setPhoneNumber((String) shippingInfo.get("phoneNumber"));
-        order.setStreetAddress((String) shippingInfo.get("streetAddress"));
-        order.setCity((String) shippingInfo.get("city"));
+        // Set shipping info - handle both addressId and direct fields
+        if (shippingInfo.containsKey("addressId") && shippingInfo.get("addressId") != null) {
+            // Load address from database
+            Long addressId = ((Number) shippingInfo.get("addressId")).longValue();
+            Optional<Address> addressOpt = addressRepository.findById(addressId);
+            
+            if (addressOpt.isEmpty()) {
+                throw new RuntimeException("Địa chỉ không tồn tại");
+            }
+            
+            Address address = addressOpt.get();
+            
+            // Populate order with address data
+            // Email: get from user repository to avoid lazy loading proxy issue
+            String email = null;
+            if (userId != null) {
+                Optional<User> userOpt = userRepository.findById(userId);
+                if (userOpt.isPresent()) {
+                    email = userOpt.get().getEmail();
+                }
+            }
+            order.setEmail(email);
+            
+            order.setRecipientName(address.getRecipientName());
+            order.setPhoneNumber(address.getPhoneNumber());
+            order.setStreetAddress(address.getStreetAddress());
+            order.setCity(address.getProvince()); // Address uses 'province' field
+            
+            logger.info("Using saved address: {} for user: {}", addressId, userId);
+        } else {
+            // Use direct fields from request
+            order.setEmail((String) shippingInfo.get("email"));
+            order.setRecipientName((String) shippingInfo.get("recipientName"));
+            order.setPhoneNumber((String) shippingInfo.get("phoneNumber"));
+            order.setStreetAddress((String) shippingInfo.get("streetAddress"));
+            order.setCity((String) shippingInfo.get("city"));
+            
+            logger.info("Using new address from form");
+        }
         
         // Set payment method
         order.setPaymentMethod(method);

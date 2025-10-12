@@ -125,6 +125,22 @@ public class ProductService {
     }
     
     /**
+     * Lấy product theo ID với EAGER fetch images (for product detail page)
+     * Tránh LazyInitializationException khi access images collection
+     * 
+     * @param productId Product ID
+     * @return Optional<Product>
+     */
+    public Optional<Product> getProductByIdWithImages(Long productId) {
+        try {
+            return productRepository.findByIdWithAllRelations(productId);
+        } catch (Exception e) {
+            logger.error("Error getting product by ID with images: {}", productId, e);
+            throw new RuntimeException("Failed to retrieve product with images", e);
+        }
+    }
+    
+    /**
      * Lấy các sản phẩm mới nhất
      * 
      * @param limit Số lượng sản phẩm

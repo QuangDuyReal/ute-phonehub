@@ -2,10 +2,7 @@
  * Admin Vouchers Management JavaScript
  */
 
-const contextPath = window.location.pathname.substring(
-  0,
-  window.location.pathname.indexOf("/admin")
-) || "";
+// contextPath is declared in admin-footer.jspf
 
 let currentPage = 1;
 let currentFilters = {

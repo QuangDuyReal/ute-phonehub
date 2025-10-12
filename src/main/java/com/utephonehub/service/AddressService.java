@@ -117,7 +117,8 @@ public class AddressService {
         response.put("recipientName", address.getRecipientName());
         response.put("phoneNumber", address.getPhoneNumber());
         response.put("streetAddress", address.getStreetAddress());
-        response.put("province", address.getProvince()); // Keep only province (removed city)
+        response.put("province", address.getProvince());
+        response.put("city", address.getProvince()); // Alias for backward compatibility
         response.put("ward", address.getWard());
         response.put("wardCode", address.getWardCode());
         response.put("provinceCode", address.getProvinceCode());

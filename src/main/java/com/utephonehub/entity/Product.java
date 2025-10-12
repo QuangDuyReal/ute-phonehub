@@ -3,6 +3,8 @@ package com.utephonehub.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,6 +32,7 @@ public class Product {
     @Column(name = "thumbnail_url", length = 500)
     private String thumbnailUrl;
     
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "specifications", columnDefinition = "jsonb")
     private String specifications; // JSON string
     

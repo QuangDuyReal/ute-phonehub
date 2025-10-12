@@ -18,7 +18,7 @@ public class PasswordUtil {
      * @param plainPassword Mật khẩu gốc
      * @return Mật khẩu đã hash
      */
-    public String hashPassword(String plainPassword) {
+    public static String hashPassword(String plainPassword) {
         try {
             String hashedPassword = BCrypt.hashpw(plainPassword, BCrypt.gensalt(BCRYPT_ROUNDS));
             logger.debug("Password hashed successfully");
@@ -35,7 +35,7 @@ public class PasswordUtil {
      * @param hashedPassword Mật khẩu đã hash
      * @return true nếu mật khẩu đúng
      */
-    public boolean verifyPassword(String plainPassword, String hashedPassword) {
+    public static boolean verifyPassword(String plainPassword, String hashedPassword) {
         try {
             boolean isValid = BCrypt.checkpw(plainPassword, hashedPassword);
             logger.debug("Password verification result: {}", isValid);
@@ -51,7 +51,7 @@ public class PasswordUtil {
      * @param password Mật khẩu cần kiểm tra
      * @return true nếu mật khẩu hợp lệ
      */
-    public boolean isValidPassword(String password) {
+    public static boolean isValidPassword(String password) {
         if (password == null || password.trim().isEmpty()) {
             return false;
         }
@@ -66,7 +66,7 @@ public class PasswordUtil {
      * @param length Độ dài mật khẩu
      * @return Mật khẩu ngẫu nhiên
      */
-    public String generateRandomPassword(int length) {
+    public static String generateRandomPassword(int length) {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
         StringBuilder password = new StringBuilder();
         
@@ -82,7 +82,7 @@ public class PasswordUtil {
      * Generate random password với độ dài mặc định
      * @return Mật khẩu ngẫu nhiên 12 ký tự
      */
-    public String generateRandomPassword() {
+    public static String generateRandomPassword() {
         return generateRandomPassword(12);
     }
 }

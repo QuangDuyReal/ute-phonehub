@@ -268,8 +268,9 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
+    <%@ include file="/WEB-INF/views/common/footer.jspf" %>
+
+    <!-- Page-specific JavaScript -->
     <script src="${pageContext.request.contextPath}/static/js/pages/user-orders.js"></script>
     
     <!-- Logout Handler -->

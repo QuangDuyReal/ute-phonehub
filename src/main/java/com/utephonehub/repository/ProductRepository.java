@@ -61,6 +61,55 @@ public class ProductRepository {
     }
     
     /**
+     * Tìm product theo ID với EAGER loading category và brand
+     * Dùng cho update/delete để tránh LazyInitializationException
+     * @param id Product ID
+     * @return Optional<Product>
+     */
+    public Optional<Product> findByIdWithRelations(Long id) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            TypedQuery<Product> query = em.createQuery(
+                "SELECT p FROM Product p " +
+                "LEFT JOIN FETCH p.category " +
+                "LEFT JOIN FETCH p.brand " +
+                "WHERE p.id = :id", 
+                Product.class);
+            query.setParameter("id", id);
+            List<Product> products = query.getResultList();
+            return products.isEmpty() ? Optional.empty() : Optional.of(products.get(0));
+        } catch (Exception e) {
+            logger.error("Error finding product by ID with relations: {}", id, e);
+            throw new RuntimeException("Failed to find product by ID with relations", e);
+        }
+    }
+    
+    /**
+     * Tìm product theo ID với EAGER loading tất cả (category, brand, images)
+     * Dùng cho product detail page để tránh LazyInitializationException
+     * @param id Product ID
+     * @return Optional<Product>
+     */
+    public Optional<Product> findByIdWithAllRelations(Long id) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            TypedQuery<Product> query = em.createQuery(
+                "SELECT p FROM Product p " +
+                "LEFT JOIN FETCH p.category " +
+                "LEFT JOIN FETCH p.brand " +
+                "LEFT JOIN FETCH p.images " +
+                "WHERE p.id = :id", 
+                Product.class);
+            query.setParameter("id", id);
+            List<Product> products = query.getResultList();
+            return products.isEmpty() ? Optional.empty() : Optional.of(products.get(0));
+        } catch (Exception e) {
+            logger.error("Error finding product by ID with all relations: {}", id, e);
+            throw new RuntimeException("Failed to find product by ID with all relations", e);
+        }
+    }
+    
+    /**
      * Lấy tất cả products
      * @return List<Product>
      */
@@ -231,6 +280,54 @@ public class ProductRepository {
      * @param id Product ID
      * @return true nếu xóa thành công
      */
+    /**
+     * Check if product can be deleted (không có order_items, cart_items, reviews)
+     * @param id Product ID
+     * @return true nếu có thể xóa
+     */
+    public boolean canDeleteProduct(Long id) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            // Check order_items
+            Long orderItemCount = em.createQuery(
+                "SELECT COUNT(oi) FROM OrderItem oi WHERE oi.product.id = :productId", Long.class)
+                .setParameter("productId", id)
+                .getSingleResult();
+            
+            if (orderItemCount > 0) {
+                logger.warn("Cannot delete product {}: has {} order_items", id, orderItemCount);
+                return false;
+            }
+            
+            // Check cart_items
+            Long cartItemCount = em.createQuery(
+                "SELECT COUNT(ci) FROM CartItem ci WHERE ci.product.id = :productId", Long.class)
+                .setParameter("productId", id)
+                .getSingleResult();
+            
+            if (cartItemCount > 0) {
+                logger.warn("Cannot delete product {}: has {} cart_items", id, cartItemCount);
+                return false;
+            }
+            
+            // Check reviews
+            Long reviewCount = em.createQuery(
+                "SELECT COUNT(r) FROM Review r WHERE r.product.id = :productId", Long.class)
+                .setParameter("productId", id)
+                .getSingleResult();
+            
+            if (reviewCount > 0) {
+                logger.warn("Cannot delete product {}: has {} reviews", id, reviewCount);
+                return false;
+            }
+            
+            return true;
+        } catch (Exception e) {
+            logger.error("Error checking if product can be deleted: {}", id, e);
+            return false;
+        }
+    }
+    
     public boolean deleteById(Long id) {
         EntityManager em = DatabaseConfig.getEntityManager();
         try {

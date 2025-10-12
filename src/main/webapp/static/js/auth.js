@@ -640,6 +640,9 @@ if (resetPasswordForm) {
 async function logout() {
   const token = localStorage.getItem("accessToken");
 
+  // Show loading toast
+  showToast("Đang đăng xuất...", "info");
+
   // IMPORTANT: Call API FIRST, then redirect
   if (token) {
     try {
@@ -673,8 +676,13 @@ async function logout() {
   document.cookie =
     "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; Secure; SameSite=Strict";
 
-  // Redirect AFTER cleanup completes
-  window.location.href = "/";
+  // Show success toast
+  showToast("Đăng xuất thành công!", "success");
+
+  // Redirect to home page AFTER cleanup completes (with small delay for toast)
+  setTimeout(() => {
+    window.location.href = contextPath + "/";
+  }, 800);
 }
 
 /**

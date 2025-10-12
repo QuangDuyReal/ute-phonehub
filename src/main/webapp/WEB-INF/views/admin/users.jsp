@@ -117,6 +117,95 @@
     input:checked + .toggle-slider:before {
       transform: translateX(26px);
     }
+    
+    /* Modal styles - giống products.jsp */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal.show {
+      display: flex;
+    }
+    
+    .modal-dialog {
+      background: white;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    
+    .modal-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--admin-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    
+    .btn-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--admin-text-light);
+    }
+    
+    .modal-body {
+      padding: 1.5rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid var(--admin-border);
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--admin-primary);
+    }
+    
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+    
+    .modal-footer {
+      padding: 1.5rem;
+      border-top: 1px solid var(--admin-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
   </style>
 </head>
 <body class="admin-body">
@@ -181,7 +270,7 @@
         <!-- Filters & Search -->
         <div class="dashboard-card" style="margin-bottom: 1.5rem;">
           <div class="card-body">
-            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
               <div style="flex: 1; min-width: 250px;">
                 <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên, email, username...">
               </div>
@@ -196,9 +285,12 @@
                 <select id="statusFilter" class="form-control">
                   <option value="">Tất cả trạng thái</option>
                   <option value="active">Đang hoạt động</option>
-                  <option value="banned">Đã khóa</option>
+                  <option value="locked">Đã khóa</option>
                 </select>
               </div>
+              <button id="btnAddUser" class="btn-add" style="white-space: nowrap;">
+                <i class="fas fa-plus"></i> Thêm người dùng
+              </button>
             </div>
           </div>
         </div>
@@ -242,10 +334,72 @@
     </main>
   </div>
 
-  <!-- JavaScript -->
-  <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
-  <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
+  <!-- User Modal -->
+  <div id="userModal" class="modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTitle">Thêm người dùng</h3>
+        <button class="btn-close" id="btnCloseModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="userForm">
+          <input type="hidden" id="userId">
+          
+          <div class="form-group">
+            <label for="userEmail">Email <span style="color: red;">*</span></label>
+            <input type="email" id="userEmail" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="userUsername">Username</label>
+            <input type="text" id="userUsername" class="form-control" placeholder="Tự động tạo từ email nếu để trống">
+            <small style="color: #666; font-size: 0.875rem;">Để trống để tự động tạo từ email</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="userFullName">Họ và tên <span style="color: red;">*</span></label>
+            <input type="text" id="userFullName" class="form-control" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="userPassword">Mật khẩu <span style="color: red;">*</span></label>
+            <input type="password" id="userPassword" class="form-control" required>
+            <small style="color: #666; font-size: 0.875rem;">Tối thiểu 6 ký tự</small>
+          </div>
+          
+          <div class="form-group">
+            <label for="userPhoneNumber">Số điện thoại</label>
+            <input type="tel" id="userPhoneNumber" class="form-control" placeholder="0123456789">
+          </div>
+          
+          <div class="form-group">
+            <label for="userRole">Vai trò <span style="color: red;">*</span></label>
+            <select id="userRole" class="form-control" required>
+              <option value="customer">Khách hàng</option>
+              <option value="admin">Quản trị viên</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="userStatus">Trạng thái <span style="color: red;">*</span></label>
+            <select id="userStatus" class="form-control" required>
+              <option value="active">Đang hoạt động</option>
+              <option value="locked">Đã khóa</option>
+              <option value="pending">Chờ xác thực</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-action btn-secondary" id="btnCancelModal">Hủy</button>
+        <button class="btn-action btn-primary" id="btnSaveUser">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <%@ include file="/WEB-INF/views/common/admin-footer.jspf" %>
+  
+  <!-- Page-specific JavaScript -->
   <script src="${pageContext.request.contextPath}/static/js/pages/admin-users.js"></script>
 
   <script>

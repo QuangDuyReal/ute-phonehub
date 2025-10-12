@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initCheckoutPage();
 });
 
-const contextPath = document.body.dataset.contextPath || '';
+// contextPath is already declared in footer.jspf
 let selectedAddressId = null;
 let cartData = null;
 let provinces = [];
@@ -205,7 +205,7 @@ function populateProvinces() {
     if (!citySelect || !provinces || provinces.length === 0) return;
     
     citySelect.innerHTML = '<option value="">Chọn tỉnh/thành</option>' +
-        provinces.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+        provinces.map(p => `<option value="${p.code}" data-code="${p.code}">${escapeHtml(p.name)}</option>`).join('');
 }
 
 /**
@@ -217,9 +217,12 @@ async function loadWards(provinceCode) {
         if (response.success && response.data) {
             wards = response.data;
             populateWards();
+            return true;
         }
+        return false;
     } catch (error) {
         console.error('Error loading wards:', error);
+        return false;
     }
 }
 
@@ -230,8 +233,13 @@ function populateWards() {
     const wardSelect = document.getElementById('ward');
     if (!wardSelect) return;
     
+    if (!wards || wards.length === 0) {
+        wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>';
+        return;
+    }
+    
     wardSelect.innerHTML = '<option value="">Chọn phường/xã</option>' +
-        wards.map(w => `<option value="${w.id}">${escapeHtml(w.name)}</option>`).join('');
+        wards.map(w => `<option value="${w.name}" data-code="${w.code}">${escapeHtml(w.name)}</option>`).join('');
 }
 
 /**
@@ -263,12 +271,23 @@ function setupEventListeners() {
     });
     
     // Province change
-    document.getElementById('city').addEventListener('change', (e) => {
-        const provinceCode = e.target.value;
+    document.getElementById('city').addEventListener('change', async (e) => {
+        const citySelect = e.target;
+        const selectedOption = citySelect.options[citySelect.selectedIndex];
+        
+        // Get province code from selected option's data attribute
+        const provinceCode = selectedOption.dataset.code || selectedOption.value;
+        
         if (provinceCode) {
-            loadWards(provinceCode);
+            console.log('Loading wards for province:', provinceCode);
+            const success = await loadWards(provinceCode);
+            if (!success) {
+                console.error('Failed to load wards');
+                document.getElementById('ward').innerHTML = '<option value="">Chọn phường/xã</option>';
+            }
         } else {
             document.getElementById('ward').innerHTML = '<option value="">Chọn phường/xã</option>';
+            wards = [];
         }
     });
     
@@ -611,9 +630,9 @@ async function handlePlaceOrder() {
             
             showToast('Đặt hàng thành công!', 'success');
             
-            // Redirect to success page or order detail
+            // Redirect to order success page
             setTimeout(() => {
-                window.location.href = `${contextPath}/orders/${order.id}?success=true`;
+                window.location.href = `${contextPath}/orders/${order.orderId}?success=true`;
             }, 1500);
         } else {
             showToast(response.message || 'Không thể đặt hàng. Vui lòng thử lại.', 'error');

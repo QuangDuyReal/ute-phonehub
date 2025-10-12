@@ -3,10 +3,7 @@
  * Handles dashboard statistics, charts, and recent data
  */
 
-const contextPath = window.location.pathname.substring(
-  0,
-  window.location.pathname.indexOf("/admin")
-) || "";
+// contextPath is declared in admin-footer.jspf
 
 // Initialize dashboard on page load
 document.addEventListener("DOMContentLoaded", () => {

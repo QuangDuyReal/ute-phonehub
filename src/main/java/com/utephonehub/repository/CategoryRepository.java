@@ -59,6 +59,30 @@ public class CategoryRepository {
     }
     
     /**
+     * Find category by ID with parent relation (EAGER fetch)
+     */
+    public Optional<Category> findByIdWithParent(Long id) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Category category = em.createQuery(
+                "SELECT c FROM Category c " +
+                "LEFT JOIN FETCH c.parent " +
+                "WHERE c.id = :id", 
+                Category.class)
+                .setParameter("id", id)
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+            return Optional.ofNullable(category);
+        } catch (Exception e) {
+            logger.error("Error finding category by id with parent: {}", id, e);
+            throw new RuntimeException("Error finding category with parent", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
      * Save category
      */
     public Category save(Category category) {
@@ -127,6 +151,48 @@ public class CategoryRepository {
         } catch (Exception e) {
             logger.error("Error finding category by name: {}", name, e);
             throw new RuntimeException("Error finding category by name", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
+     * Count products by category ID
+     */
+    public long countProductsByCategoryId(Long categoryId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Long count = em.createQuery(
+                "SELECT COUNT(p) FROM Product p WHERE p.category.id = :categoryId", 
+                Long.class
+            )
+            .setParameter("categoryId", categoryId)
+            .getSingleResult();
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            logger.error("Error counting products for category id: {}", categoryId, e);
+            throw new RuntimeException("Error counting products", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
+    
+    /**
+     * Count children categories by parent category ID
+     */
+    public long countChildrenByCategoryId(Long categoryId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Long count = em.createQuery(
+                "SELECT COUNT(c) FROM Category c WHERE c.parent.id = :categoryId", 
+                Long.class
+            )
+            .setParameter("categoryId", categoryId)
+            .getSingleResult();
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            logger.error("Error counting children for category id: {}", categoryId, e);
+            throw new RuntimeException("Error counting children", e);
         } finally {
             DatabaseConfig.closeEntityManager();
         }

@@ -347,7 +347,13 @@ uri="http://java.sun.com/jsp/jstl/core" %>
       </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- JavaScript for login page -->
+    <script>
+      const contextPath = '${pageContext.request.contextPath}';
+    </script>
+    <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
     <script src="${pageContext.request.contextPath}/static/js/auth.js"></script>
+    <script src="${pageContext.request.contextPath}/static/js/pages/login.js"></script>
   </body>
 </html>

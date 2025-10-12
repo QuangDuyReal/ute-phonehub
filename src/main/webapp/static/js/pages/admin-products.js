@@ -3,10 +3,7 @@
  * Handles CRUD operations for products
  */
 
-const contextPath = window.location.pathname.substring(
-  0,
-  window.location.pathname.indexOf("/admin")
-) || "";
+// contextPath is declared in admin-footer.jspf
 
 // State
 let currentPage = 1;

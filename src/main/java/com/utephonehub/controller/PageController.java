@@ -11,7 +11,7 @@ import java.io.IOException;
  * Page Controller
  * Handle routing cho các trang view (login, profile, products, etc.)
  */
-@WebServlet(urlPatterns = {"/login", "/profile", "/cart", "/checkout", "/orders", "/order-lookup", "/vouchers", "/admin/dashboard", "/admin/products", "/admin/orders", "/admin/users", "/admin/categories", "/admin/brands", "/admin/vouchers"})
+@WebServlet(urlPatterns = {"/login", "/profile", "/cart", "/checkout", "/orders", "/vouchers"})
 public class PageController extends HttpServlet {
 
     @Override
@@ -47,34 +47,6 @@ public class PageController extends HttpServlet {
                 
             case "/vouchers":
                 request.getRequestDispatcher("/WEB-INF/views/voucher/list.jsp").forward(request, response);
-                break;
-                
-            case "/admin/dashboard":
-                request.getRequestDispatcher("/WEB-INF/views/admin/dashboard.jsp").forward(request, response);
-                break;
-                
-            case "/admin/products":
-                request.getRequestDispatcher("/WEB-INF/views/admin/products.jsp").forward(request, response);
-                break;
-                
-            case "/admin/orders":
-                request.getRequestDispatcher("/WEB-INF/views/admin/orders.jsp").forward(request, response);
-                break;
-                
-            case "/admin/users":
-                request.getRequestDispatcher("/WEB-INF/views/admin/users.jsp").forward(request, response);
-                break;
-                
-            case "/admin/categories":
-                request.getRequestDispatcher("/WEB-INF/views/admin/categories.jsp").forward(request, response);
-                break;
-                
-            case "/admin/brands":
-                request.getRequestDispatcher("/WEB-INF/views/admin/brands.jsp").forward(request, response);
-                break;
-                
-            case "/admin/vouchers":
-                request.getRequestDispatcher("/WEB-INF/views/admin/vouchers.jsp").forward(request, response);
                 break;
                 
             default:

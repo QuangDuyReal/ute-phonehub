@@ -248,7 +248,8 @@ public class VoucherController extends HttpServlet {
             voucherData.put("startDate", voucher.getCreatedAt());
             voucherData.put("expiryDate", voucher.getExpiryDate());
             voucherData.put("usageLimit", voucher.getMaxUsage());
-            voucherData.put("usedCount", voucher.getOrders() != null ? voucher.getOrders().size() : 0);
+            // Use COUNT query instead of lazy collection to avoid LazyInitializationException
+            voucherData.put("usedCount", voucherService.countVoucherUsage(voucher.getId()));
             
             // Send response
             response.setStatus(HttpServletResponse.SC_OK);

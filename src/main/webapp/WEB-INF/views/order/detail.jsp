@@ -185,9 +185,7 @@
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="${pageContext.request.contextPath}/static/js/utils.js"></script>
-    <script src="${pageContext.request.contextPath}/static/js/api.js"></script>
+    <!-- Page-specific JavaScript -->
     <c:if test="${not empty pageJs}">
         <script src="${pageContext.request.contextPath}/static/js/${pageJs}"></script>
     </c:if>

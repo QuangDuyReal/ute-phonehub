@@ -130,4 +130,25 @@ public class BrandRepository {
             DatabaseConfig.closeEntityManager();
         }
     }
+    
+    /**
+     * Count products by brand ID
+     */
+    public long countProductsByBrandId(Long brandId) {
+        EntityManager em = DatabaseConfig.getEntityManager();
+        try {
+            Long count = em.createQuery(
+                "SELECT COUNT(p) FROM Product p WHERE p.brand.id = :brandId", 
+                Long.class
+            )
+            .setParameter("brandId", brandId)
+            .getSingleResult();
+            return count != null ? count : 0L;
+        } catch (Exception e) {
+            logger.error("Error counting products for brand id: {}", brandId, e);
+            throw new RuntimeException("Error counting products", e);
+        } finally {
+            DatabaseConfig.closeEntityManager();
+        }
+    }
 }

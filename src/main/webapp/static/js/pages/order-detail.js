@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadOrderDetails(orderId);
 });
 
-const contextPath = document.body.dataset.contextPath || '';
+// contextPath is already declared in footer.jspf
 
 /**
  * Load order details from API

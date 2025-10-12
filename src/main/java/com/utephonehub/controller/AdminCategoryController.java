@@ -241,6 +241,11 @@ public class AdminCategoryController extends HttpServlet {
             
             // Save category
             Category savedCategory = categoryRepository.save(category);
+            
+            // Re-fetch với parent relation để tránh LazyInitializationException
+            savedCategory = categoryRepository.findByIdWithParent(savedCategory.getId())
+                .orElseThrow(() -> new RuntimeException("Category not found after save"));
+            
             CategoryResponse categoryResponse = convertToCategoryResponse(savedCategory);
             
             Map<String, Object> responseData = new HashMap<>();
@@ -311,6 +316,11 @@ public class AdminCategoryController extends HttpServlet {
             
             // Save updated category
             Category updatedCategory = categoryRepository.save(category);
+            
+            // Re-fetch với parent relation để tránh LazyInitializationException
+            updatedCategory = categoryRepository.findByIdWithParent(updatedCategory.getId())
+                .orElseThrow(() -> new RuntimeException("Category not found after save"));
+            
             CategoryResponse categoryResponse = convertToCategoryResponse(updatedCategory);
             
             Map<String, Object> responseData = new HashMap<>();
@@ -346,17 +356,19 @@ public class AdminCategoryController extends HttpServlet {
                 return;
             }
             
-            // Check if category has products
-            if (!category.getProducts().isEmpty()) {
+            // Check if category has products - sử dụng count query thay vì lazy load
+            long productCount = categoryRepository.countProductsByCategoryId(categoryId);
+            if (productCount > 0) {
                 sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
-                    "Không thể xóa danh mục đang có sản phẩm");
+                    "Không thể xóa danh mục đang có " + productCount + " sản phẩm");
                 return;
             }
             
-            // Check if category has children
-            if (!category.getChildren().isEmpty()) {
+            // Check if category has children - sử dụng count query thay vì lazy load
+            long childrenCount = categoryRepository.countChildrenByCategoryId(categoryId);
+            if (childrenCount > 0) {
                 sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, 
-                    "Không thể xóa danh mục đang có danh mục con");
+                    "Không thể xóa danh mục đang có " + childrenCount + " danh mục con");
                 return;
             }
             
@@ -424,8 +436,9 @@ public class AdminCategoryController extends HttpServlet {
         response.setDescription(category.getDescription());
         response.setParentId(category.getParent() != null ? category.getParent().getId() : null);
         response.setParentName(category.getParent() != null ? category.getParent().getName() : null);
-        response.setProductCount(category.getProducts().size());
-        response.setChildrenCount(category.getChildren().size());
+        // Query counts from database instead of accessing lazy collections
+        response.setProductCount((int) categoryRepository.countProductsByCategoryId(category.getId()));
+        response.setChildrenCount((int) categoryRepository.countChildrenByCategoryId(category.getId()));
         response.setCreatedAt(category.getCreatedAt());
         response.setUpdatedAt(category.getUpdatedAt());
         return response;

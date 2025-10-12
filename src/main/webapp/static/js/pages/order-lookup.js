@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initOrderLookup();
 });
 
-const contextPath = document.body.dataset.contextPath || '';
+// contextPath is already declared in footer.jspf
 
 /**
  * Initialize order lookup page

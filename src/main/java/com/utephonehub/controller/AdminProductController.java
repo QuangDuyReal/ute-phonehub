@@ -307,6 +307,11 @@ public class AdminProductController extends HttpServlet {
             
             // Save product
             Product savedProduct = productRepository.save(product);
+            
+            // Re-fetch với relations để tránh LazyInitializationException
+            savedProduct = productRepository.findByIdWithRelations(savedProduct.getId())
+                .orElseThrow(() -> new RuntimeException("Product not found after save"));
+            
             ProductResponse productResponse = convertToProductResponse(savedProduct);
             
             Map<String, Object> responseData = new HashMap<>();
@@ -331,8 +336,8 @@ public class AdminProductController extends HttpServlet {
         try {
             Long productId = Long.parseLong(pathInfo.substring(1));
             
-            // Check product exists
-            Product product = productRepository.findById(productId)
+            // Check product exists - EAGER fetch category và brand
+            Product product = productRepository.findByIdWithRelations(productId)
                 .orElse(null);
             
             if (product == null) {
@@ -392,6 +397,11 @@ public class AdminProductController extends HttpServlet {
             
             // Save updated product
             Product updatedProduct = productRepository.save(product);
+            
+            // Re-fetch với relations để tránh LazyInitializationException
+            updatedProduct = productRepository.findByIdWithRelations(updatedProduct.getId())
+                .orElseThrow(() -> new RuntimeException("Product not found after save"));
+            
             ProductResponse productResponse = convertToProductResponse(updatedProduct);
             
             Map<String, Object> responseData = new HashMap<>();
@@ -418,8 +428,8 @@ public class AdminProductController extends HttpServlet {
         try {
             Long productId = Long.parseLong(pathInfo.substring(1));
             
-            // Check product exists
-            Product product = productRepository.findById(productId)
+            // Check product exists - EAGER fetch để tránh LazyInitializationException
+            Product product = productRepository.findByIdWithRelations(productId)
                 .orElse(null);
             
             if (product == null) {
@@ -427,15 +437,24 @@ public class AdminProductController extends HttpServlet {
                 return;
             }
             
-            // Soft delete - set status to false
-            product.setStatus(false);
-            productRepository.save(product);
+            // Check if product can be deleted (no order_items, cart_items, reviews)
+            if (!productRepository.canDeleteProduct(productId)) {
+                sendErrorResponse(response, HttpServletResponse.SC_CONFLICT, 
+                    "Không thể xóa sản phẩm này vì đã được sử dụng trong đơn hàng, giỏ hàng hoặc có đánh giá");
+                return;
+            }
             
-            Map<String, Object> responseData = new HashMap<>();
-            responseData.put("success", true);
-            responseData.put("message", "Xóa sản phẩm thành công");
+            // Hard delete - xóa thật khỏi database
+            boolean deleted = productRepository.deleteById(productId);
             
-            sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+            if (deleted) {
+                Map<String, Object> responseData = new HashMap<>();
+                responseData.put("success", true);
+                responseData.put("message", "Xóa sản phẩm thành công");
+                sendJsonResponse(response, HttpServletResponse.SC_OK, responseData);
+            } else {
+                sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Không thể xóa sản phẩm");
+            }
             
         } catch (NumberFormatException e) {
             sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Product ID không hợp lệ");

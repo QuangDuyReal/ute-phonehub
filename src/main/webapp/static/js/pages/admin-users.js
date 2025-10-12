@@ -2,10 +2,7 @@
  * Admin Users Management JavaScript
  */
 
-const contextPath = window.location.pathname.substring(
-  0,
-  window.location.pathname.indexOf("/admin")
-) || "";
+// contextPath is declared in admin-footer.jspf
 
 let currentPage = 1;
 let currentFilters = {
@@ -51,6 +48,16 @@ function setupEventListeners() {
     currentPage = 1;
     loadUsers();
   });
+
+  // Modal buttons
+  document.getElementById("btnAddUser").addEventListener("click", () => openModal());
+  document.getElementById("btnCloseModal").addEventListener("click", closeModal);
+  document.getElementById("btnCancelModal").addEventListener("click", closeModal);
+  document.getElementById("btnSaveUser").addEventListener("click", saveUser);
+  
+  document.getElementById("userModal").addEventListener("click", (e) => {
+    if (e.target.id === "userModal") closeModal();
+  });
 }
 
 async function loadUserStats() {
@@ -64,9 +71,10 @@ async function loadUserStats() {
     if (response.ok) {
       const result = await response.json();
       if (result.success && result.data) {
-        document.getElementById("totalUsers").textContent = result.data.totalUsers || 0;
-        document.getElementById("activeUsers").textContent = result.data.activeUsers || 0;
-        document.getElementById("newUsers").textContent = result.data.newUsers || 0;
+        // Backend trả về: total, active, locked, pending
+        document.getElementById("totalUsers").textContent = result.data.total || 0;
+        document.getElementById("activeUsers").textContent = result.data.active || 0;
+        document.getElementById("newUsers").textContent = result.data.pending || 0;
       }
     }
   } catch (error) {
@@ -208,7 +216,7 @@ function changePage(page) {
 
 async function toggleUserStatus(userId, isActive) {
   try {
-    const newStatus = isActive ? "active" : "banned";
+    const newStatus = isActive ? "active" : "locked";
     const response = await fetch(
       `${contextPath}/api/v1/admin/users/${userId}/status`,
       {
@@ -327,5 +335,113 @@ function showSuccess(message) {
 
 function showError(message) {
   alert(message);
+}
+
+/**
+ * Open modal for create/edit user
+ */
+function openModal(user = null) {
+  document.getElementById("modalTitle").textContent = user ? "Chỉnh sửa người dùng" : "Thêm người dùng";
+  document.getElementById("userId").value = user ? user.id : "";
+  document.getElementById("userEmail").value = user ? user.email : "";
+  document.getElementById("userFullName").value = user ? user.fullName : "";
+  document.getElementById("userPassword").value = "";
+  document.getElementById("userPhoneNumber").value = user ? (user.phoneNumber || "") : "";
+  document.getElementById("userRole").value = user ? user.role.toLowerCase() : "customer";
+  document.getElementById("userStatus").value = user ? user.status.toLowerCase() : "active";
+  
+  // Password is required for new users, optional for edit
+  const passwordInput = document.getElementById("userPassword");
+  if (user) {
+    passwordInput.required = false;
+    passwordInput.placeholder = "Để trống nếu không muốn thay đổi";
+  } else {
+    passwordInput.required = true;
+    passwordInput.placeholder = "";
+  }
+  
+  document.getElementById("userModal").classList.add("show");
+}
+
+/**
+ * Close modal
+ */
+function closeModal() {
+  document.getElementById("userModal").classList.remove("show");
+  document.getElementById("userForm").reset();
+  document.getElementById("userPassword").required = true;
+}
+
+/**
+ * Save user (create or update)
+ */
+async function saveUser() {
+  const id = document.getElementById("userId").value;
+  const email = document.getElementById("userEmail").value.trim();
+  const username = document.getElementById("userUsername").value.trim();
+  const fullName = document.getElementById("userFullName").value.trim();
+  const password = document.getElementById("userPassword").value;
+  const phoneNumber = document.getElementById("userPhoneNumber").value.trim();
+  const role = document.getElementById("userRole").value;
+  const status = document.getElementById("userStatus").value;
+
+  // Validation
+  if (!email || !fullName) {
+    alert("Vui lòng điền đầy đủ thông tin bắt buộc!");
+    return;
+  }
+
+  if (!id && !password) {
+    alert("Vui lòng nhập mật khẩu!");
+    return;
+  }
+
+  if (password && password.length < 6) {
+    alert("Mật khẩu phải có ít nhất 6 ký tự!");
+    return;
+  }
+
+  const userData = {
+    email,
+    username: username || null, // Auto-generate from email if empty
+    fullName,
+    phoneNumber: phoneNumber || null,
+    role,
+    status,
+  };
+
+  // Only include password if it's provided
+  if (password) {
+    userData.password = password;
+  }
+
+  try {
+    const url = id 
+      ? `${contextPath}/api/v1/admin/users/${id}` 
+      : `${contextPath}/api/v1/admin/users`;
+    const method = id ? "PUT" : "POST";
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("accessToken"),
+      },
+      body: JSON.stringify(userData),
+    });
+
+    if (response.ok) {
+      alert(id ? "Cập nhật người dùng thành công!" : "Thêm người dùng thành công!");
+      closeModal();
+      loadUsers();
+      loadUserStats();
+    } else {
+      const result = await response.json();
+      alert(result.message || "Có lỗi xảy ra!");
+    }
+  } catch (error) {
+    console.error("Error saving user:", error);
+    alert("Có lỗi xảy ra!");
+  }
 }
 

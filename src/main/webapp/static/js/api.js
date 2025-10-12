@@ -2,7 +2,11 @@
 /* Centralized API communication với error handling */
 
 const API = {
-    baseURL: '/api/v1',
+    get baseURL() {
+        // Get contextPath from window or default to empty string
+        const ctx = (typeof contextPath !== 'undefined') ? contextPath : '';
+        return ctx + '/api/v1';
+    },
     
     /**
      * Get headers với JWT token
@@ -31,8 +35,9 @@ const API = {
             localStorage.removeItem('user');
             
             // Redirect to login with return URL
+            const ctx = (typeof contextPath !== 'undefined') ? contextPath : '';
             const returnUrl = encodeURIComponent(window.location.pathname + window.location.search);
-            window.location.href = `/login?returnUrl=${returnUrl}`;
+            window.location.href = `${ctx}/login?returnUrl=${returnUrl}`;
             return null;
         }
         

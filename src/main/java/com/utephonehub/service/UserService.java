@@ -81,8 +81,8 @@ public class UserService {
         user = userRepository.save(user);
         
         // Tạo access token và refresh token
-        String accessToken = jwtUtil.generateToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().toString());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getEmail(), user.getRole().toString());
         
         // Store refresh token in Redis (7 days TTL)
         redisService.storeRefreshToken(user.getEmail(), refreshToken);
@@ -186,8 +186,8 @@ public class UserService {
         }
         
         // Generate tokens
-        String accessToken = jwtUtil.generateToken(user.getEmail());
-        String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
+        String accessToken = jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().toString());
+        String refreshToken = jwtUtil.generateRefreshToken(user.getId(), user.getEmail(), user.getRole().toString());
         
         // Store refresh token in Redis
         redisService.storeRefreshToken(user.getEmail(), refreshToken);

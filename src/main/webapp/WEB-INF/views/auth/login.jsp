@@ -119,7 +119,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           <p>hoặc đăng nhập với</p>
           <div class="social-icons">
             <a href="<%= request.getContextPath() %>/oauth2/google"><i class="bx bxl-google"></i></a>
-            <a href="#"><i class="bx bxl-facebook"></i></a>
           </div>
         </form>
       </div>
@@ -200,9 +199,6 @@ uri="http://java.sun.com/jsp/jstl/core" %>
           <p>hoặc đăng ký với</p>
           <div class="social-icons">
             <a href="<%= request.getContextPath() %>/oauth2/google"><i class="bx bxl-google"></i></a>
-            <a href="#"><i class="bx bxl-facebook"></i></a>
-            <a href="#"><i class="bx bxl-github"></i></a>
-            <a href="#"><i class="bx bxl-linkedin"></i></a>
           </div>
         </form>
       </div>

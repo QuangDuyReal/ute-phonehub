@@ -272,7 +272,7 @@ public class EmailService {
                 "<p>Chào mừng bạn đến với UTE Phone Hub - nơi cung cấp điện thoại chất lượng cao với giá tốt nhất!</p>" +
                 "<p>Tài khoản của bạn đã được tạo thành công. Bạn có thể bắt đầu khám phá các sản phẩm của chúng tôi ngay bây giờ.</p>" +
                 "<center>" +
-                "<a href='http://localhost:8080' class='button'>Khám phá ngay</a>" +
+                "<a href='https://utephonehub.me' class='button'>Khám phá ngay</a>" +
                 "</center>" +
                 "<p>Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi.</p>" +
                 "</div>" +
@@ -316,7 +316,7 @@ public class EmailService {
      */
     public void sendNewOrderNotificationToAdmin(com.utephonehub.entity.Order order) {
         try {
-            String adminEmail = getEnvOrProperty("ADMIN_EMAIL", "admin@utephonehub.com");
+            String adminEmail = getEnvOrProperty("ADMIN_EMAIL", "01699963463tu@gmail.com");
             String subject = "Đơn hàng mới #" + order.getOrderCode() + " - UTE Phone Hub";
             String htmlContent = buildAdminOrderNotificationTemplate(order);
             
@@ -413,14 +413,14 @@ public class EmailService {
                 "</tr>" +
                 "</tbody>" +
                 "</table>" +
-                
-                "<p>Bạn có thể tra cứu đơn hàng của mình bất kỳ lúc nào tại <a href='http://localhost:8080/orders'>trang đơn hàng</a>.</p>" +
+
+                "<p>Bạn có thể tra cứu đơn hàng của mình bất kỳ lúc nào tại <a href='https://utephonehub.me/orders'>trang đơn hàng</a>.</p>" +
                 "<p>Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ với chúng tôi qua email hoặc hotline.</p>" +
                 "<p>Trân trọng,<br><strong>UTE Phone Hub Team</strong></p>" +
                 "</div>" +
                 "<div class='footer'>" +
                 "<p>© 2025 UTE Phone Hub. All rights reserved.</p>" +
-                "<p>Email: support@utephonehub.com | Hotline: 1900 xxxx</p>" +
+                "<p>Email: support@utephonehub.me | Hotline: 1800 1234</p>" +
                 "</div>" +
                 "</div>" +
                 "</body>" +
@@ -456,7 +456,7 @@ public class EmailService {
                 "<h3>Sản phẩm:</h3>" +
                 "<pre>" + items.toString() + "</pre>" +
                 "<h3 style='color: #ff6b35;'>Tổng: " + String.format("%,.0f ₫", order.getTotalAmount()) + "</h3>" +
-                "<p><a href='http://localhost:8080/admin/orders' style='background: #ff6b35; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>Xem chi tiết</a></p>" +
+                "<p><a href='https://utephonehub.me/admin/orders' style='background: #ff6b35; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; display: inline-block;'>Xem chi tiết</a></p>" +
                 "</div>" +
                 "</body>" +
                 "</html>";

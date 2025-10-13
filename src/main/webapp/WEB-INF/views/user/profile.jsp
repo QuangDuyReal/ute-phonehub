@@ -75,7 +75,7 @@ uri="http://java.sun.com/jsp/jstl/core" %>
 
         <!-- Actions -->
         <div class="profile-header-actions">
-          <a href="${pageContext.request.contextPath}/" class="btn-back">
+          <a href="${pageContext.request.contextPath}/" class="btn-logout">
             <i class="fas fa-arrow-left"></i>
             <span>Quay lại</span>
           </a>

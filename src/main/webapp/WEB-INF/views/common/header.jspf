@@ -148,8 +148,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=phone"
-            class="nav-link ${param.category == 'phone' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=1"
+            class="nav-link ${param.category == '1' ? 'active' : ''}"
           >
             <i class="fas fa-mobile-alt"></i>
             <span>Điện thoại</span>
@@ -157,8 +157,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=laptop"
-            class="nav-link ${param.category == 'laptop' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=2"
+            class="nav-link ${param.category == '2' ? 'active' : ''}"
           >
             <i class="fas fa-laptop"></i>
             <span>Laptop</span>
@@ -166,8 +166,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=accessories"
-            class="nav-link ${param.category == 'accessories' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=3"
+            class="nav-link ${param.category == '3' ? 'active' : ''}"
           >
             <i class="fas fa-headphones"></i>
             <span>Phụ kiện</span>
@@ -175,8 +175,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=smartwatch"
-            class="nav-link ${param.category == 'smartwatch' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=4"
+            class="nav-link ${param.category == '4' ? 'active' : ''}"
           >
             <i class="fas fa-clock"></i>
             <span>Smartwatch</span>
@@ -184,8 +184,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=tablet"
-            class="nav-link ${param.category == 'tablet' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=5"
+            class="nav-link ${param.category == '5' ? 'active' : ''}"
           >
             <i class="fas fa-tablet-alt"></i>
             <span>Tablet</span>
@@ -193,8 +193,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=used"
-            class="nav-link ${param.category == 'used' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=6"
+            class="nav-link ${param.category == '6' ? 'active' : ''}"
           >
             <i class="fas fa-recycle"></i>
             <span>Máy cũ</span>
@@ -202,8 +202,8 @@
         </li>
         <li class="nav-item">
           <a
-            href="${pageContext.request.contextPath}/products?category=monitor"
-            class="nav-link ${param.category == 'monitor' ? 'active' : ''}"
+            href="${pageContext.request.contextPath}/products?category=7"
+            class="nav-link ${param.category == '7' ? 'active' : ''}"
           >
             <i class="fas fa-desktop"></i>
             <span>Màn hình</span>

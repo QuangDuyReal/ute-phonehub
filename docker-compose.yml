@@ -53,18 +53,7 @@ services:
       - .env
     ports:
       - "8080:8080"
-    environment:
-      # Override specific variables for Docker networking
-      - DB_HOST=postgres
-      - DB_NAME=utephonehub_dev
-      - DB_USER=utephonehub_user
-      - DB_PASSWORD=utephonehub_password
-      - REDIS_HOST=redis
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+    # Remove environment overrides to use cloud services from .env
     networks:
       - utephonehub-network
     restart: unless-stopped

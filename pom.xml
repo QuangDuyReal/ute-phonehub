@@ -307,6 +307,16 @@
                     </includes>
                 </configuration>
             </plugin>
+            
+            <!-- Exec Plugin for running Java classes -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <configuration>
+                    <mainClass>com.utephonehub.util.HashPasswordTool</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>

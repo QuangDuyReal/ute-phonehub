@@ -44,23 +44,37 @@ public class DatabaseConfig {
             String dbName = getEnvOrProperty("DB_NAME");
             String dbUser = getEnvOrProperty("DB_USER");
             String dbPassword = getEnvOrProperty("DB_PASSWORD");
+
+            // Apply local defaults when environment variables are missing
+            if (dbHost == null || dbHost.isBlank()) {
+                dbHost = "localhost";
+                logger.info("DB_HOST not provided - falling back to localhost");
+            }
+            if (dbPort == null || dbPort.isBlank()) {
+                dbPort = "5432";
+                logger.info("DB_PORT not provided - falling back to 5432");
+            }
+            if (dbName == null || dbName.isBlank()) {
+                dbName = "utephonehub_dev";
+                logger.info("DB_NAME not provided - falling back to utephonehub_dev");
+            }
+            if (dbUser == null || dbUser.isBlank()) {
+                dbUser = "utephonehub_user";
+                logger.info("DB_USER not provided - falling back to utephonehub_user");
+            }
+            if (dbPassword == null || dbPassword.isBlank()) {
+                dbPassword = "utephonehub_password";
+                logger.info("DB_PASSWORD not provided - falling back to default development password");
+            }
             
             // Construct JDBC URL if components are provided
-            if (dbHost != null && dbName != null) {
-                String port = dbPort != null ? dbPort : "5432";
-                String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", dbHost, port, dbName);
-                properties.put("jakarta.persistence.jdbc.url", jdbcUrl);
-                logger.info("Using database URL: {}", jdbcUrl);
-            }
+            String jdbcUrl = String.format("jdbc:postgresql://%s:%s/%s", dbHost, dbPort, dbName);
+            properties.put("jakarta.persistence.jdbc.url", jdbcUrl);
+            properties.put("jakarta.persistence.jdbc.user", dbUser);
+            properties.put("jakarta.persistence.jdbc.password", dbPassword);
             
-            if (dbUser != null) {
-                properties.put("jakarta.persistence.jdbc.user", dbUser);
-                logger.info("Using database user from environment: {}", dbUser);
-            }
-            if (dbPassword != null) {
-                properties.put("jakarta.persistence.jdbc.password", dbPassword);
-                logger.info("Using database password from environment");
-            }
+            logger.info("Using database URL: {}", jdbcUrl);
+            logger.info("Using database user: {}", dbUser);
             
             entityManagerFactory = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME, properties);
             logger.info("EntityManagerFactory initialized successfully");

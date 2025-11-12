@@ -1,12 +1,8 @@
-version: "3.8"
-
 services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: utephonehub-postgres-dev
-    env_file:
-      - .env
     environment:
       POSTGRES_DB: utephonehub_dev
       POSTGRES_USER: utephonehub_user
@@ -15,7 +11,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./docker/postgres/cloud-sql-init.sql:/docker-entrypoint-initdb.d/10-init.sql
     networks:
       - utephonehub-network
     restart: unless-stopped
@@ -49,11 +45,26 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: utephonehub-app-dev
-    env_file:
-      - .env
+    environment:
+      # Override database connection to use local PostgreSQL
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: utephonehub_dev
+      DB_USER: utephonehub_user
+      DB_PASSWORD: utephonehub_password
+      # Override Redis connection to use local Redis
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ""
+      REDIS_USERNAME: ""
+      REDIS_URL: redis://redis:6379
     ports:
       - "8080:8080"
-    # Remove environment overrides to use cloud services from .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - utephonehub-network
     restart: unless-stopped

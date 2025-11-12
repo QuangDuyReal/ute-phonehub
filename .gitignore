@@ -46,6 +46,10 @@ changelog/
 .github/
 logs/
 *.log
+*.log.gz
 *.tmp
 .cursor/
-docker/
+
+### Docker ###
+# Keep init scripts, ignore other Docker data
+# docker/postgres/cloud-sql-init.sql is kept (important file)

@@ -15,6 +15,9 @@
 ```bash
 git clone https://github.com/QuangDuyReal/ute-phonehub
 cd ute-phonehub
+git checkout main
+git fetch origin main
+git pull origin main
 ```
 
 ### 2. Khởi động Docker Services
